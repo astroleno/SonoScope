@@ -1,0 +1,32 @@
+{
+  "name": "@sonoscope/visuals-basic",
+  "version": "1.0.0",
+  "description": "SonoScope 基础粒子可视化插件",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sonoscope/core": "workspace:*",
+    "p5": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.4",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}
