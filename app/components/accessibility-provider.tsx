@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 
 interface AccessibilityContextType {
   highContrast: boolean;
@@ -12,13 +18,17 @@ interface AccessibilityContextType {
   announce: (message: string, priority?: 'polite' | 'assertive') => void;
 }
 
-const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
+const AccessibilityContext = createContext<
+  AccessibilityContextType | undefined
+>(undefined);
 
 interface AccessibilityProviderProps {
   children: ReactNode;
 }
 
-export function AccessibilityProvider({ children }: AccessibilityProviderProps) {
+export function AccessibilityProvider({
+  children,
+}: AccessibilityProviderProps) {
   const [highContrast, setHighContrast] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [screenReader, setScreenReader] = useState(false);
@@ -29,15 +39,17 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
     if (window.matchMedia) {
       const highContrastQuery = window.matchMedia('(prefers-contrast: high)');
       setHighContrast(highContrastQuery.matches);
-      
-      const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      const reducedMotionQuery = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      );
       setReducedMotion(reducedMotionQuery.matches);
 
       // 监听变化
       const handleHighContrastChange = (e: MediaQueryListEvent) => {
         setHighContrast(e.matches);
       };
-      
+
       const handleReducedMotionChange = (e: MediaQueryListEvent) => {
         setReducedMotion(e.matches);
       };
@@ -46,8 +58,14 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
       reducedMotionQuery.addEventListener('change', handleReducedMotionChange);
 
       return () => {
-        highContrastQuery.removeEventListener('change', handleHighContrastChange);
-        reducedMotionQuery.removeEventListener('change', handleReducedMotionChange);
+        highContrastQuery.removeEventListener(
+          'change',
+          handleHighContrastChange
+        );
+        reducedMotionQuery.removeEventListener(
+          'change',
+          handleReducedMotionChange
+        );
       };
     }
   }, []);
@@ -58,15 +76,15 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
     const isScreenReaderActive = () => {
       // 检查常见的屏幕阅读器标识
       const userAgent = navigator.userAgent.toLowerCase();
-      const hasScreenReader = 
+      const hasScreenReader =
         userAgent.includes('nvda') ||
         userAgent.includes('jaws') ||
         userAgent.includes('voiceover') ||
         userAgent.includes('talkback');
-      
+
       // 检查 ARIA 支持
       const hasAriaSupport = 'ariaLive' in document.createElement('div');
-      
+
       return hasScreenReader || hasAriaSupport;
     };
 
@@ -74,12 +92,15 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
   }, []);
 
   // 公告功能
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (
+    message: string,
+    priority: 'polite' | 'assertive' = 'polite'
+  ) => {
     const announcement = document.getElementById('a11y-announcements');
     if (announcement) {
       announcement.setAttribute('aria-live', priority);
       announcement.textContent = message;
-      
+
       // 清空内容以便下次公告
       setTimeout(() => {
         announcement.textContent = '';
@@ -90,19 +111,19 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
   // 应用无障碍样式
   useEffect(() => {
     const root = document.documentElement;
-    
+
     if (highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
-    
+
     if (reducedMotion) {
       root.classList.add('reduced-motion');
     } else {
       root.classList.remove('reduced-motion');
     }
-    
+
     if (screenReader) {
       root.classList.add('screen-reader');
     } else {
@@ -117,7 +138,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
     setHighContrast,
     setReducedMotion,
     setScreenReader,
-    announce
+    announce,
   };
 
   return (

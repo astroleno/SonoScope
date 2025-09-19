@@ -315,10 +315,7 @@ export class DanmuEngine {
     const y = laneY;
     // 速度多样化：基础速度 × (1 + rms 影响) × 随机因子
     const randomFactor = 0.7 + Math.random() * 0.8; // 0.7 ~ 1.5
-    const speed = Math.max(
-      1.2,
-      this.DANMU_SPEED * (1 + rms * 0.8) * randomFactor
-    );
+    const speed = Math.max(1.2, this.DANMU_SPEED * (1 + rms * 0.8) * randomFactor);
     const vx = -speed;
     const vy = 0;
 

@@ -91,31 +91,58 @@ void main() {
 }
 `;
 
-type AccretionControls = { gainScale?: number; flickerStrength?: number; flickerFreq?: number; overallBoost?: number };
+type AccretionControls = {
+  gainScale?: number;
+  flickerStrength?: number;
+  flickerFreq?: number;
+  overallBoost?: number;
+};
 export function applyAccretionAudioUniforms(
   p: any,
   shader: any,
   level: number,
-  features: { spectralCentroid?: number; zcr?: number; mfcc?: number[]; spectralFlux?: number } | null,
+  features: {
+    spectralCentroid?: number;
+    zcr?: number;
+    mfcc?: number[];
+    spectralFlux?: number;
+  } | null,
   sensitivity: number,
   controls?: AccretionControls
 ) {
   const rms = Math.max(0, Math.min(1, level || 0));
-  const centroidHz = Math.max(0, Math.min(8000, (features?.spectralCentroid ?? 0)));
+  const centroidHz = Math.max(
+    0,
+    Math.min(8000, features?.spectralCentroid ?? 0)
+  );
   const centroid = centroidHz / 8000.0;
   const zcr = Math.max(0, Math.min(1, features?.zcr ?? 0));
   const mfcc = features?.mfcc ?? [];
   const mapM = (v: number) => Math.max(0, Math.min(1, (v + 100.0) / 200.0));
-  const mf = [mapM(mfcc[0] ?? 0), mapM(mfcc[1] ?? 0), mapM(mfcc[2] ?? 0), mapM(mfcc[3] ?? 0)];
+  const mf = [
+    mapM(mfcc[0] ?? 0),
+    mapM(mfcc[1] ?? 0),
+    mapM(mfcc[2] ?? 0),
+    mapM(mfcc[3] ?? 0),
+  ];
   shader.setUniform('uLevel', rms);
   shader.setUniform('uCentroid', centroid);
   shader.setUniform('uZcr', zcr);
   shader.setUniform('uMfcc', mf);
   const sens = Math.max(0.5, Math.min(3.0, sensitivity || 1));
   const gainScale = Math.max(0.5, Math.min(2.0, controls?.gainScale ?? 1.1));
-  const flickerStrength = Math.max(0.0, Math.min(0.4, controls?.flickerStrength ?? 0.12));
-  const flickerFreq = Math.max(4.0, Math.min(48.0, controls?.flickerFreq ?? 16.0));
-  const overallBoost = Math.max(0.7, Math.min(1.6, controls?.overallBoost ?? 1.0));
+  const flickerStrength = Math.max(
+    0.0,
+    Math.min(0.4, controls?.flickerStrength ?? 0.12)
+  );
+  const flickerFreq = Math.max(
+    4.0,
+    Math.min(48.0, controls?.flickerFreq ?? 16.0)
+  );
+  const overallBoost = Math.max(
+    0.7,
+    Math.min(1.6, controls?.overallBoost ?? 1.0)
+  );
   shader.setUniform('uSensitivity', sens);
   shader.setUniform('uGainScale', gainScale);
   shader.setUniform('uFlickerStrength', flickerStrength);

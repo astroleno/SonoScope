@@ -16,7 +16,7 @@ export interface FeatureTick {
 
 export interface DecisionEvent {
   type: 'style.switch' | 'preset.suggest' | 'danmu.text';
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type EventType =
@@ -37,13 +37,14 @@ export interface EventData {
 }
 
 type EventHandler<T extends EventType> = (data: EventData[T]) => void;
+type AnyEventHandler = EventHandler<EventType>;
 
 /**
  * 事件总线类
  * 提供类型安全的事件发布/订阅机制
  */
 export class EventBus {
-  private listeners: Map<EventType, Set<EventHandler<any>>> = new Map();
+  private listeners: Map<EventType, Set<AnyEventHandler>> = new Map();
 
   constructor() {
     // 初始化所有事件类型的监听器集合
@@ -58,7 +59,9 @@ export class EventBus {
    * @param handler 事件处理器
    */
   on<T extends EventType>(type: T, handler: EventHandler<T>): void {
-    const handlers = this.listeners.get(type);
+    const handlers = this.listeners.get(type) as
+      | Set<EventHandler<T>>
+      | undefined;
     if (handlers) {
       handlers.add(handler);
     }
@@ -70,7 +73,9 @@ export class EventBus {
    * @param handler 事件处理器
    */
   off<T extends EventType>(type: T, handler: EventHandler<T>): void {
-    const handlers = this.listeners.get(type);
+    const handlers = this.listeners.get(type) as
+      | Set<EventHandler<T>>
+      | undefined;
     if (handlers) {
       handlers.delete(handler);
     }
@@ -82,7 +87,9 @@ export class EventBus {
    * @param data 事件数据
    */
   emit<T extends EventType>(type: T, data: EventData[T]): void {
-    const handlers = this.listeners.get(type);
+    const handlers = this.listeners.get(type) as
+      | Set<EventHandler<T>>
+      | undefined;
     if (handlers) {
       handlers.forEach(handler => {
         try {

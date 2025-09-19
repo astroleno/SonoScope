@@ -37,13 +37,11 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="error">
           <div className="max-w-md mx-auto text-center">
-            <h1 className="text-2xl font-bold text-red-500 mb-4">
-              出现错误
-            </h1>
+            <h1 className="text-2xl font-bold text-red-500 mb-4">出现错误</h1>
             <p className="text-gray-300 mb-6">
               应用遇到了意外错误，请尝试重新加载页面。
             </p>
-            
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="text-left bg-gray-800 p-4 rounded-lg mb-6">
                 <summary className="cursor-pointer text-yellow-400 mb-2">
@@ -55,7 +53,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 </pre>
               </details>
             )}
-            
+
             <div className="space-y-3">
               <button
                 onClick={() => window.location.reload()}
@@ -63,9 +61,15 @@ export class ErrorBoundary extends Component<Props, State> {
               >
                 重新加载页面
               </button>
-              
+
               <button
-                onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
+                onClick={() =>
+                  this.setState({
+                    hasError: false,
+                    error: undefined,
+                    errorInfo: undefined,
+                  })
+                }
                 className="w-full px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
                 重试

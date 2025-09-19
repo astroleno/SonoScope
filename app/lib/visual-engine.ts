@@ -19,9 +19,12 @@ export interface VisualPlugin {
   version: string;
   capabilities: string[];
   supportedParams: (keyof VisualPreset)[];
-  
+
   init(container: HTMLElement): Promise<void>;
-  applyPreset(preset: Partial<VisualPreset>, durationMs: number): Promise<void>;
+  applyPreset(
+    preset: Partial<VisualPreset>,
+    _durationMs: number
+  ): Promise<void>;
   renderTick(featureTick: FeatureTick): void;
   dispose(): void;
 }
@@ -77,7 +80,10 @@ export class VisualEngine {
     console.log('基础粒子插件加载成功');
   }
 
-  async applyPreset(preset: Partial<VisualPreset>, duration: number = 1000): Promise<void> {
+  async applyPreset(
+    preset: Partial<VisualPreset>,
+    duration: number = 1000
+  ): Promise<void> {
     if (!this.currentPlugin) {
       throw new Error('没有加载的可视化插件');
     }
@@ -92,7 +98,7 @@ export class VisualEngine {
 
   dispose(): void {
     this.stopRendering();
-    
+
     if (this.currentPlugin) {
       this.currentPlugin.dispose();
       this.currentPlugin = null;
@@ -134,7 +140,7 @@ export class VisualEngine {
 
   private stopRendering(): void {
     this.isRendering = false;
-    
+
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -143,9 +149,11 @@ export class VisualEngine {
 
   private updateFPS(currentTime: number): void {
     this.frameCount++;
-    
+
     if (currentTime - this.lastFrameTime >= 1000) {
-      this.fps = Math.round((this.frameCount * 1000) / (currentTime - this.lastFrameTime));
+      this.fps = Math.round(
+        (this.frameCount * 1000) / (currentTime - this.lastFrameTime)
+      );
       this.frameCount = 0;
       this.lastFrameTime = currentTime;
 
@@ -153,7 +161,7 @@ export class VisualEngine {
       this.eventBus.emit('performance', {
         fps: this.fps,
         memory: this.getMemoryUsage(),
-        latency: 0
+        latency: 0,
       });
     }
   }
@@ -198,7 +206,12 @@ class BasicParticlesPlugin implements VisualPlugin {
   version = '1.0.0';
   capabilities = ['particles', 'color-response', 'beat-detection'];
   supportedParams: (keyof VisualPreset)[] = [
-    'bg', 'particleSpeed', 'particleDensity', 'blur', 'accentHue', 'fontWeight'
+    'bg',
+    'particleSpeed',
+    'particleDensity',
+    'blur',
+    'accentHue',
+    'fontWeight',
   ];
 
   private canvas: HTMLCanvasElement | null = null;
@@ -213,12 +226,12 @@ class BasicParticlesPlugin implements VisualPlugin {
     particleDensity: 100,
     blur: 0,
     accentHue: 200,
-    fontWeight: 400
+    fontWeight: 400,
   };
 
   async init(container: HTMLElement): Promise<void> {
     this.container = container;
-    
+
     // 创建画布
     this.canvas = document.createElement('canvas');
     this.canvas.style.position = 'absolute';
@@ -227,7 +240,7 @@ class BasicParticlesPlugin implements VisualPlugin {
     this.canvas.style.width = '100%';
     this.canvas.style.height = '100%';
     this.canvas.style.pointerEvents = 'none';
-    
+
     this.ctx = this.canvas.getContext('2d');
     if (!this.ctx) {
       throw new Error('无法创建画布上下文');
@@ -235,15 +248,19 @@ class BasicParticlesPlugin implements VisualPlugin {
 
     // 设置画布大小
     this.resizeCanvas();
-    
+
     // 添加到容器
     container.appendChild(this.canvas);
-    
+
     // 监听窗口大小变化
     window.addEventListener('resize', () => this.resizeCanvas());
   }
 
-  async applyPreset(preset: Partial<VisualPreset>, durationMs: number): Promise<void> {
+  async applyPreset(
+    preset: Partial<VisualPreset>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _durationMs: number
+  ): Promise<void> {
     this.currentPreset = { ...this.currentPreset, ...preset };
   }
 
@@ -272,7 +289,7 @@ class BasicParticlesPlugin implements VisualPlugin {
     }
 
     // 更新和渲染粒子
-    this.particles.forEach((particle, index) => {
+    this.particles.forEach(particle => {
       this.updateParticle(particle, rms, centroid, flux);
       this.renderParticle(particle);
     });
@@ -293,7 +310,7 @@ class BasicParticlesPlugin implements VisualPlugin {
 
   private resizeCanvas(): void {
     if (!this.canvas) return;
-    
+
     const rect = this.canvas.getBoundingClientRect();
     this.canvas.width = rect.width;
     this.canvas.height = rect.height;
@@ -312,13 +329,19 @@ class BasicParticlesPlugin implements VisualPlugin {
         70
       ),
       life: 1,
-      maxLife: 1
+      maxLife: 1,
     };
 
     this.particles.push(particle);
   }
 
-  private updateParticle(particle: Particle, rms: number, centroid: number, flux: number): void {
+  private updateParticle(
+    particle: Particle,
+    rms: number,
+    centroid: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _flux: number
+  ): void {
     // 更新位置
     particle.x += particle.vx * (this.currentPreset.particleSpeed || 1);
     particle.y += particle.vy * (this.currentPreset.particleSpeed || 1);
@@ -350,7 +373,7 @@ class BasicParticlesPlugin implements VisualPlugin {
 
   private createBeatBurst(rms: number, centroid: number): void {
     const burstCount = Math.floor(rms * 10);
-    
+
     for (let i = 0; i < burstCount; i++) {
       const particle: Particle = {
         x: (this.canvas?.width || 800) / 2 + (Math.random() - 0.5) * 100,
@@ -364,7 +387,7 @@ class BasicParticlesPlugin implements VisualPlugin {
           100
         ),
         life: 1,
-        maxLife: 1
+        maxLife: 1,
       };
 
       this.particles.push(particle);
@@ -377,23 +400,37 @@ class BasicParticlesPlugin implements VisualPlugin {
     l /= 100;
 
     const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+    const x = c * (1 - Math.abs(((h * 6) % 2) - 1));
     const m = l - c / 2;
 
-    let r = 0, g = 0, b = 0;
+    let r = 0,
+      g = 0,
+      b = 0;
 
-    if (0 <= h && h < 1/6) {
-      r = c; g = x; b = 0;
-    } else if (1/6 <= h && h < 2/6) {
-      r = x; g = c; b = 0;
-    } else if (2/6 <= h && h < 3/6) {
-      r = 0; g = c; b = x;
-    } else if (3/6 <= h && h < 4/6) {
-      r = 0; g = x; b = c;
-    } else if (4/6 <= h && h < 5/6) {
-      r = x; g = 0; b = c;
-    } else if (5/6 <= h && h < 1) {
-      r = c; g = 0; b = x;
+    if (0 <= h && h < 1 / 6) {
+      r = c;
+      g = x;
+      b = 0;
+    } else if (1 / 6 <= h && h < 2 / 6) {
+      r = x;
+      g = c;
+      b = 0;
+    } else if (2 / 6 <= h && h < 3 / 6) {
+      r = 0;
+      g = c;
+      b = x;
+    } else if (3 / 6 <= h && h < 4 / 6) {
+      r = 0;
+      g = x;
+      b = c;
+    } else if (4 / 6 <= h && h < 5 / 6) {
+      r = x;
+      g = 0;
+      b = c;
+    } else if (5 / 6 <= h && h < 1) {
+      r = c;
+      g = 0;
+      b = x;
     }
 
     r = Math.round((r + m) * 255);

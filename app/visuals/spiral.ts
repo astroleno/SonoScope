@@ -72,14 +72,6 @@ vec3 march(vec3 p, vec3 rd){
   return col;
 }
 
-float effect(vec2 p){
-  p=abs(abs(p)-vec2(1.1,.85))-vec2(1.,.75);
-  float d=length(max(p,.0))+min(.0,max(p.x,p.y))-.02;
-  return S(.05,.0,d);
-}
-
-void cam(inout vec3 p){ p.yz*=rot(-.64); p.xz*=rot(-.64); }
-
 void main(){
   vec2 uv=(gl_FragCoord.xy-.5*R)/MN;
   vec3 col=vec3(0.), p=vec3(0.,0.,-2.), rd=N(vec3(uv,.8)), lp=vec3(1.,2.,-3.);
@@ -98,8 +90,6 @@ void main(){
     col=mix(col,vec3(1.-dif)*sqrt(col),fres);
     col=mix(col,vec3(dif),fres);
     col+=.25*spec*hue(spec)+.5*spec;
-    vec3 q=p; cam(q);
-    col=mix(col,mix(col,vec3(1.),.08),effect(q.xy*8.));
     col=mix(col,vec3(1.),fres*fres*.22);
     col=S(-.05,.8,col); col=max(col,.02);
   } else {
@@ -115,18 +105,26 @@ void main(){
 }
 `;
 
-export function applySpiralUniforms(p: any, shader: any, level: number, sensitivity: number){
-  shader.setUniform('uTime', p.millis()/1000.0);
+export function applySpiralUniforms(
+  p: any,
+  shader: any,
+  level: number,
+  sensitivity: number
+) {
+  shader.setUniform('uTime', p.millis() / 1000.0);
   shader.setUniform('uResolution', [p.width, p.height]);
-  shader.setUniform('uMove', [0,0]);
+  shader.setUniform('uMove', [0, 0]);
   shader.setUniform('uPointerCount', 0);
-  shader.setUniform('uLevel', Math.max(0, Math.min(1, level||0)));
-  shader.setUniform('uSensitivity', Math.max(0.5, Math.min(3.0, sensitivity||1.5)));
+  shader.setUniform('uLevel', Math.max(0, Math.min(1, level || 0)));
+  shader.setUniform(
+    'uSensitivity',
+    Math.max(0.5, Math.min(3.0, sensitivity || 1.5))
+  );
 }
 
-export function drawSpiral(p: any, shader: any){
+export function drawSpiral(p: any, shader: any) {
   p.shader(shader);
   p.noStroke();
   p.rectMode(p.CENTER);
-  p.rect(0,0,p.width,p.height);
+  p.rect(0, 0, p.width, p.height);
 }

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   description: '基于浏览器的实时音乐可视化与弹幕引擎',
   keywords: ['音频可视化', '音乐可视化', '实时渲染', 'Web Audio'],
   authors: [{ name: 'SonoScope Team' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  viewport:
+    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   themeColor: '#000000',
   manifest: '/manifest.json',
   icons: {
@@ -27,16 +28,30 @@ export default function RootLayout({
     <html lang="zh-CN">
       <head>
         {/* 预加载关键资源 */}
-        <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href="/fonts/inter.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {/* 移动端优化 */}
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
       </head>
       <body className={inter.className} suppressHydrationWarning={true}>
         {/* 无障碍支持 */}
-        <div id="a11y-announcements" aria-live="polite" aria-atomic="true" className="sr-only" />
+        <div
+          id="a11y-announcements"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        />
         {children}
       </body>
     </html>

@@ -45,7 +45,7 @@ export class AudioEngine {
     this.frequencyData = new Float32Array(this.FFT_SIZE / 2);
     this.timeData = new Float32Array(this.FFT_SIZE);
     this.previousSpectrum = new Float32Array(this.FFT_SIZE / 2);
-    
+
     // 初始化事件监听器
     this.listeners.set('featureTick', []);
     this.listeners.set('error', []);
@@ -60,8 +60,9 @@ export class AudioEngine {
       }
 
       // 创建音频上下文
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
+      this.audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+
       // 创建分析器节点
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = this.FFT_SIZE;
@@ -93,13 +94,13 @@ export class AudioEngine {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 44100
-        }
+          sampleRate: 44100,
+        },
       });
 
       // 创建音频源节点
       this.microphone = this.audioContext!.createMediaStreamSource(this.stream);
-      
+
       // 连接音频节点
       this.microphone.connect(this.analyser!);
 
@@ -145,7 +146,7 @@ export class AudioEngine {
 
   dispose(): void {
     this.stop();
-    
+
     if (this.audioContext) {
       this.audioContext.close();
       this.audioContext = null;
@@ -193,14 +194,14 @@ export class AudioEngine {
 
       try {
         // 获取频域数据
-        this.analyser.getFloatFrequencyData(this.frequencyData);
-        
+        this.analyser.getFloatFrequencyData(this.frequencyData as any);
+
         // 获取时域数据
-        this.analyser.getFloatTimeDomainData(this.timeData);
+        this.analyser.getFloatTimeDomainData(this.timeData as any);
 
         // 提取音频特征
         const features = this.extractFeatures();
-        
+
         // 发送特征事件
         this.emit('featureTick', features);
 
@@ -217,16 +218,16 @@ export class AudioEngine {
 
   private extractFeatures(): FeatureTick {
     const now = Date.now();
-    
+
     // RMS (均方根) - 音量
     const rms = this.calculateRMS(this.timeData);
-    
+
     // 频谱质心 - 音色亮度
     const centroid = this.calculateSpectralCentroid(this.frequencyData);
-    
+
     // 频谱通量 - 音色变化
     const flux = this.calculateSpectralFlux();
-    
+
     // 节拍检测率
     const onsetRate = this.detectOnsets(rms);
 
@@ -239,7 +240,7 @@ export class AudioEngine {
       centroid: Math.max(0, centroid),
       flux: Math.max(0, Math.min(1, flux)),
       onsetRate: Math.max(0, onsetRate),
-      version: '1.0.0'
+      version: '1.0.0',
     };
   }
 
@@ -254,45 +255,44 @@ export class AudioEngine {
   private calculateSpectralCentroid(spectrum: Float32Array): number {
     let weightedSum = 0;
     let magnitudeSum = 0;
-    
+
     for (let i = 0; i < spectrum.length; i++) {
       const magnitude = Math.pow(10, spectrum[i] / 20); // 转换为线性幅度
-      const frequency = (i * this.audioContext!.sampleRate) / (2 * spectrum.length);
-      
+      const frequency =
+        (i * this.audioContext!.sampleRate) / (2 * spectrum.length);
+
       weightedSum += frequency * magnitude;
       magnitudeSum += magnitude;
     }
-    
+
     return magnitudeSum > 0 ? weightedSum / magnitudeSum : 0;
   }
 
   private calculateSpectralFlux(): number {
     let flux = 0;
-    
+
     for (let i = 0; i < this.frequencyData.length; i++) {
       const diff = this.frequencyData[i] - this.previousSpectrum[i];
       if (diff > 0) {
         flux += diff;
       }
     }
-    
+
     return flux / this.frequencyData.length;
   }
 
   private detectOnsets(rms: number): number {
     const now = Date.now();
-    
+
     // 简单的节拍检测：RMS 突然增加
     if (rms > this.onsetThreshold && now - this.lastOnsetTime > 100) {
       this.onsetHistory.push(now);
       this.lastOnsetTime = now;
-      
+
       // 保持最近 2 秒的历史
-      this.onsetHistory = this.onsetHistory.filter(
-        time => now - time < 2000
-      );
+      this.onsetHistory = this.onsetHistory.filter(time => now - time < 2000);
     }
-    
+
     // 计算每秒的节拍数
     return this.onsetHistory.length / 2;
   }

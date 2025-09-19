@@ -1,4 +1,11 @@
-export type Particle = { x: number; y: number; r: number; a: number; vx: number; vy: number };
+export type Particle = {
+  x: number;
+  y: number;
+  r: number;
+  a: number;
+  vx: number;
+  vy: number;
+};
 
 export function drawPulse(p: any, particles: Particle[], level: number) {
   const target = Math.max(0, Math.min(1, level));
