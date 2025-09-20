@@ -15,6 +15,7 @@ interface DanmuItem {
   y: number;
   vx: number;
   vy: number;
+  laneIdx: number; // 添加轨道索引
 }
 
 export class DanmuEngine {
@@ -27,30 +28,7 @@ export class DanmuEngine {
   // 水平轨道参数
   private lanes = 8;
   private nextLane = 0;
-
-  // 本地弹幕库
-  private localPhrases: string[] = [
-    '太棒了！',
-    '好听！',
-    '节奏感很强',
-    '音色很美',
-    '很有感觉',
-    '继续！',
-    '不错！',
-    '喜欢这个',
-    '很有氛围',
-    '很棒的音乐',
-    '节奏不错',
-    '音质很好',
-    '很有创意',
-    '继续播放',
-    '很好听',
-    '很有感觉',
-    '音色很棒',
-    '节奏感强',
-    '很喜欢',
-    '太赞了',
-  ];
+  private laneOccupancy: Set<number> = new Set(); // 跟踪轨道占用情况
 
   // 弹幕配置
   private readonly MAX_DANMU_COUNT = 15;
@@ -85,17 +63,21 @@ export class DanmuEngine {
   }
 
   start(): void {
+    console.log('🎵 弹幕引擎: start() 被调用, isInitialized:', this.isInitialized, 'isActive:', this.isActive);
+    
     if (!this.isInitialized) {
+      console.error('🎵 弹幕引擎: 未初始化，无法启动');
       throw new Error('弹幕引擎未初始化');
     }
 
     if (this.isActive) {
+      console.log('🎵 弹幕引擎: 已经激活，跳过启动');
       return;
     }
 
     this.isActive = true;
     this.startAnimationLoop();
-    console.log('弹幕引擎启动');
+    console.log('🎵 弹幕引擎: 启动成功, isActive:', this.isActive);
   }
 
   stop(): void {
@@ -139,8 +121,10 @@ export class DanmuEngine {
   }
 
   private startAnimationLoop(): void {
+    console.log('🎵 弹幕引擎: 启动动画循环');
     const animate = () => {
       if (!this.isActive) {
+        console.log('🎵 弹幕引擎: 动画循环停止 - isActive:', this.isActive);
         return;
       }
 
@@ -158,6 +142,12 @@ export class DanmuEngine {
 
   private updateDanmu(): void {
     const itemsToRemove: string[] = [];
+    
+    // 每5秒显示一次弹幕状态
+    if (this.danmuItems.size > 0 && !(window as any).__lastDanmuStatusLog || Date.now() - (window as any).__lastDanmuStatusLog > 5000) {
+      (window as any).__lastDanmuStatusLog = Date.now();
+      console.log('🎵 弹幕引擎: 更新弹幕, 当前弹幕数:', this.danmuItems.size);
+    }
 
     this.danmuItems.forEach((item, id) => {
       // 更新位置
@@ -167,14 +157,17 @@ export class DanmuEngine {
       // 不按时间衰减，改为走完整屏后移除
 
       // 更新元素位置
-      item.element.style.transform = `translate(${item.x}px, ${item.y}px)`;
+      item.element.style.left = `${item.x}px`;
+      item.element.style.top = `${item.y}px`;
 
       // 更新透明度
       item.element.style.opacity = '1';
 
-      // 检查是否需要移除
-      const width = item.element.offsetWidth || 80;
-      if (item.x < -width - 16) itemsToRemove.push(id);
+      // 检查是否需要移除：确保弹幕完全离开屏幕
+      const width = item.element.offsetWidth || 200;
+      if (item.x < -width - 50) { // 增加更多边距，确保完全离开
+        itemsToRemove.push(id);
+      }
     });
 
     // 移除过期弹幕
@@ -185,37 +178,25 @@ export class DanmuEngine {
 
   // 处理音频特征事件
   handleFeatureTick(featureTick: FeatureTick): void {
-    if (!this.isActive) {
-      return;
-    }
-
-    const now = Date.now();
-
-    // 控制生成频率
-    if (now - this.lastGenerationTime < this.GENERATION_INTERVAL) {
-      return;
-    }
-
-    // 根据音频特征选择弹幕
-    const text = this.selectDanmuText(featureTick);
-    if (!text) {
-      return;
-    }
-
-    // 限制弹幕数量
-    if (this.danmuItems.size >= this.MAX_DANMU_COUNT) {
-      const firstId = this.danmuItems.keys().next().value;
-      this.removeDanmu(firstId);
-    }
-
-    this.createDanmu(text, featureTick);
-    this.lastGenerationTime = now;
+    // 禁用自动生成，只使用外部注入的弹幕
+    return;
   }
 
   // 外部文本注入：供管线/流式接口调用
   ingestText(text: string): void {
-    if (!this.isActive) return;
-    if (!text || !text.trim()) return;
+    console.log('🎵 弹幕引擎: 尝试注入文本:', text, 'isActive:', this.isActive, 'isInitialized:', this.isInitialized);
+    
+    if (!this.isActive) {
+      console.log('🎵 弹幕引擎: 未激活，跳过弹幕创建');
+      return;
+    }
+    if (!text || !text.trim()) {
+      console.log('🎵 弹幕引擎: 文本为空，跳过弹幕创建');
+      return;
+    }
+    
+    console.log('🎵 弹幕引擎: 开始创建弹幕:', text);
+    
     if (this.danmuItems.size >= this.MAX_DANMU_COUNT) {
       const firstId = this.danmuItems.keys().next().value;
       this.removeDanmu(firstId);
@@ -230,46 +211,6 @@ export class DanmuEngine {
     this.createDanmu(text, pseudo);
   }
 
-  private selectDanmuText(featureTick: FeatureTick): string | null {
-    const { rms, centroid, flux, onsetRate } = featureTick;
-
-    // 根据音频特征选择不同的弹幕
-    if (onsetRate > 0.5) {
-      // 节拍强烈时
-      return this.getRandomPhrase([
-        '太棒了！',
-        '节奏感很强',
-        '继续！',
-        '很有感觉',
-      ]);
-    } else if (rms > 0.7) {
-      // 音量较大时
-      return this.getRandomPhrase(['好听！', '音色很美', '不错！', '很喜欢']);
-    } else if (centroid > 2000) {
-      // 高频较多时
-      return this.getRandomPhrase([
-        '音色很棒',
-        '很有创意',
-        '音质很好',
-        '太赞了',
-      ]);
-    } else if (flux > 0.3) {
-      // 变化较大时
-      return this.getRandomPhrase([
-        '很有氛围',
-        '很棒的音乐',
-        '继续播放',
-        '很好听',
-      ]);
-    }
-
-    // 默认随机选择
-    return this.getRandomPhrase(this.localPhrases);
-  }
-
-  private getRandomPhrase(phrases: string[]): string {
-    return phrases[Math.floor(Math.random() * phrases.length)];
-  }
 
   private createDanmu(text: string, featureTick: FeatureTick): void {
     if (!this.container) return;
@@ -304,21 +245,43 @@ export class DanmuEngine {
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
     const laneCount = Math.max(4, Math.min(12, this.lanes));
-    const laneIdx = this.nextLane++ % laneCount;
+    
+    // 智能轨道分配：避免重复
+    let laneIdx = this.nextLane % laneCount;
+    let attempts = 0;
+    while (this.laneOccupancy.has(laneIdx) && attempts < laneCount) {
+      laneIdx = (laneIdx + 1) % laneCount;
+      attempts++;
+    }
+    
+    // 如果所有轨道都被占用，选择最老的轨道
+    if (this.laneOccupancy.has(laneIdx)) {
+      laneIdx = this.nextLane % laneCount;
+    }
+    
+    // 标记轨道为占用
+    this.laneOccupancy.add(laneIdx);
+    
     const lanePaddingTop = 56;
     const lanePaddingBottom = 56;
     const usableH = Math.max(100, screenH - lanePaddingTop - lanePaddingBottom);
     const laneGap = usableH / laneCount;
     const laneY = lanePaddingTop + laneIdx * laneGap + laneGap * 0.35;
 
-    const x = screenW + 24;
+    // 从屏幕右侧开始，确保横贯整个屏幕
+    const x = screenW + 50; // 从屏幕外开始
     const y = laneY;
-    // 速度多样化：基础速度 × (1 + rms 影响) × 随机因子
-    const randomFactor = 0.7 + Math.random() * 0.8; // 0.7 ~ 1.5
-    const speed = Math.max(
-      1.2,
-      this.DANMU_SPEED * (1 + rms * 0.8) * randomFactor
-    );
+    
+    // 设置初始位置
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+    
+    // 计算横贯整个屏幕所需的时间（约8-12秒）
+    const elementWidth = element.offsetWidth || 200; // 估算弹幕宽度
+    const totalDistance = screenW + elementWidth + 100; // 总距离
+    const duration = 8000 + Math.random() * 4000; // 8-12秒
+    const speed = totalDistance / duration * 16.67; // 转换为每帧像素数（60fps）
+    
     const vx = -speed;
     const vy = 0;
 
@@ -333,14 +296,19 @@ export class DanmuEngine {
       y,
       vx,
       vy,
+      laneIdx, // 记录轨道索引
     };
 
     this.danmuItems.set(id, danmuItem);
+    console.log('🎵 弹幕引擎: 弹幕创建完成:', text, '轨道:', laneIdx, '位置:', x, y, '速度:', vx);
   }
 
   private removeDanmu(id: string): void {
     const item = this.danmuItems.get(id);
     if (item) {
+      // 释放轨道
+      this.laneOccupancy.delete(item.laneIdx);
+      
       if (item.element.parentNode) {
         item.element.parentNode.removeChild(item.element);
       }
@@ -355,6 +323,7 @@ export class DanmuEngine {
       }
     });
     this.danmuItems.clear();
+    this.laneOccupancy.clear(); // 清除所有轨道占用
   }
 
   get isReady(): boolean {

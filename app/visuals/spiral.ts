@@ -28,6 +28,12 @@ uniform float uPointerCount;   // not used
 // Audio uniforms (optional)
 uniform float uLevel;
 uniform float uSensitivity;
+uniform float uFlux;
+uniform float uCentroid;
+uniform float uFlatness;
+uniform float uZCR;
+uniform vec4  uMFCC;
+uniform float uPulse;
 
 #define R uResolution
 #define T (uTime+5.)
@@ -47,8 +53,10 @@ vec3 smin(vec3 a, vec3 b, float k){
 float swirls(vec3 p){
   vec3 c=p; float d=.1;
   for(float i=.0;i<5.;i++){
-    p=smin(p,-p,-.01)/dot(p,p)-.7;
-    p.yz=cmul(p.yz,p.yz);
+    float bend = mix(.58,.86,clamp(uFlatness + uFlux*.35,.0,1.));
+    float fold = .01 + .02*uMFCC.w;
+    p=smin(p,-p,-fold)/dot(p,p)-bend;
+    p.yz=cmul(p.yz + vec2(uFlux*.04,uMFCC.x*.05),p.yz);
     p=p.zxy; d+=exp(-19.*abs(dot(p,c)));
   }
   return d;
@@ -56,8 +64,16 @@ float swirls(vec3 p){
 
 void anim(inout vec3 p){
   float k = .01; // pointer disabled
-  p.yz*=rot(uMove.y*6.3/MN+k*.123+T*.2);
-  p.xz*=rot(uMove.x*6.3/MN-.1/k*1.2+k*.2);
+  float centroid = mix(.2,.85,uCentroid);
+  float fluxSpin = mix(.4,1.3,uFlux);
+  vec3 mf = uMFCC.xyz;
+  p += vec3(
+    sin(p.y*5.+T*2.5+mf.x*6.)*.035*mf.x,
+    cos(p.z*4.-T*1.8+mf.y*5.)*.028*mf.y,
+    sin(p.x*6.+T*3.+mf.z*4.)*.03*(.5+mf.z)
+  );
+  p.yz*=rot(uMove.y*6.3/MN+k*.123+T*(.22+.45*centroid));
+  p.xz*=rot(uMove.x*6.3/MN-.1/k*1.2+k*.2+fluxSpin*.08);
 }
 
 vec3 march(vec3 p, vec3 rd){
@@ -67,7 +83,9 @@ vec3 march(vec3 p, vec3 rd){
   for(float i=.0;i<60.;i++){
     t+=exp(-t*.65)*exp(-c*1.05);
     c=swirls(p+rd*t);
-    col+=c*hue(dot(p,p)+c)*.008;
+    float hueShift = uCentroid*3.2 - uMFCC.y*1.4 + uMFCC.z*1.1 + uPulse*2.4;
+    float gain = .008*(1. + uFlux*.9 + uFlatness*.45);
+    col+=c*hue(dot(p,p)+c+hueShift)*gain;
   }
   return col;
 }
@@ -88,34 +106,67 @@ void main(){
           spec=pow(clamp(dot(reflect(rd,n),l),.0,1.),4.);
     dif=sqrt(dif);
     col=mix(col,vec3(1.-dif)*sqrt(col),fres);
-    col=mix(col,vec3(dif),fres);
-    col+=.25*spec*hue(spec)+.5*spec;
-    col=mix(col,vec3(1.),fres*fres*.22);
+    col=mix(col,vec3(dif),fres*(.8+.3*uFlatness));
+    float specBoost=mix(.12,.42,clamp(uFlux+uPulse*.6,.0,1.));
+    vec3 specHue=hue(spec+uCentroid*4.+uMFCC.x*2.2);
+    col+=specBoost*spec*(specHue+.5*vec3(.6+.7*uFlatness));
+    col=mix(col,vec3(1.),fres*fres*(.18+.18*uFlatness));
+    float tone= mix(.04,.18,clamp(uZCR+.3*uFlatness,.0,1.));
+    col=mix(col,col+vec3(tone),uPulse*.5);
     col=S(-.05,.8,col); col=max(col,.02);
   } else {
     col=mix(vec3(.1,.2,.3),vec3(.008),pow(S(.0,.65,dot(uv,uv)),.3));
-    col+=sqrt(at*vec3(.9,.7,1.))*.25;
+    col+=sqrt(at*vec3(.9,.7,1.))*.25*(.5+uFlux*.8);
+    col+=vec3(.05*uCentroid,.04*uFlux,.06*uFlatness);
   }
   float t=min((uTime-.5)*.3,1.);
   col=mix(vec3(0.),col,t);
   // Simple audio reactivity on brightness
-  col *= (1.0 + uSensitivity * uLevel * 0.6);
+  float response = uLevel + uFlux*.35 + uPulse*.6;
+  col *= (1.0 + uSensitivity * response * 0.6);
   col=S(-.15,1.1,.9*col);
   gl_FragColor=vec4(col,1.);
 }
 `;
 
+export type SpiralAudioUniforms = {
+  level: number;
+  flux: number;
+  centroid: number;
+  flatness: number;
+  zcr: number;
+  mfcc: [number, number, number, number];
+  pulse: number;
+};
+
 export function applySpiralUniforms(
   p: any,
   shader: any,
-  level: number,
+  audio: SpiralAudioUniforms,
   sensitivity: number
 ) {
   shader.setUniform('uTime', p.millis() / 1000.0);
   shader.setUniform('uResolution', [p.width, p.height]);
   shader.setUniform('uMove', [0, 0]);
   shader.setUniform('uPointerCount', 0);
-  shader.setUniform('uLevel', Math.max(0, Math.min(1, level || 0)));
+  shader.setUniform('uLevel', Math.max(0, Math.min(1, audio.level || 0)));
+  shader.setUniform('uFlux', Math.max(0, Math.min(1, audio.flux || 0)));
+  shader.setUniform(
+    'uCentroid',
+    Math.max(0, Math.min(1, audio.centroid || 0))
+  );
+  shader.setUniform(
+    'uFlatness',
+    Math.max(0, Math.min(1, audio.flatness || 0))
+  );
+  shader.setUniform('uZCR', Math.max(0, Math.min(1, audio.zcr || 0)));
+  shader.setUniform('uMFCC', [
+    Math.max(0, Math.min(1, audio.mfcc?.[0] ?? 0)),
+    Math.max(0, Math.min(1, audio.mfcc?.[1] ?? 0)),
+    Math.max(0, Math.min(1, audio.mfcc?.[2] ?? 0)),
+    Math.max(0, Math.min(1, audio.mfcc?.[3] ?? 0)),
+  ]);
+  shader.setUniform('uPulse', Math.max(0, Math.min(1, audio.pulse || 0)));
   shader.setUniform(
     'uSensitivity',
     Math.max(0.5, Math.min(3.0, sensitivity || 1.5))

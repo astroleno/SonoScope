@@ -15,12 +15,12 @@ export class DanmuScheduler {
 
   constructor(cfg?: SchedulerConfig) {
     this.config = {
-      minIntervalSec: 0.8,
+      minIntervalSec: 2.5,
       baseMinSec: 3.0,
-      baseMaxSec: 10.0,
+      baseMaxSec: 8.0,
       maxConcurrency: 3,
-      upThreshold: 0.6,
-      downThreshold: 0.45,
+      upThreshold: 0.65,
+      downThreshold: 0.4,
       ...cfg,
     } as Required<SchedulerConfig>;
   }
@@ -31,7 +31,7 @@ export class DanmuScheduler {
       this.config.baseMinSec,
       this.config.baseMaxSec
     );
-    const factor = 1.0 - 0.6 * this.clamp01(drive);
+    const factor = 1.0 - 0.55 * this.clamp01(drive);
     const interval = Math.max(
       this.config.minIntervalSec,
       Math.min(base * factor, this.config.baseMaxSec)

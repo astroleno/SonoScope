@@ -6,11 +6,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { EventBus } from '../lib/event-bus';
 import { DanmuEngine } from '../lib/danmu-engine';
-import { DanmuPipeline, PipelineConfig } from '../lib/danmu-pipeline';
+import {
+  DanmuPipelineEnhanced,
+  PipelineConfig,
+} from '../lib/danmu-pipeline-enhanced';
+import { DanmuPipelineSimple } from '../lib/danmu-pipeline-simple';
 
 export interface UseDanmuPipelineOptions extends PipelineConfig {
   enabled?: boolean;
   autoStart?: boolean;
+  useSimple?: boolean; // 是否使用简化版管线
 }
 
 export interface DanmuPipelineState {
@@ -21,7 +26,7 @@ export interface DanmuPipelineState {
 }
 
 export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
-  const { enabled = true, autoStart = true, ...pipelineConfig } = options;
+  const { enabled = true, autoStart = true, useSimple = true, ...pipelineConfig } = options;
 
   const [state, setState] = useState<DanmuPipelineState>({
     isActive: false,
@@ -32,7 +37,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
   const eventBusRef = useRef<EventBus | null>(null);
   const danmuEngineRef = useRef<DanmuEngine | null>(null);
-  const pipelineRef = useRef<DanmuPipeline | null>(null);
+  const pipelineRef = useRef<DanmuPipelineEnhanced | DanmuPipelineSimple | null>(null);
   const initializedRef = useRef(false);
 
   // 初始化弹幕引擎和管线
@@ -50,8 +55,10 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         await danmuEngine.initialize();
         danmuEngineRef.current = danmuEngine;
 
-        // 创建弹幕管线
-        const pipeline = new DanmuPipeline(danmuEngine, pipelineConfig);
+        // 创建弹幕管线（根据配置选择版本）
+        const pipeline = useSimple 
+          ? new DanmuPipelineSimple(danmuEngine, pipelineConfig)
+          : new DanmuPipelineEnhanced(danmuEngine, pipelineConfig);
         pipelineRef.current = pipeline;
 
         initializedRef.current = true;
@@ -77,10 +84,18 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
   // 启动/停止管线
   const start = () => {
+    console.log('🎵 useDanmuPipeline start 被调用:', {
+      hasDanmuEngine: !!danmuEngineRef.current,
+      hasPipeline: !!pipelineRef.current,
+      initialized: initializedRef.current
+    });
     if (danmuEngineRef.current && pipelineRef.current) {
       danmuEngineRef.current.start();
       pipelineRef.current.start();
       setState(prev => ({ ...prev, isActive: true }));
+      console.log('🎵 弹幕管线启动成功');
+    } else {
+      console.log('🎵 弹幕管线启动失败 - 组件未就绪');
     }
   };
 
@@ -97,7 +112,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
   // 手动触发弹幕生成
   const trigger = async () => {
     if (pipelineRef.current) {
-      await pipelineRef.current.manualTrigger();
+      pipelineRef.current.trigger();
     }
   };
 
@@ -116,11 +131,12 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (!pipelineRef.current) return;
 
     const updateState = () => {
+      const status = pipelineRef.current?.status;
       setState(prev => ({
         ...prev,
-        currentStyle: pipelineRef.current?.currentStyleName || null,
-        pendingRequests: pipelineRef.current?.pendingCount || 0,
-        danmuCount: danmuEngineRef.current?.danmuCount || 0,
+        currentStyle: status?.currentStyle || null,
+        pendingRequests: status?.pendingRequests || 0,
+        danmuCount: status?.danmuCount || 0,
       }));
     };
 

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosaic 颜色方案预览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            margin: 20px;
+        }
+        .color-scheme {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #2a2a2a;
+        }
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .color-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        .bg-color {
+            width: 100px;
+            height: 40px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            margin-top: 10px;
+        }
+        h3 {
+            margin: 0 0 10px 0;
+            color: #4CAF50;
+        }
+        .description {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Mosaic 颜色方案预览</h1>
+    <p>以下是所有可用的颜色方案，包括新增的8个方案：</p>
+
+    <div class="color-scheme">
+        <h3>霓虹赛博 (Neon Cyber)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #00FFFF;">青</div>
+            <div class="color-box" style="background: #FF00FF;">洋红</div>
+            <div class="color-box" style="background: #FFFF00;">黄</div>
+            <div class="color-box" style="background: #00FF00;">绿</div>
+            <div class="color-box" style="background: #FF0080;">粉红</div>
+        </div>
+        <div class="bg-color" style="background: #0A0A0A;"></div>
+        <div class="description">适合电子音乐、赛博朋克风格</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>极光 (Aurora)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #00C9FF;">天蓝</div>
+            <div class="color-box" style="background: #92FE9D;">薄荷绿</div>
+            <div class="color-box" style="background: #00F5FF;">青蓝</div>
+            <div class="color-box" style="background: #A8EDEA;">浅青</div>
+            <div class="color-box" style="background: #FED6E3;">粉红</div>
+        </div>
+        <div class="bg-color" style="background: #0B1426;"></div>
+        <div class="description">梦幻极光效果，适合环境音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>火焰 (Fire)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #FF4500;">橙红</div>
+            <div class="color-box" style="background: #FF6347;">番茄红</div>
+            <div class="color-box" style="background: #FF7F50;">珊瑚</div>
+            <div class="color-box" style="background: #FFA500;">橙色</div>
+            <div class="color-box" style="background: #FFD700;">金色</div>
+        </div>
+        <div class="bg-color" style="background: #1C0A00;"></div>
+        <div class="description">热烈火焰效果，适合摇滚、金属音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>冰雪 (Ice)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #B0E0E6;">粉蓝</div>
+            <div class="color-box" style="background: #87CEEB;">天蓝</div>
+            <div class="color-box" style="background: #4682B4;">钢蓝</div>
+            <div class="color-box" style="background: #191970;">午夜蓝</div>
+            <div class="color-box" style="background: #000080;">海军蓝</div>
+        </div>
+        <div class="bg-color" style="background: #0A0F1A;"></div>
+        <div class="description">冷静冰雪效果，适合古典、环境音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>秋日 (Autumn)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #8B4513;">马鞍棕</div>
+            <div class="color-box" style="background: #CD853F;">秘鲁</div>
+            <div class="color-box" style="background: #DEB887;">小麦</div>
+            <div class="color-box" style="background: #F4A460;">沙棕</div>
+            <div class="color-box" style="background: #D2691E;">巧克力</div>
+        </div>
+        <div class="bg-color" style="background: #2F1B14;"></div>
+        <div class="description">温暖秋日色调，适合民谣、爵士音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>春日 (Spring)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #98FB98;">浅绿</div>
+            <div class="color-box" style="background: #90EE90;">浅绿</div>
+            <div class="color-box" style="background: #32CD32;">酸橙绿</div>
+            <div class="color-box" style="background: #228B22;">森林绿</div>
+            <div class="color-box" style="background: #006400;">深绿</div>
+        </div>
+        <div class="bg-color" style="background: #0F1A0F;"></div>
+        <div class="description">清新春日色调，适合轻音乐、流行音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>宇宙 (Cosmic)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #4B0082;">靛蓝</div>
+            <div class="color-box" style="background: #8A2BE2;">蓝紫</div>
+            <div class="color-box" style="background: #9370DB;">中紫</div>
+            <div class="color-box" style="background: #BA55D3;">兰花紫</div>
+            <div class="color-box" style="background: #DA70D6;">兰花紫</div>
+        </div>
+        <div class="bg-color" style="background: #0A0A0F;"></div>
+        <div class="description">神秘宇宙色调，适合电子、氛围音乐</div>
+    </div>
+
+    <div class="color-scheme">
+        <h3>极简 (Minimal)</h3>
+        <div class="color-palette">
+            <div class="color-box" style="background: #FFFFFF; color: black;">白</div>
+            <div class="color-box" style="background: #F0F0F0; color: black;">浅灰</div>
+            <div class="color-box" style="background: #D3D3D3; color: black;">灰</div>
+            <div class="color-box" style="background: #A9A9A9;">暗灰</div>
+            <div class="color-box" style="background: #696969;">深灰</div>
+        </div>
+        <div class="bg-color" style="background: #1A1A1A;"></div>
+        <div class="description">极简黑白灰，适合任何音乐风格</div>
+    </div>
+
+    <h2>🎵 使用建议</h2>
+    <ul>
+        <li><strong>霓虹赛博</strong>: 电子音乐、EDM、赛博朋克</li>
+        <li><strong>极光</strong>: 环境音乐、氛围音乐、新世纪</li>
+        <li><strong>火焰</strong>: 摇滚、金属、激情音乐</li>
+        <li><strong>冰雪</strong>: 古典音乐、冷静的电子音乐</li>
+        <li><strong>秋日</strong>: 民谣、爵士、温暖音乐</li>
+        <li><strong>春日</strong>: 流行音乐、轻音乐、清新音乐</li>
+        <li><strong>宇宙</strong>: 电子音乐、氛围音乐、神秘音乐</li>
+        <li><strong>极简</strong>: 任何音乐风格，突出音乐本身</li>
+    </ul>
+</body>
+</html>

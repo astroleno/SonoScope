@@ -1,28 +1,27 @@
+
 Build Error
 Failed to compile
 
 Next.js (14.2.32) is outdated (learn more)
-app/layout.tsx
-An error occurred in `next/font`.
+./visuals/mosaic.ts
+Error: 
+  × Expected ',', got ';'
+     ╭─[/Users/zuobowen/Documents/GitHub/SonoScope/app/visuals/mosaic.ts:346:1]
+ 346 │     Math.max(0, Math.min(1, audio.mfcc?.[3] ?? 0)),
+ 347 │   ]);
+ 348 │   shader.setUniform('uPulse', Math.max(0, Math.min(1, audio.pulse || 0)));
+ 349 │   shader.setUniform('uSensitivity', Math.max(0.5, Math.min(3.0, sensitivity || 1.5));
+     ·                                                                                     ─
+ 350 │   
+ 351 │   // Color scheme uniforms
+ 352 │   const [r1, g1, b1] = hexToRgb(colorScheme.colors[0]);
+     ╰────
 
-Error: Cannot find module 'tailwindcss'
-Require stack:
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/index.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack-config.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/server/dev/hot-reloader-webpack.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/server/lib/router-server.js
-- /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/server/lib/start-server.js
-    at Function.<anonymous> (node:internal/modules/cjs/loader:1365:15)
-    at /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/server/require-hook.js:55:36
-    at Function.resolve (node:internal/modules/helpers:145:19)
-    at loadPlugin (/Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:49:32)
-    at /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:56
-    at Array.map (<anonymous>)
-    at getPostCssPlugins (/Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:47)
-    at async /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js:124:36
-    at async /Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js:86:33
-    at async Span.traceAsyncFn (/Users/zuobowen/Documents/GitHub/SonoScope/node_modules/.pnpm/next@14.2.32_react-dom@18.3.1_react@18.3.1/node_modules/next/dist/trace/trace.js:154:20)
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./visuals/mosaic.ts
+./components/visualizer.tsx
+./app/page.tsx
 This error occurred during the build process and can only be dismissed by fixing the error.

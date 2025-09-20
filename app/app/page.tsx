@@ -4,6 +4,8 @@ import { useState, useRef } from 'react';
 import Visualizer from '../components/visualizer';
 import Meyda from 'meyda';
 import { useDanmuPipeline } from '../hooks/useDanmuPipeline';
+import MobileAudioPermission from '../components/mobile-audio-permission';
+import AudioFallback from '../components/audio-fallback';
 
 export default function HomePage() {
   const [isStarted, setIsStarted] = useState(false);
@@ -12,9 +14,11 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [deviceInfo, setDeviceInfo] = useState<string>('');
   const [testMode, setTestMode] = useState(false);
+  const [showMobilePermission, setShowMobilePermission] = useState(false);
+  const [showAudioFallback, setShowAudioFallback] = useState(false);
   const [signalOn, setSignalOn] = useState(false);
   const [peak, setPeak] = useState(0);
-  const [preset, setPreset] = useState<'pulse' | 'accretion' | 'spiral'>(
+  const [preset, setPreset] = useState<'pulse' | 'accretion' | 'spiral' | 'mosaic'>(
     'pulse'
   );
   const [accretionCtrl, setAccretionCtrl] = useState({
@@ -25,6 +29,15 @@ export default function HomePage() {
     flickerFreq: 14,
     overallBoost: 1.1,
   });
+  const [mosaicCtrl, setMosaicCtrl] = useState({
+    cellSize: 20,
+    maxAge: 80,
+    growthRate: 0.05,
+    spawnRate: 0.02,
+    colorScheme: 0,
+    colorFlowSpeed: 0.01,
+    alpha: 0.7,
+  });
   // const [frequencyBars, setFrequencyBars] = useState<number[]>([]); // legacy, not used now
   const [features, setFeatures] = useState<{
     rms?: number;
@@ -33,6 +46,19 @@ export default function HomePage() {
     mfcc?: number[];
     spectralFlatness?: number;
     spectralFlux?: number;
+    chroma?: number[];
+    spectralBandwidth?: number;
+    spectralRolloff?: number;
+    spectralContrast?: number[];
+    spectralSpread?: number;
+    spectralSkewness?: number;
+    spectralKurtosis?: number;
+    loudness?: number;
+    perceptualSpread?: number;
+    perceptualSharpness?: number;
+    voiceProb?: number;
+    percussiveRatio?: number;
+    harmonicRatio?: number;
   } | null>(null);
   const [sensitivity, setSensitivity] = useState<number>(1.5);
   const [rawMic, setRawMic] = useState<boolean>(false);
@@ -43,9 +69,10 @@ export default function HomePage() {
   const danmuPipeline = useDanmuPipeline({
     enabled: true,
     autoStart: false, // 手动启动
+    useSimple: false, // 启用完整版管线进行实时风格检测
     needComments: 4,
     locale: 'zh-CN',
-    rmsThreshold: 0.05,
+        rmsThreshold: 0.0001, // 进一步降低RMS阈值，确保能检测到音频
     maxConcurrency: 2,
   });
 
@@ -57,7 +84,52 @@ export default function HomePage() {
   const isRunningRef = useRef<boolean>(false);
   const meydaAnalyzerRef = useRef<any | null>(null);
 
-  const handleStart = async () => {
+  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+  const deriveAudioHints = (f: any) => {
+    const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : undefined;
+    const centroid = typeof f?.spectralCentroid === 'number' ? f.spectralCentroid : undefined;
+    const flux = typeof f?.spectralFlux === 'number' ? f.spectralFlux : undefined;
+
+    let voiceProb: number | undefined;
+    if (flat != null || centroid != null) {
+      const flatFactor = flat != null ? clamp01(1 - flat) : 0.5;
+      const centroidNorm = centroid != null ? clamp01((centroid - 1500) / 2500) : 0.5;
+      voiceProb = clamp01(0.35 + 0.4 * flatFactor + 0.25 * centroidNorm);
+    }
+
+    let percussiveRatio: number | undefined;
+    if (flat != null || flux != null) {
+      const fluxNorm = flux != null ? clamp01(flux * 1.4) : 0.35;
+      const flatNorm = flat != null ? clamp01(flat) : 0.4;
+      percussiveRatio = clamp01(0.45 * fluxNorm + 0.4 * flatNorm);
+    }
+
+    let harmonicRatio: number | undefined;
+    if (percussiveRatio != null) {
+      const base = 1 - percussiveRatio * 0.7;
+      const voiceBoost = voiceProb != null ? 0.2 * voiceProb : 0;
+      harmonicRatio = clamp01(base + voiceBoost);
+    }
+
+    return { voiceProb, percussiveRatio, harmonicRatio };
+  };
+
+  const handleStart = () => {
+    // 检测移动设备并显示相应的权限请求
+    const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(
+      navigator.userAgent
+    );
+
+    if (isMobile) {
+      setShowMobilePermission(true);
+    } else {
+      // 桌面设备使用原来的流程
+      startDesktopAudio();
+    }
+  };
+
+  const startDesktopAudio = async () => {
     try {
       setStatus('请求麦克风权限...');
       console.log('请求麦克风权限...');
@@ -155,9 +227,20 @@ export default function HomePage() {
               'mfcc',
               'spectralFlatness',
               'spectralFlux',
+              'chroma',
+              'spectralBandwidth',
+              'spectralRolloff',
+              'spectralContrast',
+              'spectralSpread',
+              'spectralSkewness',
+              'spectralKurtosis',
+              'loudness',
+              'perceptualSpread',
+              'perceptualSharpness',
             ],
             callback: (f: any) => {
               try {
+                const hints = deriveAudioHints(f);
                 setFeatures({
                   rms: typeof f.rms === 'number' ? f.rms : undefined,
                   spectralCentroid:
@@ -174,6 +257,43 @@ export default function HomePage() {
                     typeof f.spectralFlux === 'number'
                       ? f.spectralFlux
                       : undefined,
+                  chroma: Array.isArray(f.chroma) ? f.chroma : undefined,
+                  spectralBandwidth:
+                    typeof f.spectralBandwidth === 'number'
+                      ? f.spectralBandwidth
+                      : undefined,
+                  spectralRolloff:
+                    typeof f.spectralRolloff === 'number'
+                      ? f.spectralRolloff
+                      : undefined,
+                  spectralContrast: Array.isArray(f.spectralContrast)
+                    ? f.spectralContrast
+                    : undefined,
+                  spectralSpread:
+                    typeof f.spectralSpread === 'number'
+                      ? f.spectralSpread
+                      : undefined,
+                  spectralSkewness:
+                    typeof f.spectralSkewness === 'number'
+                      ? f.spectralSkewness
+                      : undefined,
+                  spectralKurtosis:
+                    typeof f.spectralKurtosis === 'number'
+                      ? f.spectralKurtosis
+                      : undefined,
+                  loudness:
+                    typeof f.loudness === 'number' ? f.loudness : undefined,
+                  perceptualSpread:
+                    typeof f.perceptualSpread === 'number'
+                      ? f.perceptualSpread
+                      : undefined,
+                  perceptualSharpness:
+                    typeof f.perceptualSharpness === 'number'
+                      ? f.perceptualSharpness
+                      : undefined,
+                  voiceProb: hints.voiceProb,
+                  percussiveRatio: hints.percussiveRatio,
+                  harmonicRatio: hints.harmonicRatio,
                 });
               } catch (e) {
                 // ignore per-frame errors
@@ -194,10 +314,12 @@ export default function HomePage() {
       setIsStarted(true);
       startAudioAnalysis();
 
-      // 启动弹幕管线
-      if (danmuPipeline.isReady) {
-        danmuPipeline.start();
-      }
+      // 启动弹幕管线（延迟启动确保初始化完成）
+      console.log('🎵 弹幕管线准备状态:', { isReady: danmuPipeline.isReady });
+      setTimeout(() => {
+        console.log('🎵 延迟启动弹幕管线');
+        setTimeout(() => danmuPipeline.start(), 500);
+      }, 1000); // 延迟1秒启动
 
       setStatus('音频分析已启动');
       setError(null);
@@ -207,6 +329,252 @@ export default function HomePage() {
       setError(err instanceof Error ? err.message : '启动失败');
       setStatus('启动失败');
     }
+  };
+
+  // 移动端权限处理
+  const handleMobilePermissionGranted = async (
+    stream: MediaStream,
+    audioContext: AudioContext
+  ) => {
+    try {
+      setStatus('初始化移动端音频分析...');
+      console.log('初始化移动端音频分析...');
+
+      const analyser = audioContext.createAnalyser();
+      const microphone = audioContext.createMediaStreamSource(stream);
+
+      // 配置分析器
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.5;
+
+      // 连接
+      microphone.connect(analyser);
+
+      // 保存引用
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      microphoneRef.current = microphone;
+      streamRef.current = stream;
+
+      // 调试信息：检查音频流状态
+      console.log('🎤 移动端音频流信息:', {
+        audioTracks: stream.getAudioTracks().length,
+        trackEnabled: stream.getAudioTracks()[0]?.enabled,
+        trackMuted: stream.getAudioTracks()[0]?.muted,
+        trackReadyState: stream.getAudioTracks()[0]?.readyState,
+        trackLabel: stream.getAudioTracks()[0]?.label,
+        audioContextState: audioContext.state,
+        analyserConnected: true
+      });
+
+      // 确保音频轨道启用（移动设备特别重要）
+      try {
+        stream.getAudioTracks().forEach(track => {
+          if (!track.enabled) {
+            console.log('启用音频轨道...');
+            track.enabled = true;
+          }
+        });
+      } catch (e) {
+        console.warn('无法设置音频轨道启用状态:', e);
+      }
+
+      // 设置移动端设备信息
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length > 0) {
+        const track = audioTracks[0];
+        const deviceLabel = track.label || '移动端麦克风';
+        setDeviceInfo(`移动端设备: ${deviceLabel}`);
+      } else {
+        setDeviceInfo('移动端音频设备已连接');
+      }
+
+      // 初始化 Meyda 特征提取
+      try {
+        if (Meyda && (Meyda as any).isBrowser) {
+          meydaAnalyzerRef.current = Meyda.createMeydaAnalyzer({
+            audioContext,
+            source: microphone,
+            bufferSize: 1024,
+            featureExtractors: [
+              'rms',
+              'spectralCentroid',
+              'zcr',
+              'mfcc',
+              'spectralFlatness',
+              'spectralFlux',
+              'chroma',
+              'spectralBandwidth',
+              'spectralRolloff',
+              'spectralContrast',
+              'spectralSpread',
+              'spectralSkewness',
+              'spectralKurtosis',
+              'loudness',
+              'perceptualSpread',
+              'perceptualSharpness',
+            ],
+            callback: (f: any) => {
+              try {
+                const hints = deriveAudioHints(f);
+                setFeatures({
+                  rms: typeof f.rms === 'number' ? f.rms : undefined,
+                  spectralCentroid:
+                    typeof f.spectralCentroid === 'number'
+                      ? f.spectralCentroid
+                      : undefined,
+                  zcr: typeof f.zcr === 'number' ? f.zcr : undefined,
+                  mfcc: Array.isArray(f.mfcc) ? f.mfcc : undefined,
+                  spectralFlatness:
+                    typeof f.spectralFlatness === 'number'
+                      ? f.spectralFlatness
+                      : undefined,
+                  spectralFlux:
+                    typeof f.spectralFlux === 'number'
+                      ? f.spectralFlux
+                      : undefined,
+                  chroma: Array.isArray(f.chroma) ? f.chroma : undefined,
+                  spectralBandwidth:
+                    typeof f.spectralBandwidth === 'number'
+                      ? f.spectralBandwidth
+                      : undefined,
+                  spectralRolloff:
+                    typeof f.spectralRolloff === 'number'
+                      ? f.spectralRolloff
+                      : undefined,
+                  spectralContrast: Array.isArray(f.spectralContrast)
+                    ? f.spectralContrast
+                    : undefined,
+                  spectralSpread:
+                    typeof f.spectralSpread === 'number'
+                      ? f.spectralSpread
+                      : undefined,
+                  spectralSkewness:
+                    typeof f.spectralSkewness === 'number'
+                      ? f.spectralSkewness
+                      : undefined,
+                  spectralKurtosis:
+                    typeof f.spectralKurtosis === 'number'
+                      ? f.spectralKurtosis
+                      : undefined,
+                  loudness:
+                    typeof f.loudness === 'number' ? f.loudness : undefined,
+                  perceptualSpread:
+                    typeof f.perceptualSpread === 'number'
+                      ? f.perceptualSpread
+                      : undefined,
+                  perceptualSharpness:
+                    typeof f.perceptualSharpness === 'number'
+                      ? f.perceptualSharpness
+                      : undefined,
+                  voiceProb: hints.voiceProb,
+                  percussiveRatio: hints.percussiveRatio,
+                  harmonicRatio: hints.harmonicRatio,
+                });
+              } catch (e) {
+                // ignore per-frame errors
+              }
+            },
+          });
+          meydaAnalyzerRef.current.start();
+        }
+      } catch (e) {
+        console.warn('Meyda 初始化失败:', e);
+      }
+
+      setStatus('开始音频分析...');
+      console.log('开始音频分析...');
+
+      // 确保音频上下文已恢复 (移动设备特别重要)
+      try {
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+          console.log('AudioContext 已恢复:', audioContext.state);
+        }
+      } catch (resumeErr) {
+        console.warn('AudioContext 恢复失败:', resumeErr);
+      }
+
+      // 先标记为运行，再启动循环，避免闭包捕获旧状态
+      isRunningRef.current = true;
+      setIsStarted(true);
+      setShowMobilePermission(false);
+
+      // 短暂延迟确保音频上下文完全就绪 (移动设备需要)
+      setTimeout(() => {
+        console.log('启动音频分析循环...');
+        startAudioAnalysis();
+      }, 100);
+
+      // 启动弹幕管线
+      if (danmuPipeline.isReady) {
+        setTimeout(() => danmuPipeline.start(), 500);
+      }
+
+      setStatus('移动端音频分析已启动');
+      setError(null);
+      console.log('移动端启动成功');
+    } catch (err) {
+      console.error('移动端启动失败:', err);
+      setError(err instanceof Error ? err.message : '移动端启动失败');
+      setStatus('移动端启动失败');
+    }
+  };
+
+  // 移动端权限错误处理
+  const handleMobilePermissionError = (error: Error) => {
+    console.error('移动端权限错误:', error);
+    setError(error.message);
+    setShowMobilePermission(false);
+    setShowAudioFallback(true);
+  };
+
+  // 移动端降级选择处理
+  const handleMobileFallbackSelected = (type: string) => {
+    console.log('移动端降级选择:', type);
+    setShowMobilePermission(false);
+    setShowAudioFallback(true);
+  };
+
+  // 降级音频启动处理
+  const handleFallbackStarted = (
+    audioContext: AudioContext,
+    analyser: AnalyserNode
+  ) => {
+    try {
+      console.log('降级音频启动成功');
+
+      // 保存引用
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      // 设置降级音频设备信息
+      setDeviceInfo('降级音频源: 测试音频/文件上传');
+
+      // 标记为运行
+      isRunningRef.current = true;
+      setIsStarted(true);
+      setShowAudioFallback(false);
+      setStatus('降级音频分析已启动');
+      setError(null);
+
+      // 启动音频分析循环
+      startAudioAnalysis();
+
+      // 启动弹幕管线
+      if (danmuPipeline.isReady) {
+        setTimeout(() => danmuPipeline.start(), 500);
+      }
+    } catch (err) {
+      console.error('降级音频启动失败:', err);
+      setError(err instanceof Error ? err.message : '降级启动失败');
+    }
+  };
+
+  // 降级音频停止处理
+  const handleFallbackStopped = () => {
+    console.log('降级音频停止');
+    handleStop();
   };
 
   const startAudioAnalysis = () => {
@@ -240,7 +608,8 @@ export default function HomePage() {
     const analyze = () => {
       if (!isRunningRef.current) return;
 
-      try {
+      // 临时禁用音频分析，避免错误
+      // try {
         if (testMode) {
           const testLevel = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
           setAudioLevel(testLevel);
@@ -254,16 +623,65 @@ export default function HomePage() {
           let maxAbs = 0;
           let minVal = 1;
           let maxVal = -1;
+          let zeroCount = 0;
+
           for (let i = 0; i < bufferLength; i++) {
             const sample = timeDomainData[i]; // [-1, 1]
+            if (sample === 0) zeroCount++;
             sumSquares += sample * sample;
             if (sample > maxVal) maxVal = sample;
             if (sample < minVal) minVal = sample;
             const abs = Math.abs(sample);
             if (abs > maxAbs) maxAbs = abs;
           }
+
           const rms = Math.sqrt(sumSquares / bufferLength); // [0, 1]
           let normalizedLevel = Math.min(Math.max(rms, 0), 1);
+
+          // 调试信息：检查是否所有值都是0
+          if (zeroCount === bufferLength) {
+            console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
+
+            // 尝试恢复音频上下文
+            if (
+              audioContextRef.current &&
+              audioContextRef.current.state !== 'running'
+            ) {
+              console.log('尝试恢复音频上下文...');
+              audioContextRef.current.resume().catch(err => {
+                console.warn('恢复音频上下文失败:', err);
+              });
+            }
+          }
+
+          // 检查是否是固定值（如91-92%可能表示读取问题）
+          if (normalizedLevel > 0.9 && normalizedLevel < 0.93) {
+            console.warn('⚠️ 检测到可能的固定音频值:', normalizedLevel.toFixed(6));
+            console.warn('这通常表示音频数据读取有问题，而不是真实的麦克风输入');
+            
+            // 输出前10个样本值用于调试
+            const sampleValues = Array.from(timeDomainData.slice(0, 10));
+            console.log('前10个音频样本值:', sampleValues);
+          }
+
+          // 每2秒输出一次调试信息
+          if (
+            !(window as any).__lastAudioDebugLog ||
+            Date.now() - (window as any).__lastAudioDebugLog > 2000
+          ) {
+            (window as any).__lastAudioDebugLog = Date.now();
+            console.log('🎵 音频调试:', {
+              rms: rms.toFixed(6),
+              normalizedLevel: normalizedLevel.toFixed(6),
+              maxAbs: maxAbs.toFixed(6),
+              minVal: minVal.toFixed(6),
+              maxVal: maxVal.toFixed(6),
+              zeroCount,
+              bufferLength,
+              audioContextState: audioContextRef.current?.state,
+              audioContextRunning: audioContextRef.current?.state === 'running',
+            });
+          }
           // 自适应校准：估计噪声底并抬升动态范围
           if (autoCalibrate) {
             const prev = noiseFloorRef.current || 0;
@@ -282,8 +700,109 @@ export default function HomePage() {
           setSignalOn(maxAbs > 0.008);
 
           // 自动触发弹幕管线
-          if (danmuPipeline.isActive && features) {
-            danmuPipeline.handleAudioFeatures(normalizedLevel, features);
+          if (!(window as any).__lastPipelineStatusLog || Date.now() - (window as any).__lastPipelineStatusLog > 5000) {
+            (window as any).__lastPipelineStatusLog = Date.now();
+            console.log('🎵 检查弹幕管线状态:', { isActive: danmuPipeline.isActive, normalizedLevel });
+          }
+          if (danmuPipeline.isActive) {
+            // 调试：检查特征数据
+            if (!(window as any).__lastFeatureDebugLog || Date.now() - (window as any).__lastFeatureDebugLog > 3000) {
+              (window as any).__lastFeatureDebugLog = Date.now();
+              console.log('🎵 特征数据状态:', {
+                hasFeatures: !!features,
+                rms: features?.rms,
+                spectralCentroid: features?.spectralCentroid,
+                zcr: features?.zcr,
+                mfcc: features?.mfcc?.length,
+                chroma: features?.chroma?.length,
+                spectralFlatness: features?.spectralFlatness,
+                spectralFlux: features?.spectralFlux,
+                hasAllFeatures: !!(features?.rms && features?.spectralCentroid && features?.zcr),
+                meydaAnalyzerExists: !!meydaAnalyzerRef.current,
+                featuresKeys: features ? Object.keys(features) : [],
+                normalizedLevel: normalizedLevel
+              });
+            }
+            
+            // 调试：检查弹幕管线调用
+            if (!(window as any).__lastPipelineDebugLog || Date.now() - (window as any).__lastPipelineDebugLog > 3000) {
+              (window as any).__lastPipelineDebugLog = Date.now();
+              console.log('🎵 弹幕管线状态:', {
+                isActive: danmuPipeline.isActive,
+                hasFeatures: !!features,
+                normalizedLevel: normalizedLevel,
+                rmsThreshold: 0.001
+              });
+            }
+            
+            // 强制使用基本特征进行测试
+            console.log('🎵 强制使用基本特征调用弹幕管线进行测试');
+            const basicFeatures = {
+              rms: normalizedLevel,
+              spectralCentroid: 2000, // 默认值
+              zcr: 0.1, // 默认值
+              mfcc: new Array(13).fill(0),
+              chroma: new Array(12).fill(0.1),
+              spectralFlatness: 0.5,
+              spectralFlux: 0.1,
+              spectralBandwidth: 1000,
+              spectralRolloff: 0.8,
+              spectralContrast: new Array(6).fill(0.5),
+              spectralSpread: 1000,
+              spectralSkewness: 0,
+              spectralKurtosis: 3,
+              loudness: normalizedLevel * 10,
+              perceptualSpread: 0.5,
+              perceptualSharpness: 0.5,
+              voiceProb: features?.voiceProb ?? 0.3,
+              percussiveRatio: features?.percussiveRatio ?? 0.4,
+              harmonicRatio: features?.harmonicRatio ?? 0.6,
+            };
+            danmuPipeline.handleAudioFeatures(normalizedLevel, basicFeatures);
+          } else {
+            if (!(window as any).__lastInactiveLog || Date.now() - (window as any).__lastInactiveLog > 5000) {
+              (window as any).__lastInactiveLog = Date.now();
+              console.log('🎵 弹幕管线未激活，跳过调用');
+            }
+          }
+          
+          // 强制测试：直接调用弹幕管线
+          if (normalizedLevel > 0.001) { // 降低阈值，确保能触发
+            if (!(window as any).__lastForceTestLog || Date.now() - (window as any).__lastForceTestLog > 3000) {
+              (window as any).__lastForceTestLog = Date.now();
+              console.log('🎵 强制测试弹幕管线调用');
+            }
+            const testFeatures = {
+              rms: normalizedLevel,
+              spectralCentroid: 2000,
+              zcr: 0.1,
+              mfcc: new Array(13).fill(0),
+              chroma: new Array(12).fill(0.1),
+              spectralFlatness: 0.5,
+              spectralFlux: 0.1,
+              spectralBandwidth: 1000,
+              spectralRolloff: 0.8,
+              spectralContrast: new Array(6).fill(0.5),
+              spectralSpread: 1000,
+              spectralSkewness: 0,
+              spectralKurtosis: 3,
+              loudness: normalizedLevel * 10,
+              perceptualSpread: 0.5,
+              perceptualSharpness: 0.5,
+              voiceProb: features?.voiceProb ?? 0.35,
+              percussiveRatio: features?.percussiveRatio ?? 0.45,
+              harmonicRatio: features?.harmonicRatio ?? 0.55,
+            };
+            danmuPipeline.handleAudioFeatures(normalizedLevel, testFeatures);
+          }
+          
+          // 超简单测试：直接调用弹幕生成
+          if (normalizedLevel > 0.1) { // 只在有足够音频时测试
+            if (!(window as any).__lastSimpleTestLog || Date.now() - (window as any).__lastSimpleTestLog > 5000) {
+              (window as any).__lastSimpleTestLog = Date.now();
+              console.log('🎵 超简单测试：直接触发弹幕生成');
+            }
+            danmuPipeline.trigger();
           }
 
           // 频谱获取与下采样 (已移除spectrum预设)
@@ -314,10 +833,15 @@ export default function HomePage() {
 
         // 继续分析循环
         animationFrameRef.current = requestAnimationFrame(analyze);
-      } catch (error) {
-        console.error('音频分析错误:', error);
-        animationFrameRef.current = requestAnimationFrame(analyze);
-      }
+      // } catch (error) {
+      //   if (error) {
+      //     console.error('音频分析错误:', error);
+      //   } else {
+      //     console.error('音频分析错误: 未知错误');
+      //   }
+      //   // 不要继续循环，避免无限错误
+      //   // animationFrameRef.current = requestAnimationFrame(analyze);
+      // }
     };
 
     animationFrameRef.current = requestAnimationFrame(analyze);
@@ -513,6 +1037,171 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Mosaic 控制面板 */}
+      {isStarted && preset === 'mosaic' && (
+        <div className="mt-4 z-10 w-[min(92vw,680px)] bg-white/5 border border-white/10 rounded-lg p-4 text-sm">
+          <div className="mb-2 text-gray-300 font-semibold">
+            Mosaic 控制面板
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                细胞大小 cellSize ({mosaicCtrl.cellSize})
+              </label>
+              <input
+                type="range"
+                min={10}
+                max={50}
+                step={2}
+                value={mosaicCtrl.cellSize}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    cellSize: parseInt(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                最大年龄 maxAge ({mosaicCtrl.maxAge})
+              </label>
+              <input
+                type="range"
+                min={40}
+                max={120}
+                step={5}
+                value={mosaicCtrl.maxAge}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    maxAge: parseInt(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                生长率 growthRate ({mosaicCtrl.growthRate.toFixed(3)})
+              </label>
+              <input
+                type="range"
+                min={0.01}
+                max={0.1}
+                step={0.005}
+                value={mosaicCtrl.growthRate}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    growthRate: parseFloat(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                生成率 spawnRate ({mosaicCtrl.spawnRate.toFixed(3)})
+              </label>
+              <input
+                type="range"
+                min={0.005}
+                max={0.05}
+                step={0.002}
+                value={mosaicCtrl.spawnRate}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    spawnRate: parseFloat(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                颜色流动速度 colorFlowSpeed ({mosaicCtrl.colorFlowSpeed.toFixed(3)})
+              </label>
+              <input
+                type="range"
+                min={0.005}
+                max={0.05}
+                step={0.002}
+                value={mosaicCtrl.colorFlowSpeed}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    colorFlowSpeed: parseFloat(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                透明度 alpha ({mosaicCtrl.alpha.toFixed(2)})
+              </label>
+              <input
+                type="range"
+                min={0.3}
+                max={1.0}
+                step={0.05}
+                value={mosaicCtrl.alpha}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    alpha: parseFloat(e.target.value),
+                  }))
+                }
+                className="w-full"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs text-gray-400 mb-1">
+                颜色方案 colorScheme ({mosaicCtrl.colorScheme})
+              </label>
+              <select
+                value={mosaicCtrl.colorScheme}
+                onChange={e =>
+                  setMosaicCtrl(v => ({
+                    ...v,
+                    colorScheme: parseInt(e.target.value),
+                  }))
+                }
+                className="w-full px-2 py-1 bg-gray-700 text-white rounded text-xs"
+              >
+                <option value={0}>黑白</option>
+                <option value={1}>粉色天竺葵</option>
+                <option value={2}>蓝色花朵</option>
+                <option value={3}>日落</option>
+                <option value={4}>紫色花朵</option>
+                <option value={5}>莫奈</option>
+                <option value={6}>康定斯基</option>
+                <option value={7}>夏日</option>
+                <option value={8}>樱花</option>
+                <option value={9}>激情</option>
+                <option value={10}>绣球花</option>
+                <option value={11}>郁金香</option>
+                <option value={12}>海洋</option>
+                <option value={13}>明亮</option>
+                <option value={14}>森林</option>
+                <option value={15}>彩虹</option>
+                <option value={16}>霓虹赛博</option>
+                <option value={17}>极光</option>
+                <option value={18}>火焰</option>
+                <option value={19}>冰雪</option>
+                <option value={20}>秋日</option>
+                <option value={21}>春日</option>
+                <option value={22}>宇宙</option>
+                <option value={23}>极简</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 错误显示 */}
       {error && (
         <div className="mb-4 z-10 p-4 bg-red-900/50 border border-red-500 rounded-lg">
@@ -537,16 +1226,21 @@ export default function HomePage() {
         {/* 弹幕管线状态 */}
         {isStarted && (
           <div className="mt-2 text-xs text-gray-300">
-            <span>弹幕: {danmuPipeline.isActive ? '活跃' : '停止'}</span>
-            {danmuPipeline.currentStyle && (
-              <span className="ml-2">风格: {danmuPipeline.currentStyle}</span>
-            )}
-            <span className="ml-2">数量: {danmuPipeline.danmuCount}</span>
-            {danmuPipeline.pendingRequests > 0 && (
-              <span className="ml-2">
-                生成中: {danmuPipeline.pendingRequests}
-              </span>
-            )}
+            <div className="flex flex-wrap gap-2">
+              <span>弹幕: {danmuPipeline.isActive ? '活跃' : '停止'}</span>
+              {danmuPipeline.currentStyle && (
+                <span className="text-blue-400">风格: {danmuPipeline.currentStyle}</span>
+              )}
+              <span>数量: {danmuPipeline.danmuCount}</span>
+              {danmuPipeline.pendingRequests > 0 && (
+                <span className="text-yellow-400">
+                  生成中: {danmuPipeline.pendingRequests}
+                </span>
+              )}
+            </div>
+            <div className="mt-1 text-xs text-gray-400">
+              支持风格: EDM, Techno, Trance, Dubstep, Ambient, Rock, Pop, Jazz, Classical, Hip-Hop, Metal
+            </div>
           </div>
         )}
       </div>
@@ -607,7 +1301,7 @@ export default function HomePage() {
         <select
           value={preset}
           onChange={e =>
-            setPreset(e.target.value as 'pulse' | 'accretion' | 'spiral')
+            setPreset(e.target.value as 'pulse' | 'accretion' | 'spiral' | 'mosaic')
           }
           className="px-3 py-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="可视化预设"
@@ -615,6 +1309,7 @@ export default function HomePage() {
           <option value="pulse">脉冲圆环</option>
           <option value="accretion">Accretion</option>
           <option value="spiral">Spiral</option>
+          <option value="mosaic">Mosaic</option>
         </select>
 
         {/* 反应强度 */}
@@ -689,6 +1384,17 @@ export default function HomePage() {
         >
           {testMode ? '退出测试' : '测试模式'}
         </button>
+        <button
+          onClick={() => setShowAudioFallback(true)}
+          disabled={isStarted}
+          className={`px-6 py-4 rounded-lg focus:outline-none focus:ring-2 transition-all ${
+            isStarted
+              ? 'bg-gray-600 text-white opacity-50 cursor-not-allowed'
+              : 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
+          }`}
+        >
+          音频选项
+        </button>
       </div>
 
       {/* 设备信息 */}
@@ -719,6 +1425,29 @@ export default function HomePage() {
         )}
       </div>
 
+      {/* 移动端权限弹窗 */}
+      {showMobilePermission && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <MobileAudioPermission
+            onPermissionGranted={handleMobilePermissionGranted}
+            onFallbackSelected={handleMobileFallbackSelected}
+            onError={handleMobilePermissionError}
+          />
+        </div>
+      )}
+
+      {/* 降级音频选项弹窗 */}
+      {showAudioFallback && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto">
+            <AudioFallback
+              onFallbackStarted={handleFallbackStarted}
+              onFallbackStopped={handleFallbackStopped}
+            />
+          </div>
+        </div>
+      )}
+
       {/* 画布容器 */}
       <div
         id="visual-canvas"
@@ -738,6 +1467,7 @@ export default function HomePage() {
         features={features}
         sensitivity={sensitivity}
         accretionControls={accretionCtrl}
+        mosaicControls={mosaicCtrl}
       />
     </main>
   );

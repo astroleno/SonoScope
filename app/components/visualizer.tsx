@@ -9,6 +9,9 @@ interface Features {
   mfcc?: number[];
   spectralFlatness?: number;
   spectralFlux?: number;
+  voiceProb?: number;
+  percussiveRatio?: number;
+  harmonicRatio?: number;
 }
 
 export type Particle = {
@@ -23,7 +26,7 @@ export type Particle = {
 interface VisualizerProps {
   audioLevel: number; // 0 ~ 1
   running: boolean;
-  preset?: 'pulse' | 'accretion' | 'spiral';
+  preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic';
   features?: Features | null;
   sensitivity?: number;
   accretionControls?: {
@@ -34,6 +37,15 @@ interface VisualizerProps {
     flickerFreq?: number;
     overallBoost?: number;
   };
+  mosaicControls?: {
+    cellSize?: number;
+    maxAge?: number;
+    growthRate?: number;
+    spawnRate?: number;
+    colorScheme?: number; // index into MOSAIC_COLOR_SCHEMES
+    colorFlowSpeed?: number;
+    alpha?: number;
+  };
 }
 
 export default function Visualizer({
@@ -43,17 +55,21 @@ export default function Visualizer({
   features = null,
   sensitivity = 1.5,
   accretionControls,
+  mosaicControls,
 }: VisualizerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const p5InstanceRef = useRef<any | null>(null);
   const levelRef = useRef<number>(0);
   const runningRef = useRef<boolean>(false);
-  const presetRef = useRef<'pulse' | 'accretion' | 'spiral'>(preset);
+  const presetRef = useRef<'pulse' | 'accretion' | 'spiral' | 'mosaic'>(preset);
   const featuresRef = useRef<Features | null>(features);
   const sensitivityRef = useRef<number>(sensitivity);
   const accretionControlsRef = useRef<
     VisualizerProps['accretionControls'] | undefined
   >(accretionControls);
+  const mosaicControlsRef = useRef<
+    VisualizerProps['mosaicControls'] | undefined
+  >(mosaicControls);
 
   useEffect(() => {
     levelRef.current = audioLevel;
@@ -73,6 +89,9 @@ export default function Visualizer({
   useEffect(() => {
     accretionControlsRef.current = accretionControls;
   }, [accretionControls]);
+  useEffect(() => {
+    mosaicControlsRef.current = mosaicControls;
+  }, [mosaicControls]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -93,15 +112,23 @@ export default function Visualizer({
             applyAccretionAudioUniforms,
           },
           { SPIRAL_VERTEX, SPIRAL_FRAGMENT, applySpiralUniforms, drawSpiral },
+          {
+            MosaicVisual,
+            applyMosaicUniforms,
+            drawMosaic,
+            MOSAIC_COLOR_SCHEMES,
+          },
         ] = await Promise.all([
           import('../visuals/pulse'),
           import('../visuals/accretion'),
           import('../visuals/spiral'),
+          import('../visuals/mosaic'),
         ]);
 
         const sketch = (p: any) => {
           let shaderProgram: any | null = null;
           let spiralProgram: any | null = null;
+          let mosaicVisual: any | null = null;
           const particles: Particle[] = [];
           const maxParticles = 90;
           // smoothed feature state for obvious yet stable response
@@ -115,6 +142,9 @@ export default function Visualizer({
             mfcc1: 0,
             mfcc2: 0,
             mfcc3: 0,
+            voice: 0,
+            perc: 0,
+            harmonic: 0,
           };
           // transient pulse driven by spectralFlux peaks
           let fluxPulse = 0;
@@ -160,6 +190,30 @@ export default function Visualizer({
               } catch (e) {
                 console.error('Spiral shader 编译失败:', e);
               }
+            } else if (mode === 'mosaic') {
+              try {
+                const controls = {
+                  cellSize: mosaicControlsRef.current?.cellSize ?? 20,
+                  maxAge: mosaicControlsRef.current?.maxAge ?? 80,
+                  growthRate: mosaicControlsRef.current?.growthRate ?? 0.05,
+                  spawnRate: mosaicControlsRef.current?.spawnRate ?? 0.02,
+                  colorScheme: mosaicControlsRef.current?.colorScheme ?? 0,
+                  colorFlowSpeed: mosaicControlsRef.current?.colorFlowSpeed ?? 0.01,
+                  alpha: mosaicControlsRef.current?.alpha ?? 0.7,
+                };
+                const audio = {
+                  level: 0,
+                  flux: 0,
+                  centroid: 0,
+                  flatness: 0,
+                  zcr: 0,
+                  mfcc: [0, 0, 0, 0] as [number, number, number, number],
+                  pulse: 0,
+                };
+                mosaicVisual = new MosaicVisual(p, controls, audio);
+              } catch (e) {
+                console.error('Mosaic 初始化失败:', e);
+              }
             } else {
               initParticles();
             }
@@ -167,7 +221,11 @@ export default function Visualizer({
 
           p.windowResized = () => {
             p.resizeCanvas(p.windowWidth, p.windowHeight);
-            if (presetRef.current !== 'accretion') initParticles();
+            if (presetRef.current === 'pulse') {
+              initParticles();
+            } else if (presetRef.current === 'mosaic' && mosaicVisual) {
+              mosaicVisual.resize();
+            }
           };
 
           p.draw = () => {
@@ -200,6 +258,16 @@ export default function Visualizer({
               f?.spectralFlux != null
                 ? Math.max(0, Math.min(1, f.spectralFlux))
                 : 0;
+            const voiceRaw =
+              f?.voiceProb != null ? Math.max(0, Math.min(1, f.voiceProb)) : 0;
+            const percRaw =
+              f?.percussiveRatio != null
+                ? Math.max(0, Math.min(1, f.percussiveRatio))
+                : 0;
+            const harmRaw =
+              f?.harmonicRatio != null
+                ? Math.max(0, Math.min(1, f.harmonicRatio))
+                : 0;
             const m0 = f?.mfcc?.[0] ?? 0,
               m1 = f?.mfcc?.[1] ?? 0,
               m2 = f?.mfcc?.[2] ?? 0,
@@ -216,6 +284,9 @@ export default function Visualizer({
             smoothed.mfcc1 = smooth(smoothed.mfcc1, mapM(m1));
             smoothed.mfcc2 = smooth(smoothed.mfcc2, mapM(m2));
             smoothed.mfcc3 = smooth(smoothed.mfcc3, mapM(m3));
+            smoothed.voice = smooth(smoothed.voice, voiceRaw);
+            smoothed.perc = smooth(smoothed.perc, percRaw);
+            smoothed.harmonic = smooth(smoothed.harmonic, harmRaw);
 
             // trigger/decay a visible pulse on flux spikes
             const fluxThresh = 0.12;
@@ -224,6 +295,7 @@ export default function Visualizer({
             } else {
               fluxPulse *= 0.92; // decay
             }
+            fluxPulse = Math.max(0, Math.min(1, fluxPulse));
 
             if (mode === 'accretion' && shaderProgram) {
               // Gentle sensitivity; clamp by external controls if provided
@@ -262,13 +334,57 @@ export default function Visualizer({
               );
               drawAccretion(p, shaderProgram);
             } else if (mode === 'spiral' && spiralProgram) {
+              const spiralAudio = {
+                level: smoothed.level,
+                flux: smoothed.flux,
+                centroid: smoothed.centroid,
+                flatness: smoothed.flatness,
+                zcr: smoothed.zcr,
+                mfcc: [
+                  smoothed.mfcc0,
+                  smoothed.mfcc1,
+                  smoothed.mfcc2,
+                  smoothed.mfcc3,
+                ] as [number, number, number, number],
+                pulse: fluxPulse,
+              };
               applySpiralUniforms(
                 p,
                 spiralProgram,
-                smoothed.level,
-                sensitivityRef.current
+                spiralAudio,
+                sensitivityRef.current ?? 1.5
               );
               drawSpiral(p, spiralProgram);
+            } else if (mode === 'mosaic' && mosaicVisual) {
+              const mosaicAudio = {
+                level: smoothed.level,
+                flux: smoothed.flux,
+                centroid: smoothed.centroid,
+                flatness: smoothed.flatness,
+                zcr: smoothed.zcr,
+                mfcc: [
+                  smoothed.mfcc0,
+                  smoothed.mfcc1,
+                  smoothed.mfcc2,
+                  smoothed.mfcc3,
+                ] as [number, number, number, number],
+                pulse: fluxPulse,
+              };
+              const controls = mosaicControlsRef.current;
+              applyMosaicUniforms(
+                p,
+                mosaicVisual,
+                mosaicAudio,
+                sensitivityRef.current ?? 1.5,
+                controls?.cellSize ?? 20,
+                controls?.maxAge ?? 80,
+                controls?.growthRate ?? 0.05,
+                controls?.spawnRate ?? 0.02,
+                controls?.colorScheme ?? 0,
+                controls?.colorFlowSpeed ?? 0.01,
+                controls?.alpha ?? 0.7
+              );
+              drawMosaic(p, mosaicVisual);
             } else {
               p.background(0, 0, 0);
               drawPulse(p, particles, smoothed.level);
@@ -279,11 +395,13 @@ export default function Visualizer({
                 ? 'Accretion'
                 : mode === 'spiral'
                   ? 'Spiral'
-                  : 'Pulse';
+                  : mode === 'mosaic'
+                    ? 'Mosaic'
+                    : 'Pulse';
             p.resetMatrix?.();
             p.noStroke();
-            // Avoid p5 WEBGL text font warnings by skipping text in accretion mode
-            if (mode !== 'accretion') {
+            // 避免 WEBGL 模式下的字体警告，只在 P2D 模式下绘制文本
+            if (mode === 'pulse') {
               p.fill(200);
               p.textAlign(p.CENTER, p.TOP);
               p.textSize(12);

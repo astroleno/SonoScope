@@ -15,23 +15,23 @@
 ## 🎯 Phase 1: 特征提取增强 (高优先级)
 
 ### 1.1 扩展Meyda特征提取器
-- [ ] 添加Chroma特征提取 (12维)
-- [ ] 添加PCP (Pitch Class Profile) 特征 (12维)
-- [ ] 添加Spectral Contrast特征 (6维)
-- [ ] 添加Spectral Bandwidth特征
-- [ ] 添加Spectral Rolloff特征
-- [ ] 添加Dynamic Range计算
+- [x] 添加Chroma特征提取 (12维)
+- [x] 添加PCP (Pitch Class Profile) 特征 (12维，Meyda `chroma` 已覆盖)
+- [x] 添加Spectral Contrast特征 (6维)
+- [x] 添加Spectral Bandwidth特征
+- [x] 添加Spectral Rolloff特征
+- [x] 添加Dynamic Range计算
 - [ ] 添加Loudness (LKFS) 计算
 
 ### 1.2 实现2-4s窗口聚合
-- [ ] 创建滑动窗口缓冲区
-- [ ] 计算特征统计量 (均值/方差/峰值)
-- [ ] 实现Tempo BPM估计 (每0.5-1s更新)
-- [ ] 实现Beat Strength计算
-- [ ] 添加特征平滑算法 (EMA)
+- [x] 创建滑动窗口缓冲区
+- [x] 计算特征统计量 (均值/方差/峰值)
+- [x] 实现Tempo BPM估计 (每0.5-1s更新)
+- [x] 实现Beat Strength计算
+- [x] 添加特征平滑算法 (EMA)
 
 ### 1.3 特征数据接口标准化
-- [ ] 定义完整的FeatureWindow接口
+- [x] 定义完整的FeatureWindow接口
 - [ ] 实现特征归一化函数
 - [ ] 添加特征验证和边界检查
 - [ ] 创建特征序列化/反序列化
@@ -67,6 +67,53 @@
 
 ---
 
+## 🎯 Phase 2.5: 轻量曲风/乐器识别路线（新增）
+
+### 2.5.1 框架准备（2-3天）
+- [ ] 扩展 `FeatureAggregator`，增加 `voiceProb`、`percussiveRatio` 等字段
+- [ ] 更新 `StyleDetector`/`fastHeuristic`，基于新字段输出 6-8 个主要曲风标签
+- [ ] 调整 `/api/analyze` Prompt/模板，引用新风格标签生成文案
+
+### 2.5.2 人声检测接入（3-4天）
+- [ ] 评估 WebRTC VAD 与 `onnxruntime-web`(YAMNet) 的性能差异
+- [ ] 在 Audio Worker 中集成人声检测，每 0.5-1s 产出 `voiceProb`
+- [ ] 将人声阈值加入风格判定与弹幕模板（区分纯器乐 / 主唱）
+
+### 2.5.3 打击乐/能量占比（4-5天）
+- [ ] 实现简化 HPSS，计算 `percussiveRatio` 与 `harmonicRatio`
+- [ ] 将能量占比映射到 Techno/EDM/Rock 等风格触发条件
+- [ ] 记录调试日志，验证不同素材下的鲁棒性
+
+### 2.5.4 乐器提示（可选，5-6天）
+- [ ] 引入轻量嵌入模型（OpenL3/VGGish wasm），每 2s 计算音色嵌入
+- [ ] 建立简易分类器，输出 `synth/guitar/piano/strings` 等标签
+- [ ] 将乐器标签写入 FeatureWindow 与弹幕 Prompt，提升文案区分度
+
+**验收标准**: 能辨别“有无人声”“打击乐主导”“核心乐器/音色”，弹幕文案对应曲风明显差异
+
+---
+
+## 🎯 Phase 2.6: 预训练乐器分类模型接入（新增）
+
+### 2.6.1 模型评估与集成（1-2天）
+- [ ] 评估 `musicnn` 与 `YAMNet` 浏览器版本的体积与性能
+- [ ] 在 Web Worker 中加载选定模型（优先 musicnn，备用 YAMNet）
+- [ ] 实现 0.5~1s 音频窗口预处理（16kHz/mono）并完成推理调用
+
+### 2.6.2 概率映射与接口对接（1天）
+- [ ] 将模型输出映射为核心乐器标签（piano/guitar/synth/strings/drums/voice）
+- [ ] 将标签概率注入 `FeatureFrame` / `FeatureWindow`（如 `instrumentProb` 与 `dominantInstrument`）
+- [ ] 扩展 `StyleDetector` 与 `/api/analyze`，利用新标签选取弹幕模板
+
+### 2.6.3 可视化与弹幕联动（1-2天）
+- [ ] 为每类乐器定义视觉主题（配色、粒子/Shader 参数）
+- [ ] 更新弹幕模板库：针对不同乐器生成差异化评论语料
+- [ ] 在缺少模型输出时保持旧的启发式兜底逻辑
+
+**验收标准**: 现实演奏音频能自动识别主导乐器，弹幕与可视化随乐器转换而变化
+
+---
+
 ## 🎯 Phase 3: LLM集成 (中优先级)
 
 ### 3.1 真实API替换
@@ -85,7 +132,7 @@
 - [ ] 设计专业乐评Prompt
 - [ ] 实现结构化JSON输出
 - [ ] 添加评论质量验证
-- [ ] 实现批量生成和串行输出
+- [x] 实现批量生成和串行输出
 
 ### 3.4 缓存和性能
 - [ ] 实现特征hash缓存
@@ -188,15 +235,18 @@
 - React Hook (生命周期管理)
 - 移动端适配 (用户手势触发)
 - 基础集成 (自动触发、状态显示)
+- 弹幕节奏调度 (3-10s 随机间隔 + 评论缓冲队列)
 
 ### 🟡 进行中
-- 特征提取增强 (需要添加Chroma、PCP等)
+- 特征提取增强 (剩余 LKFS、归一化等)
 - 稳定判定器 (需要实现风格稳定度检测)
+- 轻量曲风/乐器识别路线（Phase 2.5）
 
 ### ❌ 待开始
 - LLM集成 (替换假数据API)
 - 性能优化 (WebWorker、缓存)
 - 用户体验增强 (自定义、多语言)
+- 预训练乐器分类模型接入（Phase 2.6）
 
 ---
 
