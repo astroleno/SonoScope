@@ -5,9 +5,20 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./test/utils/setup.ts'],
-    include: ['test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    setupFiles: ['./utils/setup.ts'],
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.idea',
+      '.git',
+      '.cache',
+      // exclude known legacy integration/perf scripts without suites
+      'worker-integration.test.cjs',
+      'worker-integration-full.test.cjs',
+      'worker-performance.test.cjs',
+      'hpss-algorithm.test.cjs'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -27,7 +38,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './app'),
-      '@test': resolve(__dirname, './test')
+      '@test': resolve(__dirname, './'),
+      '@tensorflow/tfjs': resolve(__dirname, './utils/mocks/tfjs.js'),
+      '@mediapipe/tasks-audio': resolve(__dirname, './utils/mocks/mediapipe-tasks-audio.js'),
     }
   },
   define: {

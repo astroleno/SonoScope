@@ -20,6 +20,92 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// 构建 Core JSON（仅包含存在的字段）
+function buildCoreJson(features: Record<string, unknown>) {
+  const core: Record<string, unknown> = {};
+
+  // style 与 instruments 可能来自上游，但此处仅当存在时带入（不做推断）
+  if (typeof features['style_label'] === 'string' || typeof features['style'] === 'string') {
+    core.style = {
+      label: (features['style_label'] as string) || (features['style'] as string),
+      confidence: Number(features['style_confidence'] ?? features['instrumentConfidence'] ?? 0) || undefined,
+    };
+  }
+
+  // instruments（主/次与概率）
+  const primary = features['dominantInstrument'];
+  const histogram = features['instrumentHistogram'] as Record<string, number> | undefined;
+  const confidence = features['instrumentConfidence'];
+  if (typeof primary === 'string' || histogram || typeof confidence === 'number') {
+    core.instruments = {
+      primary: typeof primary === 'string' ? primary : undefined,
+      probabilities: histogram,
+      confidence: typeof confidence === 'number' ? Number(confidence) : undefined,
+    };
+  }
+
+  // tempo
+  if (features['tempo_bpm'] != null || features['beat_strength'] != null) {
+    core.tempo = {
+      bpm: Number(features['tempo_bpm'] ?? '' ) || undefined,
+      beatStrength: Number(features['beat_strength'] ?? '' ) || undefined,
+    };
+  }
+
+  // voice
+  if (features['voiceProb_mean'] != null) {
+    core.voice = { probability: Number(features['voiceProb_mean']) };
+  }
+
+  // hpss
+  if (features['percussiveRatio_mean'] != null || features['harmonicRatio_mean'] != null) {
+    core.hpss = {
+      percussiveRatio: Number(features['percussiveRatio_mean'] ?? '' ) || undefined,
+      harmonicRatio: Number(features['harmonicRatio_mean'] ?? '' ) || undefined,
+    };
+  }
+
+  // timbre（若存在增强统计）
+  if (
+    features['timbreStats.avgWarmth'] != null ||
+    features['timbreStats.avgBrightness'] != null ||
+    features['timbreStats.avgRoughness'] != null
+  ) {
+    core.timbre = {
+      warmth: Number(features['timbreStats.avgWarmth'] ?? '' ) || undefined,
+      brightness: Number(features['timbreStats.avgBrightness'] ?? '' ) || undefined,
+      roughness: Number(features['timbreStats.avgRoughness'] ?? '' ) || undefined,
+    };
+  }
+
+  // 能量/响度（通俗指标）
+  if (features['loudness_lkfs'] != null || features['dynamic_range'] != null) {
+    core.energy = {
+      loudnessLKFS: Number(features['loudness_lkfs'] ?? '' ) || undefined,
+      dynamicRange: Number(features['dynamic_range'] ?? '' ) || undefined,
+    };
+  }
+
+  return core;
+}
+
+function buildSummaryTokens(core: Record<string, unknown>): string {
+  const tokens: string[] = [];
+  const style = (core.style as any) || {};
+  const instruments = (core.instruments as any) || {};
+  const tempo = (core.tempo as any) || {};
+  const voice = (core.voice as any) || {};
+  const hpss = (core.hpss as any) || {};
+
+  if (style.label) tokens.push(`style=${style.label}`);
+  if (instruments.primary) tokens.push(`instrument=${instruments.primary}`);
+  if (typeof tempo.bpm === 'number') tokens.push(`bpm=${Math.round(tempo.bpm)}`);
+  if (typeof voice.probability === 'number') tokens.push(`voiceProb=${Number(voice.probability).toFixed(2)}`);
+  if (typeof hpss.percussiveRatio === 'number') tokens.push(`percRatio=${Number(hpss.percussiveRatio).toFixed(2)}`);
+
+  return tokens.join('; ');
+}
+
 // 简单的内存缓存（Edge Runtime中可用）
 const cache = new Map<
   string,
@@ -69,11 +155,21 @@ async function generateCommentsWithLLM(
       locale,
     });
 
+    // 构建 Core JSON 与 Summary tokens（仅包含存在的字段）
+    const coreJson = buildCoreJson(features);
+    const summaryTokens = buildSummaryTokens(coreJson);
+
     const prompt = `你是资深乐迷主播，基于下列信息生成${need}条“更像真人说话”的弹幕：
 
 风格: ${style}
 要点: ${talkingPoints.join(', ')}
 语言: ${locale === 'zh-CN' ? '中文' : 'English'}
+
+核心数据（只读，务必依据这些事实）：
+${JSON.stringify(coreJson)}
+
+摘要（英文token，便于对齐事实）：
+${summaryTokens}
 
 写作准则（严格遵守）：
 1) 口语化+现场感：允许轻微口头禅/拟声词（如“哇”“嘿”“嗖的一下”），每条至多1个轻表情（如😉/😮/🔥）。
