@@ -6,6 +6,71 @@ import Meyda from 'meyda';
 import { useDanmuPipeline } from '../hooks/useDanmuPipeline';
 import MobileAudioPermission from '../components/mobile-audio-permission';
 import AudioFallback from '../components/audio-fallback';
+import {
+  getSharedInstrumentClassifier,
+  InstrumentDetectionResult,
+} from '../lib/instrument-classifier';
+import { EnhancedFeatureAggregator } from '../lib/enhanced-feature-aggregator';
+
+type AudioFeatureSnapshot = {
+  // 基础Meyda特征
+  rms?: number;
+  spectralCentroid?: number;
+  zcr?: number;
+  mfcc?: number[];
+  spectralFlatness?: number;
+  spectralFlux?: number;
+  chroma?: number[];
+  spectralBandwidth?: number;
+  spectralRolloff?: number;
+  spectralContrast?: number[];
+  spectralSpread?: number;
+  spectralSkewness?: number;
+  spectralKurtosis?: number;
+  loudness?: number;
+  perceptualSpread?: number;
+  perceptualSharpness?: number;
+  voiceProb?: number;
+  percussiveRatio?: number;
+  harmonicRatio?: number;
+  dominantInstrument?: string;
+  instrumentProbabilities?: Record<string, number>;
+  instrumentConfidence?: number;
+  
+  // 增强特征
+  pitch?: {
+    fundamentalFreq: number;
+    pitchConfidence: number;
+    pitchClass: string;
+    octave: number;
+    cents: number;
+    harmonicity: number;
+    isVoiced: boolean;
+  };
+  tempo?: {
+    bpm: number;
+    tempoConfidence: number;
+    timeSignature: [number, number];
+    rhythmPattern: string;
+  };
+  timbre?: {
+    brightness: number;
+    warmth: number;
+    roughness: number;
+    timbreCategory: string;
+  };
+  instruments?: {
+    dominantInstrument: string;
+    instrumentCount: number;
+    polyphony: number;
+  };
+  enhancedHPSS?: {
+    musicComplexity: number;
+    overallStability: number;
+    overallRichness: number;
+    dominantComponent: 'harmonic' | 'percussive' | 'mixed';
+  };
+};
 
 export default function HomePage() {
   const [isStarted, setIsStarted] = useState(false);
@@ -18,9 +83,9 @@ export default function HomePage() {
   const [showAudioFallback, setShowAudioFallback] = useState(false);
   const [signalOn, setSignalOn] = useState(false);
   const [peak, setPeak] = useState(0);
-  const [preset, setPreset] = useState<'pulse' | 'accretion' | 'spiral' | 'mosaic'>(
-    'pulse'
-  );
+  const [preset, setPreset] = useState<
+    'pulse' | 'accretion' | 'spiral' | 'mosaic'
+  >('pulse');
   const [accretionCtrl, setAccretionCtrl] = useState({
     sensMin: 0.92,
     sensMax: 1.18,
@@ -39,27 +104,7 @@ export default function HomePage() {
     alpha: 0.7,
   });
   // const [frequencyBars, setFrequencyBars] = useState<number[]>([]); // legacy, not used now
-  const [features, setFeatures] = useState<{
-    rms?: number;
-    spectralCentroid?: number;
-    zcr?: number;
-    mfcc?: number[];
-    spectralFlatness?: number;
-    spectralFlux?: number;
-    chroma?: number[];
-    spectralBandwidth?: number;
-    spectralRolloff?: number;
-    spectralContrast?: number[];
-    spectralSpread?: number;
-    spectralSkewness?: number;
-    spectralKurtosis?: number;
-    loudness?: number;
-    perceptualSpread?: number;
-    perceptualSharpness?: number;
-    voiceProb?: number;
-    percussiveRatio?: number;
-    harmonicRatio?: number;
-  } | null>(null);
+  const [features, setFeatures] = useState<AudioFeatureSnapshot | null>(null);
   const [sensitivity, setSensitivity] = useState<number>(1.5);
   const [rawMic, setRawMic] = useState<boolean>(false);
   const [autoCalibrate, setAutoCalibrate] = useState<boolean>(true);
@@ -72,7 +117,7 @@ export default function HomePage() {
     useSimple: false, // 启用完整版管线进行实时风格检测
     needComments: 4,
     locale: 'zh-CN',
-        rmsThreshold: 0.0001, // 进一步降低RMS阈值，确保能检测到音频
+    rmsThreshold: 0.0001, // 进一步降低RMS阈值，确保能检测到音频
     maxConcurrency: 2,
   });
 
@@ -83,18 +128,60 @@ export default function HomePage() {
   const animationFrameRef = useRef<number | null>(null);
   const isRunningRef = useRef<boolean>(false);
   const meydaAnalyzerRef = useRef<any | null>(null);
+  const featureSnapshotRef = useRef<AudioFeatureSnapshot | null>(null);
+  const enhancedFeatureAggregatorRef = useRef<EnhancedFeatureAggregator | null>(null);
+  type SharedInstrumentClassifier = ReturnType<
+    typeof getSharedInstrumentClassifier
+  >;
+  const instrumentClassifierRef = useRef<SharedInstrumentClassifier | null>(
+    null
+  );
+  const instrumentBufferRef = useRef<Float32Array>(new Float32Array(0));
+  const instrumentSampleRateRef = useRef<number>(44100);
+  const instrumentLastEvalRef = useRef<number>(0);
+  const instrumentPendingRef = useRef<boolean>(false);
+  const instrumentInfoRef = useRef<InstrumentDetectionResult | null>(null);
+  const voiceLevelRef = useRef(0);
+  const percussiveLevelRef = useRef(0);
+  const harmonicLevelRef = useRef(0.5);
 
   const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+  const clampOptional = (value: number | undefined) => {
+    if (typeof value !== 'number' || Number.isNaN(value) || !Number.isFinite(value)) {
+      return 0;
+    }
+    return clamp01(value);
+  };
+  const pickNumber = (value: unknown): number | undefined => {
+    if (typeof value !== 'number') return undefined;
+    if (Number.isNaN(value) || !Number.isFinite(value)) return undefined;
+    return value;
+  };
+  const toFixedArray = (value: unknown, length: number) => {
+    if (!Array.isArray(value)) return undefined;
+    const result = new Array(length).fill(0);
+    for (let i = 0; i < Math.min(length, value.length); i++) {
+      const num = pickNumber(value[i]);
+      if (num !== undefined) {
+        result[i] = num;
+      }
+    }
+    return result;
+  };
 
   const deriveAudioHints = (f: any) => {
-    const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : undefined;
-    const centroid = typeof f?.spectralCentroid === 'number' ? f.spectralCentroid : undefined;
-    const flux = typeof f?.spectralFlux === 'number' ? f.spectralFlux : undefined;
+    const flat =
+      typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : undefined;
+    const centroid =
+      typeof f?.spectralCentroid === 'number' ? f.spectralCentroid : undefined;
+    const flux =
+      typeof f?.spectralFlux === 'number' ? f.spectralFlux : undefined;
 
     let voiceProb: number | undefined;
     if (flat != null || centroid != null) {
       const flatFactor = flat != null ? clamp01(1 - flat) : 0.5;
-      const centroidNorm = centroid != null ? clamp01((centroid - 1500) / 2500) : 0.5;
+      const centroidNorm =
+        centroid != null ? clamp01((centroid - 1500) / 2500) : 0.5;
       voiceProb = clamp01(0.35 + 0.4 * flatFactor + 0.25 * centroidNorm);
     }
 
@@ -113,6 +200,57 @@ export default function HomePage() {
     }
 
     return { voiceProb, percussiveRatio, harmonicRatio };
+  };
+
+  const appendInstrumentSamples = (chunk: Float32Array) => {
+    const sampleRate =
+      instrumentSampleRateRef.current ||
+      audioContextRef.current?.sampleRate ||
+      44100;
+    const maxSamples = Math.max(sampleRate * 2, chunk.length);
+    const current = instrumentBufferRef.current;
+    const combinedLength = Math.min(maxSamples, current.length + chunk.length);
+    const nextBuffer = new Float32Array(combinedLength);
+    const tailLength = Math.min(current.length, combinedLength - chunk.length);
+    if (tailLength > 0) {
+      nextBuffer.set(current.slice(current.length - tailLength), 0);
+    }
+    nextBuffer.set(chunk, combinedLength - chunk.length);
+    instrumentBufferRef.current = nextBuffer;
+  };
+
+  const runInstrumentDetection = async () => {
+    if (instrumentPendingRef.current) return;
+    const sampleRate =
+      instrumentSampleRateRef.current ||
+      audioContextRef.current?.sampleRate ||
+      44100;
+    const buffer = instrumentBufferRef.current;
+    if (buffer.length < sampleRate) return;
+    const now =
+      typeof performance !== 'undefined' ? performance.now() : Date.now();
+    if (now - instrumentLastEvalRef.current < 800) return;
+
+    instrumentPendingRef.current = true;
+    instrumentLastEvalRef.current = now;
+
+    try {
+      if (!instrumentClassifierRef.current) {
+        instrumentClassifierRef.current = getSharedInstrumentClassifier();
+      }
+      const segment = buffer.slice(buffer.length - sampleRate);
+      const result = await instrumentClassifierRef.current.classify(
+        segment,
+        sampleRate
+      );
+      if (result) {
+        instrumentInfoRef.current = result;
+      }
+    } catch (err) {
+      console.warn('Instrument detection error:', err);
+    } finally {
+      instrumentPendingRef.current = false;
+    }
   };
 
   const handleStart = () => {
@@ -180,6 +318,14 @@ export default function HomePage() {
         (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
+      instrumentSampleRateRef.current = audioContext.sampleRate;
+      instrumentBufferRef.current = new Float32Array(0);
+      instrumentLastEvalRef.current = 0;
+      instrumentInfoRef.current = null;
+      instrumentSampleRateRef.current = audioContext.sampleRate;
+      instrumentBufferRef.current = new Float32Array(0);
+      instrumentLastEvalRef.current = 0;
+      instrumentInfoRef.current = null;
 
       // 确保音频上下文运行
       try {
@@ -213,6 +359,15 @@ export default function HomePage() {
       microphoneRef.current = microphone;
       streamRef.current = stream;
 
+      // 初始化增强特征聚合器
+      try {
+        enhancedFeatureAggregatorRef.current = new EnhancedFeatureAggregator();
+        await enhancedFeatureAggregatorRef.current.initialize();
+        console.log('增强特征聚合器初始化完成');
+      } catch (e) {
+        console.warn('增强特征聚合器初始化失败:', e);
+      }
+
       // 初始化 Meyda 特征提取
       try {
         if (Meyda && (Meyda as any).isBrowser) {
@@ -241,60 +396,157 @@ export default function HomePage() {
             callback: (f: any) => {
               try {
                 const hints = deriveAudioHints(f);
-                setFeatures({
-                  rms: typeof f.rms === 'number' ? f.rms : undefined,
-                  spectralCentroid:
-                    typeof f.spectralCentroid === 'number'
-                      ? f.spectralCentroid
-                      : undefined,
-                  zcr: typeof f.zcr === 'number' ? f.zcr : undefined,
-                  mfcc: Array.isArray(f.mfcc) ? f.mfcc : undefined,
-                  spectralFlatness:
-                    typeof f.spectralFlatness === 'number'
-                      ? f.spectralFlatness
-                      : undefined,
-                  spectralFlux:
-                    typeof f.spectralFlux === 'number'
-                      ? f.spectralFlux
-                      : undefined,
-                  chroma: Array.isArray(f.chroma) ? f.chroma : undefined,
-                  spectralBandwidth:
-                    typeof f.spectralBandwidth === 'number'
-                      ? f.spectralBandwidth
-                      : undefined,
-                  spectralRolloff:
-                    typeof f.spectralRolloff === 'number'
-                      ? f.spectralRolloff
-                      : undefined,
-                  spectralContrast: Array.isArray(f.spectralContrast)
-                    ? f.spectralContrast
-                    : undefined,
-                  spectralSpread:
-                    typeof f.spectralSpread === 'number'
-                      ? f.spectralSpread
-                      : undefined,
-                  spectralSkewness:
-                    typeof f.spectralSkewness === 'number'
-                      ? f.spectralSkewness
-                      : undefined,
-                  spectralKurtosis:
-                    typeof f.spectralKurtosis === 'number'
-                      ? f.spectralKurtosis
-                      : undefined,
-                  loudness:
-                    typeof f.loudness === 'number' ? f.loudness : undefined,
-                  perceptualSpread:
-                    typeof f.perceptualSpread === 'number'
-                      ? f.perceptualSpread
-                      : undefined,
-                  perceptualSharpness:
-                    typeof f.perceptualSharpness === 'number'
-                      ? f.perceptualSharpness
-                      : undefined,
-                  voiceProb: hints.voiceProb,
-                  percussiveRatio: hints.percussiveRatio,
-                  harmonicRatio: hints.harmonicRatio,
-                });
+                const instrumentInfo = instrumentInfoRef.current;
+                const loudnessValue =
+                  typeof f.loudness === 'number'
+                    ? f.loudness
+                    : typeof f?.loudness?.total === 'number'
+                      ? f.loudness.total
+                      : undefined;
+                const probabilities = instrumentInfo?.probabilities;
+                const voiceModel = clampOptional(probabilities?.voice);
+                const drumsModel = clampOptional(probabilities?.drums);
+                const bassModel = clampOptional(probabilities?.bass);
+                const synthModel = clampOptional(probabilities?.synth);
+                const percussiveModel = clamp01(
+                  drumsModel * 0.7 + bassModel * 0.2 + synthModel * 0.1
+                );
+                const heuristicVoice = hints.voiceProb ?? 0;
+                const heuristicPercussive = hints.percussiveRatio ?? 0;
+                const heuristicHarmonic = hints.harmonicRatio ?? undefined;
+
+                const blendedVoice =
+                  voiceModel > 0
+                    ? clamp01(heuristicVoice * 0.4 + voiceModel * 0.6)
+                    : heuristicVoice;
+                voiceLevelRef.current =
+                  voiceLevelRef.current * 0.7 + blendedVoice * 0.3;
+                const finalVoiceProb = clamp01(voiceLevelRef.current);
+
+                const blendedPercussive = clamp01(
+                  heuristicPercussive * 0.5 + percussiveModel * 0.5
+                );
+                percussiveLevelRef.current =
+                  percussiveLevelRef.current * 0.7 + blendedPercussive * 0.3;
+                const finalPercussive = clamp01(percussiveLevelRef.current);
+
+                const harmonicModel = clamp01(1 - finalPercussive + finalVoiceProb * 0.2);
+                const blendedHarmonic =
+                  heuristicHarmonic !== undefined
+                    ? clamp01(heuristicHarmonic * 0.5 + harmonicModel * 0.5)
+                    : harmonicModel;
+                harmonicLevelRef.current =
+                  harmonicLevelRef.current * 0.6 + blendedHarmonic * 0.4;
+                const finalHarmonic = clamp01(harmonicLevelRef.current);
+
+                const snapshot: AudioFeatureSnapshot = {
+                  rms: pickNumber(f.rms),
+                  spectralCentroid: pickNumber(f.spectralCentroid),
+                  zcr: pickNumber(f.zcr),
+                  mfcc: toFixedArray(f.mfcc, 13),
+                  spectralFlatness: pickNumber(f.spectralFlatness),
+                  spectralFlux: pickNumber(f.spectralFlux),
+                  chroma: toFixedArray(f.chroma, 12),
+                  spectralBandwidth: pickNumber(f.spectralBandwidth),
+                  spectralRolloff: pickNumber(f.spectralRolloff),
+                  spectralContrast: toFixedArray(f.spectralContrast, 6),
+                  spectralSpread: pickNumber(f.spectralSpread),
+                  spectralSkewness: pickNumber(f.spectralSkewness),
+                  spectralKurtosis: pickNumber(f.spectralKurtosis),
+                  loudness: pickNumber(loudnessValue),
+                  perceptualSpread: pickNumber(f.perceptualSpread),
+                  perceptualSharpness: pickNumber(f.perceptualSharpness),
+                  voiceProb: finalVoiceProb,
+                  percussiveRatio: finalPercussive,
+                  harmonicRatio: finalHarmonic,
+                  dominantInstrument: instrumentInfo?.label,
+                  instrumentProbabilities: instrumentInfo?.probabilities,
+                  instrumentConfidence: instrumentInfo?.probability,
+                };
+
+                // 添加增强特征提取
+                if (enhancedFeatureAggregatorRef.current && audioContextRef.current) {
+                  try {
+                    // 获取当前音频缓冲区
+                    const audioBuffer = new Float32Array(analyser.fftSize);
+                    analyser.getFloatTimeDomainData(audioBuffer);
+                    const sampleRate = audioContextRef.current.sampleRate;
+                    
+                    // 创建增强特征帧
+                    const enhancedFrame = {
+                      ...snapshot,
+                      audioBuffer,
+                      sampleRate,
+                      timestamp: Date.now(),
+                      // 确保包含必需的字段
+                      pitch: undefined,
+                      tempo: undefined,
+                      timbre: undefined,
+                      instruments: undefined,
+                      enhancedHPSS: undefined
+                    };
+
+                    // 异步处理增强特征
+                    enhancedFeatureAggregatorRef.current.addEnhancedFrame(enhancedFrame).then(() => {
+                      // 获取增强特征统计
+                      const enhancedWindow = enhancedFeatureAggregatorRef.current?.getLatestEnhancedWindow();
+                      if (enhancedWindow) {
+                        // 更新快照中的增强特征
+                        snapshot.pitch = enhancedWindow.pitchStats ? {
+                          fundamentalFreq: enhancedWindow.pitchStats.avgFundamentalFreq,
+                          pitchConfidence: enhancedWindow.pitchStats.pitchConfidence,
+                          pitchClass: enhancedWindow.pitchStats.dominantPitch,
+                          octave: Math.floor(Math.log2(enhancedWindow.pitchStats.avgFundamentalFreq / 16.35)) - 1,
+                          cents: 0, // 可以从详细统计中获取
+                          harmonicity: 0.8, // 可以从详细统计中获取
+                          isVoiced: enhancedWindow.pitchStats.pitchConfidence > 0.5
+                        } : undefined;
+
+                        snapshot.tempo = enhancedWindow.tempoStats ? {
+                          bpm: enhancedWindow.tempoStats.avgBpm,
+                          tempoConfidence: enhancedWindow.tempoStats.tempoConfidence,
+                          timeSignature: enhancedWindow.tempoStats.dominantTimeSignature.split('/').map(Number) as [number, number],
+                          rhythmPattern: enhancedWindow.tempoStats.tempoStability > 0.8 ? 'regular' : 'irregular'
+                        } : undefined;
+
+                        snapshot.timbre = enhancedWindow.timbreStats ? {
+                          brightness: enhancedWindow.timbreStats.avgBrightness,
+                          warmth: enhancedWindow.timbreStats.avgWarmth,
+                          roughness: enhancedWindow.timbreStats.avgRoughness,
+                          timbreCategory: enhancedWindow.timbreStats.dominantTimbre
+                        } : undefined;
+
+                        snapshot.instruments = enhancedWindow.instrumentStats ? {
+                          dominantInstrument: enhancedWindow.instrumentStats.dominantInstrument,
+                          instrumentCount: enhancedWindow.instrumentStats.instrumentCount,
+                          polyphony: enhancedWindow.instrumentStats.polyphony
+                        } : undefined;
+
+                        snapshot.enhancedHPSS = enhancedWindow.enhancedHPSSStats ? {
+                          musicComplexity: enhancedWindow.enhancedHPSSStats.avgMusicalComplexity,
+                          overallStability: enhancedWindow.enhancedHPSSStats.avgMusicalStability,
+                          overallRichness: enhancedWindow.enhancedHPSSStats.avgMusicalRichness,
+                          dominantComponent: 'mixed' as const // 从统计中推断
+                        } : undefined;
+
+                        console.log('🎵 增强特征提取完成:', {
+                          pitch: snapshot.pitch,
+                          tempo: snapshot.tempo,
+                          timbre: snapshot.timbre,
+                          instruments: snapshot.instruments,
+                          enhancedHPSS: snapshot.enhancedHPSS
+                        });
+                      }
+                    }).catch(err => {
+                      console.warn('增强特征提取失败:', err);
+                    });
+                  } catch (err) {
+                    console.warn('增强特征处理错误:', err);
+                  }
+                }
+
+                featureSnapshotRef.current = snapshot;
+                setFeatures(snapshot);
               } catch (e) {
                 // ignore per-frame errors
               }
@@ -364,7 +616,7 @@ export default function HomePage() {
         trackReadyState: stream.getAudioTracks()[0]?.readyState,
         trackLabel: stream.getAudioTracks()[0]?.label,
         audioContextState: audioContext.state,
-        analyserConnected: true
+        analyserConnected: true,
       });
 
       // 确保音频轨道启用（移动设备特别重要）
@@ -417,6 +669,7 @@ export default function HomePage() {
             callback: (f: any) => {
               try {
                 const hints = deriveAudioHints(f);
+                const instrumentInfo = instrumentInfoRef.current;
                 setFeatures({
                   rms: typeof f.rms === 'number' ? f.rms : undefined,
                   spectralCentroid:
@@ -470,6 +723,9 @@ export default function HomePage() {
                   voiceProb: hints.voiceProb,
                   percussiveRatio: hints.percussiveRatio,
                   harmonicRatio: hints.harmonicRatio,
+                  dominantInstrument: instrumentInfo?.label,
+                  instrumentProbabilities: instrumentInfo?.probabilities,
+                  instrumentConfidence: instrumentInfo?.probability,
                 });
               } catch (e) {
                 // ignore per-frame errors
@@ -610,229 +866,233 @@ export default function HomePage() {
 
       // 临时禁用音频分析，避免错误
       // try {
-        if (testMode) {
-          const testLevel = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
-          setAudioLevel(testLevel);
-          setPeak(testLevel);
-          setSignalOn(testLevel > 0.01);
-        } else {
-          // 使用时域数据计算 RMS 与峰值
-          analyser.getFloatTimeDomainData(timeDomainData);
+      if (testMode) {
+        const testLevel = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
+        setAudioLevel(testLevel);
+        setPeak(testLevel);
+        setSignalOn(testLevel > 0.01);
+      } else {
+        // 使用时域数据计算 RMS 与峰值
+        analyser.getFloatTimeDomainData(timeDomainData);
 
-          let sumSquares = 0;
-          let maxAbs = 0;
-          let minVal = 1;
-          let maxVal = -1;
-          let zeroCount = 0;
+        const chunkCopy = new Float32Array(timeDomainData);
+        appendInstrumentSamples(chunkCopy);
+        runInstrumentDetection();
 
-          for (let i = 0; i < bufferLength; i++) {
-            const sample = timeDomainData[i]; // [-1, 1]
-            if (sample === 0) zeroCount++;
-            sumSquares += sample * sample;
-            if (sample > maxVal) maxVal = sample;
-            if (sample < minVal) minVal = sample;
-            const abs = Math.abs(sample);
-            if (abs > maxAbs) maxAbs = abs;
-          }
+        let sumSquares = 0;
+        let maxAbs = 0;
+        let minVal = 1;
+        let maxVal = -1;
+        let zeroCount = 0;
 
-          const rms = Math.sqrt(sumSquares / bufferLength); // [0, 1]
-          let normalizedLevel = Math.min(Math.max(rms, 0), 1);
+        for (let i = 0; i < bufferLength; i++) {
+          const sample = timeDomainData[i]; // [-1, 1]
+          if (sample === 0) zeroCount++;
+          sumSquares += sample * sample;
+          if (sample > maxVal) maxVal = sample;
+          if (sample < minVal) minVal = sample;
+          const abs = Math.abs(sample);
+          if (abs > maxAbs) maxAbs = abs;
+        }
 
-          // 调试信息：检查是否所有值都是0
-          if (zeroCount === bufferLength) {
-            console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
+        const rms = Math.sqrt(sumSquares / bufferLength); // [0, 1]
+        let normalizedLevel = Math.min(Math.max(rms, 0), 1);
 
-            // 尝试恢复音频上下文
-            if (
-              audioContextRef.current &&
-              audioContextRef.current.state !== 'running'
-            ) {
-              console.log('尝试恢复音频上下文...');
-              audioContextRef.current.resume().catch(err => {
-                console.warn('恢复音频上下文失败:', err);
-              });
-            }
-          }
+        // 调试信息：检查是否所有值都是0
+        if (zeroCount === bufferLength) {
+          console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
 
-          // 检查是否是固定值（如91-92%可能表示读取问题）
-          if (normalizedLevel > 0.9 && normalizedLevel < 0.93) {
-            console.warn('⚠️ 检测到可能的固定音频值:', normalizedLevel.toFixed(6));
-            console.warn('这通常表示音频数据读取有问题，而不是真实的麦克风输入');
-            
-            // 输出前10个样本值用于调试
-            const sampleValues = Array.from(timeDomainData.slice(0, 10));
-            console.log('前10个音频样本值:', sampleValues);
-          }
-
-          // 每2秒输出一次调试信息
+          // 尝试恢复音频上下文
           if (
-            !(window as any).__lastAudioDebugLog ||
-            Date.now() - (window as any).__lastAudioDebugLog > 2000
+            audioContextRef.current &&
+            audioContextRef.current.state !== 'running'
           ) {
-            (window as any).__lastAudioDebugLog = Date.now();
-            console.log('🎵 音频调试:', {
-              rms: rms.toFixed(6),
-              normalizedLevel: normalizedLevel.toFixed(6),
-              maxAbs: maxAbs.toFixed(6),
-              minVal: minVal.toFixed(6),
-              maxVal: maxVal.toFixed(6),
-              zeroCount,
-              bufferLength,
-              audioContextState: audioContextRef.current?.state,
-              audioContextRunning: audioContextRef.current?.state === 'running',
+            console.log('尝试恢复音频上下文...');
+            audioContextRef.current.resume().catch(err => {
+              console.warn('恢复音频上下文失败:', err);
             });
-          }
-          // 自适应校准：估计噪声底并抬升动态范围
-          if (autoCalibrate) {
-            const prev = noiseFloorRef.current || 0;
-            const alpha = normalizedLevel < 0.02 ? 0.01 : 0.002; // 安静时更快贴近底噪
-            const floor = prev * (1 - alpha) + normalizedLevel * alpha;
-            noiseFloorRef.current = Math.min(0.05, floor); // 底噪上限约 0.05
-            const margin = 0.01; // 安全边距
-            const adj = Math.max(
-              0,
-              normalizedLevel - (noiseFloorRef.current + margin)
-            );
-            normalizedLevel = Math.min(1, adj * 6); // 放大剩余动态范围
-          }
-          setAudioLevel(normalizedLevel);
-          setPeak(maxAbs);
-          setSignalOn(maxAbs > 0.008);
-
-          // 自动触发弹幕管线
-          if (!(window as any).__lastPipelineStatusLog || Date.now() - (window as any).__lastPipelineStatusLog > 5000) {
-            (window as any).__lastPipelineStatusLog = Date.now();
-            console.log('🎵 检查弹幕管线状态:', { isActive: danmuPipeline.isActive, normalizedLevel });
-          }
-          if (danmuPipeline.isActive) {
-            // 调试：检查特征数据
-            if (!(window as any).__lastFeatureDebugLog || Date.now() - (window as any).__lastFeatureDebugLog > 3000) {
-              (window as any).__lastFeatureDebugLog = Date.now();
-              console.log('🎵 特征数据状态:', {
-                hasFeatures: !!features,
-                rms: features?.rms,
-                spectralCentroid: features?.spectralCentroid,
-                zcr: features?.zcr,
-                mfcc: features?.mfcc?.length,
-                chroma: features?.chroma?.length,
-                spectralFlatness: features?.spectralFlatness,
-                spectralFlux: features?.spectralFlux,
-                hasAllFeatures: !!(features?.rms && features?.spectralCentroid && features?.zcr),
-                meydaAnalyzerExists: !!meydaAnalyzerRef.current,
-                featuresKeys: features ? Object.keys(features) : [],
-                normalizedLevel: normalizedLevel
-              });
-            }
-            
-            // 调试：检查弹幕管线调用
-            if (!(window as any).__lastPipelineDebugLog || Date.now() - (window as any).__lastPipelineDebugLog > 3000) {
-              (window as any).__lastPipelineDebugLog = Date.now();
-              console.log('🎵 弹幕管线状态:', {
-                isActive: danmuPipeline.isActive,
-                hasFeatures: !!features,
-                normalizedLevel: normalizedLevel,
-                rmsThreshold: 0.001
-              });
-            }
-            
-            // 强制使用基本特征进行测试
-            console.log('🎵 强制使用基本特征调用弹幕管线进行测试');
-            const basicFeatures = {
-              rms: normalizedLevel,
-              spectralCentroid: 2000, // 默认值
-              zcr: 0.1, // 默认值
-              mfcc: new Array(13).fill(0),
-              chroma: new Array(12).fill(0.1),
-              spectralFlatness: 0.5,
-              spectralFlux: 0.1,
-              spectralBandwidth: 1000,
-              spectralRolloff: 0.8,
-              spectralContrast: new Array(6).fill(0.5),
-              spectralSpread: 1000,
-              spectralSkewness: 0,
-              spectralKurtosis: 3,
-              loudness: normalizedLevel * 10,
-              perceptualSpread: 0.5,
-              perceptualSharpness: 0.5,
-              voiceProb: features?.voiceProb ?? 0.3,
-              percussiveRatio: features?.percussiveRatio ?? 0.4,
-              harmonicRatio: features?.harmonicRatio ?? 0.6,
-            };
-            danmuPipeline.handleAudioFeatures(normalizedLevel, basicFeatures);
-          } else {
-            if (!(window as any).__lastInactiveLog || Date.now() - (window as any).__lastInactiveLog > 5000) {
-              (window as any).__lastInactiveLog = Date.now();
-              console.log('🎵 弹幕管线未激活，跳过调用');
-            }
-          }
-          
-          // 强制测试：直接调用弹幕管线
-          if (normalizedLevel > 0.001) { // 降低阈值，确保能触发
-            if (!(window as any).__lastForceTestLog || Date.now() - (window as any).__lastForceTestLog > 3000) {
-              (window as any).__lastForceTestLog = Date.now();
-              console.log('🎵 强制测试弹幕管线调用');
-            }
-            const testFeatures = {
-              rms: normalizedLevel,
-              spectralCentroid: 2000,
-              zcr: 0.1,
-              mfcc: new Array(13).fill(0),
-              chroma: new Array(12).fill(0.1),
-              spectralFlatness: 0.5,
-              spectralFlux: 0.1,
-              spectralBandwidth: 1000,
-              spectralRolloff: 0.8,
-              spectralContrast: new Array(6).fill(0.5),
-              spectralSpread: 1000,
-              spectralSkewness: 0,
-              spectralKurtosis: 3,
-              loudness: normalizedLevel * 10,
-              perceptualSpread: 0.5,
-              perceptualSharpness: 0.5,
-              voiceProb: features?.voiceProb ?? 0.35,
-              percussiveRatio: features?.percussiveRatio ?? 0.45,
-              harmonicRatio: features?.harmonicRatio ?? 0.55,
-            };
-            danmuPipeline.handleAudioFeatures(normalizedLevel, testFeatures);
-          }
-          
-          // 超简单测试：直接调用弹幕生成
-          if (normalizedLevel > 0.1) { // 只在有足够音频时测试
-            if (!(window as any).__lastSimpleTestLog || Date.now() - (window as any).__lastSimpleTestLog > 5000) {
-              (window as any).__lastSimpleTestLog = Date.now();
-              console.log('🎵 超简单测试：直接触发弹幕生成');
-            }
-            danmuPipeline.trigger();
-          }
-
-          // 频谱获取与下采样 (已移除spectrum预设)
-          // if (preset === 'spectrum') {
-          //   analyser.getByteFrequencyData(freqData);
-          //   setFrequencyBars(downsample(freqData, 64));
-          // }
-
-          if (maxAbs < 0.01 && normalizedLevel < 0.005) {
-            if (
-              !(window as any).__lastQuietLog ||
-              Date.now() - (window as any).__lastQuietLog > 2000
-            ) {
-              (window as any).__lastQuietLog = Date.now();
-              console.log(
-                '静音区间调试: maxAbs=',
-                maxAbs.toFixed(4),
-                'RMS=',
-                normalizedLevel.toFixed(4),
-                'min=',
-                minVal.toFixed(3),
-                'max=',
-                maxVal.toFixed(3)
-              );
-            }
           }
         }
 
-        // 继续分析循环
-        animationFrameRef.current = requestAnimationFrame(analyze);
+        // 检查是否是固定值（如91-92%可能表示读取问题）
+        if (normalizedLevel > 0.9 && normalizedLevel < 0.93) {
+          console.warn(
+            '⚠️ 检测到可能的固定音频值:',
+            normalizedLevel.toFixed(6)
+          );
+          console.warn('这通常表示音频数据读取有问题，而不是真实的麦克风输入');
+
+          // 输出前10个样本值用于调试
+          const sampleValues = Array.from(timeDomainData.slice(0, 10));
+          console.log('前10个音频样本值:', sampleValues);
+        }
+
+        // 每2秒输出一次调试信息
+        if (
+          !(window as any).__lastAudioDebugLog ||
+          Date.now() - (window as any).__lastAudioDebugLog > 2000
+        ) {
+          (window as any).__lastAudioDebugLog = Date.now();
+          console.log('🎵 音频调试:', {
+            rms: rms.toFixed(6),
+            normalizedLevel: normalizedLevel.toFixed(6),
+            maxAbs: maxAbs.toFixed(6),
+            minVal: minVal.toFixed(6),
+            maxVal: maxVal.toFixed(6),
+            zeroCount,
+            bufferLength,
+            audioContextState: audioContextRef.current?.state,
+            audioContextRunning: audioContextRef.current?.state === 'running',
+          });
+        }
+        // 自适应校准：估计噪声底并抬升动态范围
+        if (autoCalibrate) {
+          const prev = noiseFloorRef.current || 0;
+          const alpha = normalizedLevel < 0.02 ? 0.01 : 0.002; // 安静时更快贴近底噪
+          const floor = prev * (1 - alpha) + normalizedLevel * alpha;
+          noiseFloorRef.current = Math.min(0.05, floor); // 底噪上限约 0.05
+          const margin = 0.01; // 安全边距
+          const adj = Math.max(
+            0,
+            normalizedLevel - (noiseFloorRef.current + margin)
+          );
+          normalizedLevel = Math.min(1, adj * 6); // 放大剩余动态范围
+        }
+        setAudioLevel(normalizedLevel);
+        setPeak(maxAbs);
+        setSignalOn(maxAbs > 0.008);
+
+        // 自动触发弹幕管线
+        if (
+          !(window as any).__lastPipelineStatusLog ||
+          Date.now() - (window as any).__lastPipelineStatusLog > 5000
+        ) {
+          (window as any).__lastPipelineStatusLog = Date.now();
+          console.log('🎵 检查弹幕管线状态:', {
+            isActive: danmuPipeline.isActive,
+            normalizedLevel,
+          });
+        }
+        const latestFeatures = featureSnapshotRef.current;
+        if (danmuPipeline.isActive) {
+          if (
+            !(window as any).__lastFeatureDebugLog ||
+            Date.now() - (window as any).__lastFeatureDebugLog > 3000
+          ) {
+            (window as any).__lastFeatureDebugLog = Date.now();
+            console.log('🎵 特征数据状态:', {
+              hasFeatures: !!latestFeatures,
+              rms: latestFeatures?.rms,
+              spectralCentroid: latestFeatures?.spectralCentroid,
+              zcr: latestFeatures?.zcr,
+              mfcc: latestFeatures?.mfcc?.length,
+              chroma: latestFeatures?.chroma?.length,
+              spectralFlatness: latestFeatures?.spectralFlatness,
+              spectralFlux: latestFeatures?.spectralFlux,
+              hasAllFeatures: !!(
+                latestFeatures?.rms !== undefined &&
+                latestFeatures?.spectralCentroid !== undefined &&
+                latestFeatures?.zcr !== undefined
+              ),
+              meydaAnalyzerExists: !!meydaAnalyzerRef.current,
+              featuresKeys: latestFeatures
+                ? Object.keys(latestFeatures)
+                : [],
+              normalizedLevel,
+            });
+          }
+
+          if (
+            !(window as any).__lastPipelineDebugLog ||
+            Date.now() - (window as any).__lastPipelineDebugLog > 3000
+          ) {
+            (window as any).__lastPipelineDebugLog = Date.now();
+            console.log('🎵 弹幕管线状态:', {
+              isActive: danmuPipeline.isActive,
+              hasFeatures: !!latestFeatures,
+              normalizedLevel,
+            });
+          }
+
+          const pipelineFeatures: AudioFeatureSnapshot = {
+            ...(latestFeatures ?? {}),
+            rms: latestFeatures?.rms ?? normalizedLevel,
+            loudness: latestFeatures?.loudness ?? normalizedLevel * 10,
+            dominantInstrument:
+              instrumentInfoRef.current?.label ??
+              latestFeatures?.dominantInstrument,
+            instrumentProbabilities:
+              instrumentInfoRef.current?.probabilities ??
+              latestFeatures?.instrumentProbabilities,
+            instrumentConfidence:
+              instrumentInfoRef.current?.probability ??
+              latestFeatures?.instrumentConfidence,
+          };
+
+          if (
+            pipelineFeatures.voiceProb == null ||
+            pipelineFeatures.percussiveRatio == null ||
+            pipelineFeatures.harmonicRatio == null
+          ) {
+            const derived = deriveAudioHints(pipelineFeatures);
+            pipelineFeatures.voiceProb =
+              pipelineFeatures.voiceProb ?? derived.voiceProb;
+            pipelineFeatures.percussiveRatio =
+              pipelineFeatures.percussiveRatio ?? derived.percussiveRatio;
+            pipelineFeatures.harmonicRatio =
+              pipelineFeatures.harmonicRatio ?? derived.harmonicRatio;
+          }
+
+          danmuPipeline.handleAudioFeatures(normalizedLevel, pipelineFeatures);
+        } else {
+          if (
+            !(window as any).__lastInactiveLog ||
+            Date.now() - (window as any).__lastInactiveLog > 5000
+          ) {
+            (window as any).__lastInactiveLog = Date.now();
+            console.log('🎵 弹幕管线未激活，跳过调用');
+          }
+        }
+        if (normalizedLevel > 0.1) {
+          // 只在有足够音频时测试
+          if (
+            !(window as any).__lastSimpleTestLog ||
+            Date.now() - (window as any).__lastSimpleTestLog > 5000
+          ) {
+            (window as any).__lastSimpleTestLog = Date.now();
+            console.log('🎵 超简单测试：直接触发弹幕生成');
+          }
+          danmuPipeline.trigger();
+        }
+
+        // 频谱获取与下采样 (已移除spectrum预设)
+        // if (preset === 'spectrum') {
+        //   analyser.getByteFrequencyData(freqData);
+        //   setFrequencyBars(downsample(freqData, 64));
+        // }
+
+        if (maxAbs < 0.01 && normalizedLevel < 0.005) {
+          if (
+            !(window as any).__lastQuietLog ||
+            Date.now() - (window as any).__lastQuietLog > 2000
+          ) {
+            (window as any).__lastQuietLog = Date.now();
+            console.log(
+              '静音区间调试: maxAbs=',
+              maxAbs.toFixed(4),
+              'RMS=',
+              normalizedLevel.toFixed(4),
+              'min=',
+              minVal.toFixed(3),
+              'max=',
+              maxVal.toFixed(3)
+            );
+          }
+        }
+      }
+
+      // 继续分析循环
+      animationFrameRef.current = requestAnimationFrame(analyze);
       // } catch (error) {
       //   if (error) {
       //     console.error('音频分析错误:', error);
@@ -1122,7 +1382,8 @@ export default function HomePage() {
             </div>
             <div>
               <label className="block text-xs text-gray-400 mb-1">
-                颜色流动速度 colorFlowSpeed ({mosaicCtrl.colorFlowSpeed.toFixed(3)})
+                颜色流动速度 colorFlowSpeed (
+                {mosaicCtrl.colorFlowSpeed.toFixed(3)})
               </label>
               <input
                 type="range"
@@ -1229,7 +1490,9 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-2">
               <span>弹幕: {danmuPipeline.isActive ? '活跃' : '停止'}</span>
               {danmuPipeline.currentStyle && (
-                <span className="text-blue-400">风格: {danmuPipeline.currentStyle}</span>
+                <span className="text-blue-400">
+                  风格: {danmuPipeline.currentStyle}
+                </span>
               )}
               <span>数量: {danmuPipeline.danmuCount}</span>
               {danmuPipeline.pendingRequests > 0 && (
@@ -1239,7 +1502,8 @@ export default function HomePage() {
               )}
             </div>
             <div className="mt-1 text-xs text-gray-400">
-              支持风格: EDM, Techno, Trance, Dubstep, Ambient, Rock, Pop, Jazz, Classical, Hip-Hop, Metal
+              支持风格: EDM, Techno, Trance, Dubstep, Ambient, Rock, Pop, Jazz,
+              Classical, Hip-Hop, Metal
             </div>
           </div>
         )}
@@ -1301,7 +1565,9 @@ export default function HomePage() {
         <select
           value={preset}
           onChange={e =>
-            setPreset(e.target.value as 'pulse' | 'accretion' | 'spiral' | 'mosaic')
+            setPreset(
+              e.target.value as 'pulse' | 'accretion' | 'spiral' | 'mosaic'
+            )
           }
           className="px-3 py-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="可视化预设"

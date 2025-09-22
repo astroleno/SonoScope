@@ -1,27 +1,18 @@
+> @sonoscope/app@1.0.0 dev /Users/zuobowen/Documents/GitHub/SonoScope/app
+> next dev
 
-Build Error
-Failed to compile
+ ⚠ Port 3000 is in use, trying 3001 instead.
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3001
+  - Environments: .env.local
 
-Next.js (14.2.32) is outdated (learn more)
-./visuals/mosaic.ts
-Error: 
-  × Expected ',', got ';'
-     ╭─[/Users/zuobowen/Documents/GitHub/SonoScope/app/visuals/mosaic.ts:346:1]
- 346 │     Math.max(0, Math.min(1, audio.mfcc?.[3] ?? 0)),
- 347 │   ]);
- 348 │   shader.setUniform('uPulse', Math.max(0, Math.min(1, audio.pulse || 0)));
- 349 │   shader.setUniform('uSensitivity', Math.max(0.5, Math.min(3.0, sensitivity || 1.5));
-     ·                                                                                     ─
- 350 │   
- 351 │   // Color scheme uniforms
- 352 │   const [r1, g1, b1] = hexToRgb(colorScheme.colors[0]);
-     ╰────
-
-Caused by:
-    Syntax Error
-
-Import trace for requested module:
-./visuals/mosaic.ts
-./components/visualizer.tsx
-./app/page.tsx
-This error occurred during the build process and can only be dismissed by fixing the error.
+ ✓ Starting...
+ ✓ Ready in 1719ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1929ms (456 modules)
+ ⚠ Unsupported metadata viewport is configured in metadata export in /model/yamnet.task. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /model/yamnet.task. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /model/yamnet.task 404 in 2195ms
+ ✓ Compiled in 232ms (237 modules)

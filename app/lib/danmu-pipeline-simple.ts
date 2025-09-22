@@ -98,9 +98,9 @@ export class DanmuPipelineSimple {
       // 使用简化的特征数据
       const simpleFeatures = {
         rms_mean: 0.1,
+        spectralCentroid_mean: 2000,
+        spectralFlatness_mean: 0.3,
         tempo_bpm: 120,
-        centroid_mean: 2000,
-        flatness_mean: 0.3,
         dynamic_range: 0.5,
       };
 
@@ -161,6 +161,9 @@ export class DanmuPipelineSimple {
       currentStyle: this.currentStyle,
       danmuCount: this.danmuCount,
       pendingRequests: this.pendingRequests,
+      dominantInstrument: null,
+      stabilityConfidence: 0,
+      stabilityDuration: 0,
     };
   }
 }

@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-09-22T01:56:18.200Z",
+  "duration": 122,
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "details": [
+    {
+      "name": "Loudness (LKFS) 计算功能测试",
+      "status": "passed",
+      "error": null
+    },
+    {
+      "name": "特征归一化功能测试",
+      "status": "passed",
+      "error": null
+    },
+    {
+      "name": "特征验证和边界检查测试",
+      "status": "passed",
+      "error": null
+    },
+    {
+      "name": "特征序列化/反序列化测试",
+      "status": "passed",
+      "error": null
+    },
+    {
+      "name": "Phase 1 集成测试",
+      "status": "passed",
+      "error": null
+    }
+  ]
+}

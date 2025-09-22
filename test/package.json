@@ -1,0 +1,23 @@
+{
+  "name": "sonoscope-test",
+  "version": "1.0.0",
+  "description": "SonoScope Test Suite",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:phase1": "vitest run test/phase1/*",
+    "test:phase2": "vitest run test/phase2/*",
+    "test:phase2-5": "vitest run test/phase2-5/*",
+    "test:phase2-6": "vitest run test/phase2-6/*",
+    "test:report": "tsx test/run-tests.ts",
+    "test:all": "npm run test:report"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "vitest": "^1.0.0",
+    "jsdom": "^23.0.0"
+  },
+  "type": "module"
+}

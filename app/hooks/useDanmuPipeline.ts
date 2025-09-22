@@ -23,6 +23,7 @@ export interface DanmuPipelineState {
   currentStyle: string | null;
   pendingRequests: number;
   danmuCount: number;
+  dominantInstrument: string | null;
 }
 
 export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
@@ -33,6 +34,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     currentStyle: null,
     pendingRequests: 0,
     danmuCount: 0,
+    dominantInstrument: null,
   });
 
   const eventBusRef = useRef<EventBus | null>(null);
@@ -132,11 +134,16 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
     const updateState = () => {
       const status = pipelineRef.current?.status;
+      const dominantInstrument =
+        status && 'dominantInstrument' in status
+          ? (status as { dominantInstrument: string | null }).dominantInstrument
+          : null;
       setState(prev => ({
         ...prev,
         currentStyle: status?.currentStyle || null,
         pendingRequests: status?.pendingRequests || 0,
         danmuCount: status?.danmuCount || 0,
+        dominantInstrument: dominantInstrument ?? prev.dominantInstrument,
       }));
     };
 

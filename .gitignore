@@ -69,7 +69,12 @@ dist
 
 # Gatsby files
 .cache/
-public
+/public
+!public/model/
+!public/model/yamnet.task
+app/public/*
+!app/public/model/
+!app/public/model/yamnet.task
 
 # Storybook build outputs
 .out

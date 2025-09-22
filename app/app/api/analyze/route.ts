@@ -9,6 +9,7 @@ type AnalyzeRequest = {
   style?: string;
   confidence?: number;
   talking_points?: string[];
+  no_cache?: boolean;
 };
 
 function encode(line: string) {
@@ -20,22 +21,35 @@ function sleep(ms: number) {
 }
 
 // 简单的内存缓存（Edge Runtime中可用）
-const cache = new Map<string, { style: string; confidence: number; talking_points: string[]; comments: string[] }>();
+const cache = new Map<
+  string,
+  {
+    style: string;
+    confidence: number;
+    talking_points: string[];
+    comments: string[];
+  }
+>();
 
 // 智谱AI配置
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || '';
 const ENABLE_COMMENT_FALLBACK = process.env.ENABLE_COMMENT_FALLBACK === 'true';
+const PROMPT_VERSION = 'v2-humanlike';
 
 // 调试：检查API密钥是否加载
-console.log('🎵 ZHIPU_API_KEY 状态:', ZHIPU_API_KEY ? '已配置' : '未配置', ZHIPU_API_KEY ? `(${ZHIPU_API_KEY.substring(0, 10)}...)` : '');
+console.log(
+  '🎵 ZHIPU_API_KEY 状态:',
+  ZHIPU_API_KEY ? '已配置' : '未配置',
+  ZHIPU_API_KEY ? `(${ZHIPU_API_KEY.substring(0, 10)}...)` : ''
+);
 
 // LLM生成评论函数
 async function generateCommentsWithLLM(
-  style: string, 
-  talkingPoints: string[], 
-  features: Record<string, unknown>, 
-  need: number, 
+  style: string,
+  talkingPoints: string[],
+  features: Record<string, unknown>,
+  need: number,
   locale: string
 ): Promise<string[]> {
   if (!ZHIPU_API_KEY) {
@@ -48,54 +62,62 @@ async function generateCommentsWithLLM(
   }
 
   try {
-    console.log('🎵 开始调用智谱AI API:', { style, talkingPoints, need, locale });
-    
-    const prompt = `你是专业音乐评论人，基于以下音乐风格和特征，生成${need}条简短的音乐评论：
+    console.log('🎵 开始调用智谱AI API:', {
+      style,
+      talkingPoints,
+      need,
+      locale,
+    });
+
+    const prompt = `你是资深乐迷主播，基于下列信息生成${need}条“更像真人说话”的弹幕：
 
 风格: ${style}
-特征要点: ${talkingPoints.join(', ')}
+要点: ${talkingPoints.join(', ')}
 语言: ${locale === 'zh-CN' ? '中文' : 'English'}
 
-要求：
-1. 每条评论30-50字，技术+感性混合
-2. 不要重复特征名，只给乐评感受+技术暗示
-3. 输出JSON数组格式，不要其他文字
-4. 评论要专业、有趣、有记忆点
+写作准则（严格遵守）：
+1) 口语化+现场感：允许轻微口头禅/拟声词（如“哇”“嘿”“嗖的一下”），每条至多1个轻表情（如😉/😮/🔥）。
+2) 长短句交错：每条随机在12–40字之间，避免整齐划一。
+3) 具体听感钩子：用“踩镲/落点/和声堆叠/上行线/泛音/低频抬升/切分”等具体词，而非空泛形容。
+4) 互动感：大约1/4的句子可以带轻微提问或呼应（如“这段你也喜欢吗？”），但不要每条都问。
+5) 去模板化：避免重复用语（如“轻盈/舒适/层次分明/行云流水”等老词），不要复述上面要点原词。
+6) 禁止输出解释或额外文字，仅输出JSON数组。
 
-示例格式：
-["评论1", "评论2", "评论3"]`;
+只输出JSON数组：[{...}]，示例：
+["低频今天格外厚，耳机里像有人在身后推你一把😮", "踩镲一扫就把节奏拎起来了，脚跟止不住点点点", "这段solo有戏！你也听到那个小泛音了吗？好上头～"]`;
 
     console.log('🎵 发送API请求到智谱AI...');
     const response = await fetch(ZHIPU_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ZHIPU_API_KEY}`,
+        Authorization: `Bearer ${ZHIPU_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'glm-4.5-air',
         messages: [
           {
             role: 'system',
-            content: '你是专业音乐评论人，擅长基于音频特征生成简洁有趣的音乐评论。'
+            content:
+              '你是一名资深乐迷主播，语气自然不做作，敢用口语与具体听感词；你擅长在技术暗示与情绪表达之间找到平衡，让弹幕像“人”说的话。严禁输出除JSON外的任何解释。',
           },
           {
             role: 'user',
-            content: prompt
-          }
+            content: prompt,
+          },
         ],
-        temperature: 0.7,
+        temperature: 0.95, // 提高创造性
         max_tokens: 2000,
         thinking: {
-          type: "disabled"
+          type: 'disabled',
         },
-        stream: false
+        stream: false,
       }),
-      signal: AbortSignal.timeout(4000) // 4秒超时
+      signal: AbortSignal.timeout(4000), // 4秒超时
     });
 
     console.log('🎵 API响应状态:', response.status);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('🎵 API请求失败:', response.status, errorText);
@@ -104,16 +126,16 @@ async function generateCommentsWithLLM(
 
     const data = await response.json();
     console.log('🎵 API返回数据:', data);
-    
+
     const content = data.choices?.[0]?.message?.content;
-    
+
     if (!content) {
       console.error('🎵 API返回内容为空:', data);
       throw new Error('API返回内容为空');
     }
 
     console.log('🎵 解析API返回内容:', content);
-    
+
     // 解析JSON数组
     const comments = JSON.parse(content);
     if (!Array.isArray(comments)) {
@@ -139,7 +161,7 @@ function generateFeatureHash(features: Record<string, unknown>): string {
     Math.round(Number(features.tempo_bpm) || 120),
     Math.round((Number(features.spectralFlatness_mean) || 0.5) * 100),
     Math.round((Number(features.spectralCentroid_mean) || 2000) / 100),
-    Math.round((Number(features.rms_mean) || 0.1) * 1000)
+    Math.round((Number(features.rms_mean) || 0.1) * 1000),
   ].join('-');
   return key;
 }
@@ -148,8 +170,8 @@ function generateFeatureHash(features: Record<string, unknown>): string {
 function fastHeuristic(features: Record<string, unknown>) {
   const tempo = Number(features.tempo_bpm) || 120;
   const flatness = Number(features.spectralFlatness_mean) || 0.5;
-  const contrast = Array.isArray(features.spectralContrast_mean) 
-    ? (features.spectralContrast_mean as number[])[0] || 0.5 
+  const contrast = Array.isArray(features.spectralContrast_mean)
+    ? (features.spectralContrast_mean as number[])[0] || 0.5
     : 0.5;
   const centroid = Number(features.spectralCentroid_mean) || 2000;
   const rms = Number(features.rms_mean) || 0.1;
@@ -162,329 +184,118 @@ function fastHeuristic(features: Record<string, unknown>) {
     return {
       style: 'pop_vocal',
       confidence: 0.86,
-      talking_points: ['主唱突出', '旋律性强', '节奏明快', '适合现场合唱']
+      talking_points: ['主唱突出', '旋律性强', '节奏明快', '适合现场合唱'],
     };
   } else if (percussive > 0.6 && tempo >= 118 && tempo <= 136) {
     return {
       style: 'techno_percussive',
       confidence: 0.83,
-      talking_points: ['强烈四拍', '机械质感', '低频冲击', '适合舞池']
+      talking_points: ['强烈四拍', '机械质感', '低频冲击', '适合舞池'],
     };
   } else if (voice < 0.2 && harmonic > 0.55 && tempo < 110 && flatness > 0.5) {
     return {
       style: 'ambient_harmonic',
       confidence: 0.8,
-      talking_points: ['氛围铺陈', '和声堆叠', '慢速沉浸', '空间感强']
+      talking_points: ['氛围铺陈', '和声堆叠', '慢速沉浸', '空间感强'],
     };
   } else if (tempo >= 130 && tempo <= 142 && centroid > 3000 && voice < 0.4) {
     return {
       style: 'trance_instrumental',
       confidence: 0.8,
-      talking_points: ['渐进铺垫', '合成器上升线', '空间延展', '迷离氛围']
+      talking_points: ['渐进铺垫', '合成器上升线', '空间延展', '迷离氛围'],
     };
   } else if (tempo >= 100 && tempo <= 135 && zcr > 0.3 && voice > 0.35) {
     return {
       style: 'rock_vocal',
       confidence: 0.82,
-      talking_points: ['吉他驱动', '鼓组推进', '人声张力', '舞台能量']
+      talking_points: ['吉他驱动', '鼓组推进', '人声张力', '舞台能量'],
     };
   } else if (tempo >= 80 && tempo <= 110 && percussive > 0.45 && voice > 0.5) {
     return {
       style: 'hiphop_vocal',
       confidence: 0.78,
-      talking_points: ['低频律动', '人声说唱', '节奏切分', '街头氛围']
+      talking_points: ['低频律动', '人声说唱', '节奏切分', '街头氛围'],
     };
   } else if (tempo >= 120 && tempo <= 140 && flatness < 0.45 && voice < 0.4) {
     return {
       style: 'edm_instrumental',
       confidence: 0.78,
-      talking_points: ['四踩节奏', '合成器堆叠', '低频力量', '舞池友好']
+      talking_points: ['四踩节奏', '合成器堆叠', '低频力量', '舞池友好'],
     };
   } else if (tempo < 90 && flatness > 0.6 && harmonic > 0.5) {
     return {
       style: 'ambient_harmonic',
       confidence: 0.76,
-      talking_points: ['氛围音乐', '空灵感', '缓慢节奏', '冥想感']
+      talking_points: ['氛围音乐', '空灵感', '缓慢节奏', '冥想感'],
     };
   } else if (tempo >= 80 && tempo <= 160 && contrast > 0.7) {
     return {
       style: 'jazz_ensemble',
       confidence: 0.74,
-      talking_points: ['即兴演奏', '复杂和声', '自由节奏', '爵士味道']
+      talking_points: ['即兴演奏', '复杂和声', '自由节奏', '爵士味道'],
     };
   } else if (voice <= 0.3 && rms > 0.25 && percussive > 0.4) {
     return {
       style: 'electronic_instrumental',
       confidence: 0.72,
-      talking_points: ['电子律动', '合成器主导', '节奏推进', '现代感']
+      talking_points: ['电子律动', '合成器主导', '节奏推进', '现代感'],
+    };
+  } else if (centroid > 4000 && rms > 0.2 && voice < 0.3) {
+    return {
+      style: 'electronic_club',
+      confidence: 0.65,
+      talking_points: ['高频明亮', '俱乐部氛围', '电子节拍', '能量充沛'],
+    };
+  } else if (tempo < 80 && flatness > 0.7 && voice < 0.1) {
+    return {
+      style: 'drone_ambient',
+      confidence: 0.63,
+      talking_points: ['持续低音', '冥想氛围', '时间拉伸', '极简主义'],
+    };
+  } else if (voice > 0.7 && tempo < 100 && harmonic > 0.7) {
+    return {
+      style: 'singer_songwriter',
+      confidence: 0.67,
+      talking_points: ['情感表达', '原声乐器', '歌词突出', '私人化'],
+    };
+  } else if (percussive > 0.8 && tempo > 140) {
+    return {
+      style: 'breakbeat_hardcore',
+      confidence: 0.64,
+      talking_points: ['复杂切分', '高速冲击', '碎片化节奏', '高强度'],
+    };
+  } else if (harmonic > 0.8 && voice < 0.15 && tempo > 110) {
+    return {
+      style: 'classical_electronic',
+      confidence: 0.62,
+      talking_points: ['复杂和声', '电子模拟', '结构严谨', '艺术性'],
     };
   } else {
+    // 随机选择一个默认风格，避免总是pop_instrumental
+    const defaultStyles = [
+      { style: 'indie_experimental', talking_points: ['独立制作', '实验元素', '非常规结构', '个性化'] },
+      { style: 'minimal_techno', talking_points: ['简约重复', '微观变化', '空间感', ' hypnotic'] },
+      { style: 'fusion_rock', talking_points: ['风格融合', '技巧展示', '即兴演奏', '跨界'] },
+      { style: 'dream_pop', talking_points: ['梦幻质感', '音墙效果', '氛围营造', '朦胧美感'] },
+    ];
+    const randomChoice = defaultStyles[Math.floor(Math.random() * defaultStyles.length)];
     return {
-      style: 'pop_instrumental',
-      confidence: 0.68,
-      talking_points: ['旋律轻盈', '器乐主导', '节奏适中', '舒适听感']
+      style: randomChoice.style,
+      confidence: 0.6,
+      talking_points: randomChoice.talking_points,
     };
   }
 }
 
-// 基于风格生成个性化评论
-function generateCommentsByStyle(style: string, talkingPoints: string[], need: number, locale: string): string[] {
-  const templates: Record<string, Record<string, string[]>> = {
-    pop_vocal: {
-      'zh-CN': [
-        '主唱的情绪线很抓人，副歌拉升时和声堆得恰到好处。',
-        '人声质感温暖，配合流畅的鼓点很容易让人哼唱。',
-        '主歌铺垫克制，到了副歌爆发出充盈的共鸣感。',
-        '人声占主导，背景合成器做了柔和的托底，非常适合电台播放。'
-      ],
-      en: [
-        'Lead vocal shines with a warm tone and a memorable hook.',
-        'Voice-driven mix keeps the groove light yet catchy.',
-        'Verses stay restrained before the chorus blooms with harmonies.',
-        'Vocal-forward production with soft synth beds, radio ready.'
-      ]
-    },
-    pop_instrumental: {
-      'zh-CN': [
-        '去掉人声后，旋律线依然流畅，合成器和弦铺得很满。',
-        '器乐主导的编排，适合当成日常背景音乐。',
-        '律动轻盈，旋律线条清晰，是一首舒服的器乐流行。',
-        '节奏稳稳推进，合成器和吉他把氛围拉得很柔和。'
-      ],
-      en: [
-        'Instrumental pop with a clean melodic contour and lush pads.',
-        'Laid-back groove makes it perfect for everyday listening.',
-        'Without vocals it still carries a strong hook via synth leads.',
-        'Balanced rhythm section with gentle guitars keeps it breezy.'
-      ]
-    },
-    techno_percussive: {
-      'zh-CN': [
-        '鼓机的四踩稳到不行，金属质感的合成器让舞池瞬间升温。',
-        '打击乐层叠得很密，工业氛围的细节极具画面感。',
-        '低频和击掌声把能量直接堆到顶，很适合作为暖场段落。',
-        '重复的律动配合突出的打击声，紧张感一步步渗透。'
-      ],
-      en: [
-        'Relentless four-on-the-floor kick with metallic percussive stabs.',
-        'Dense percussion layers create an immersive industrial vibe.',
-        'Low-end thrust paired with claps keeps the energy peaking.',
-        'Repetitive groove and sharp drums build hypnotic tension.'
-      ]
-    },
-    ambient_harmonic: {
-      'zh-CN': [
-        '和声垫底温柔绵延，像是一场渐入的清晨雾气。',
-        '慢速推进的和弦群，营造出无重力的沉浸氛围。',
-        '没有明显节奏，靠和声和空间混响撑起整首作品。',
-        '非常适合冥想或阅读，背景层次细腻而克制。'
-      ],
-      en: [
-        'Soft harmonic pads drift like dawn fog settling in slow motion.',
-        'Glacial chord progressions build a weightless ambience.',
-        'No defined beat, just layers of harmony and reverb breathing.',
-        'Perfect for meditation or reading, understated yet detailed.'
-      ]
-    },
-    rock_vocal: {
-      'zh-CN': [
-        '主唱的嘶吼和吉他失真叠在一起，很有现场感。',
-        '鼓组和贝斯把骨架打得扎实，人声顶在前面非常炸。',
-        '副歌瞬间炸开，咬字与情绪控制得很好。',
-        '经典的吉他+主唱组合，能量从第一拍就溢出。'
-      ],
-      en: [
-        'Lead vocal grit rides atop crunchy guitars with live energy.',
-        'Solid rhythm section lets the vocal punch straight through.',
-        'Chorus explodes instantly, vocals control the grit and emotion.',
-        'Classic vocal-and-guitar pairing overflowing with energy.'
-      ]
-    },
-    hiphop_vocal: {
-      'zh-CN': [
-        '低频颗粒感十足，人声flow切分很舒服。',
-        '鼓点强劲，配合说唱的押韵手法让人想点头。',
-        '人声层次丰富，合成器点缀恰到好处。',
-        '有力的鼓组与饱满的贝斯，hold住全场气氛。'
-      ],
-      en: [
-        'Punchy low end with a relaxed yet precise vocal flow.',
-        'Hard-hitting drums and rhyme schemes that demand a head nod.',
-        'Vocal stacks and ad-libs keep the narrative dynamic.',
-        'Solid drums and bass glue the entire vibe together.'
-      ]
-    },
-    jazz_ensemble: {
-      'zh-CN': [
-        '铜管与钢琴的对话很精彩，节奏组收放自如。',
-        '主旋律和即兴段落衔接自然，像是一场小型爵士演出。',
-        '和声丰富、动态灵活，是典型的小编制爵士氛围。',
-        '鼓与贝斯打得松弛，留出空间给即兴旋律。'
-      ],
-      en: [
-        'Horns and piano trade phrases with an intimate ensemble feel.',
-        'Themes blend seamlessly with improvisation, like a live session.',
-        'Rich harmonies and agile dynamics define this small-group jazz.',
-        'Relaxed drums and bass leave room for melodic improvisation.'
-      ]
-    },
-    trance_instrumental: {
-      'zh-CN': [
-        '合成器刻画出逐步上升的旋律线，情绪延伸很到位。',
-        '铺底的pad和延迟让空间感爆棚，典型的Trance编排。',
-        '没有人声也不空，合成器琶音本身就是亮点。',
-        '适合DJ段落的过渡，能量循序渐进地堆叠。'
-      ],
-      en: [
-        'Layered synth arps rise steadily, building emotional lift.',
-        'Pads and delays create huge spatial presence—classic trance.',
-        'No vocal required; the arpeggios carry the spotlight.',
-        'Ideal transition piece with energy that keeps climbing.'
-      ]
-    },
-    edm_instrumental: {
-      'zh-CN': [
-        '四拍鼓点稳扎稳打，合成器riff是主角。',
-        'Drop部分能量集中，低频冲击力强。',
-        '旋律清晰，适合舞池的器乐EDM。',
-        '节奏精准，合成器层次分明。'
-      ],
-      en: [
-        'Four-on-the-floor kick anchors a synth-driven instrumental.',
-        'Drop hits hard with focused low-end impact.',
-        'Clear melodic riff keeps the instrumental EDM engaging.',
-        'Precise rhythm with well-layered synth textures.'
-      ]
-    },
-    electronic_instrumental: {
-      'zh-CN': [
-        '偏器乐的电子编排，律动轻盈带一点未来感。',
-        '合成器与鼓机的配合松弛有度，适合日常聆听。',
-        '中低频柔和，线条干净，是一首气质型电子曲。',
-        '简洁的节奏搭配润泽的合成器，氛围感满满。'
-      ],
-      en: [
-        'Instrumental electronic with a light, futuristic groove.',
-        'Relaxed drum-machine patterns paired with airy synths.',
-        'Soft low-end and clean lines—an understated electronic gem.',
-        'Minimal rhythm plus lush synths create a mood-forward track.'
-      ]
-    },
-    'EDM/House': {
-      'zh-CN': [
-        '鼓点扎实且128BPM的四踩感很稳，低频滚动让舞池张力起来了。',
-        '高频质心偏上，合成器亮度足，主旋律有清晰的hook位。',
-        '电子节拍推进感强，适合舞池律动。',
-        '合成器层次分明，音色现代感十足。',
-        '低频有弹性，中高频清晰，整体能量充沛。',
-        '节拍稳定，律动感强，让人想跟着摇摆。'
-      ],
-      'en': [
-        'Solid 128BPM four-on-the-floor groove with driving low-end.',
-        'Bright synths with clear hook positioning in the high frequencies.',
-        'Strong electronic pulse, perfect for dance floor movement.',
-        'Layered synths with modern sound design.',
-        'Punchy bass with clear mids and highs, energetic overall.',
-        'Steady beat with strong rhythm, makes you want to move.'
-      ]
-    },
-    'Techno': {
-      'zh-CN': [
-        '工业感十足，机械律动很带感，重复的节拍营造出催眠效果。',
-        '科技感音色，未来感很强，低频厚重，中频清晰。',
-        '机械化的节拍模式，营造出工业氛围。',
-        '重复性强的律动，具有催眠般的魅力。',
-        '科技感十足的音色设计，层次分明。',
-        '工业风格的节拍，营造出独特的机械美感。'
-      ],
-      'en': [
-        'Industrial feel with mechanical rhythm, hypnotic repetitive beats.',
-        'Futuristic sound design with heavy low-end and clear mids.',
-        'Mechanical beat patterns creating industrial atmosphere.',
-        'Repetitive rhythms with hypnotic appeal.',
-        'Tech-heavy sound design with clear layering.',
-        'Industrial-style beats with unique mechanical beauty.'
-      ]
-    },
-    'Rock': {
-      'zh-CN': [
-        '吉他riff很有力量感，鼓点扎实，节拍稳定。',
-        '整体动态范围大，表现力强，摇滚的粗犷和细腻并存。',
-        '电吉他音色饱满，鼓组协调，节奏感强。',
-        '摇滚精神十足，能量充沛，感染力强。',
-        '吉他solo部分很有表现力，鼓点推进感强。',
-        '整体制作精良，摇滚元素丰富，层次分明。'
-      ],
-      'en': [
-        'Powerful guitar riffs with solid drums and steady rhythm.',
-        'Wide dynamic range with strong expression, raw and refined.',
-        'Full electric guitar tone with coordinated drums.',
-        'Strong rock spirit with energetic and infectious sound.',
-        'Expressive guitar solos with driving drum patterns.',
-        'Well-produced with rich rock elements and clear layering.'
-      ]
-    },
-    'Pop': {
-      'zh-CN': [
-        '旋律优美，节奏感强，人声突出，和声丰富。',
-        '流行元素明显，朗朗上口，编曲层次清晰。',
-        '制作精良，旋律记忆点强，容易传唱。',
-        '节奏明快，人声处理细腻，整体平衡。',
-        '流行感十足，旋律流畅，制作水准高。',
-        '朗朗上口的旋律，节奏感强，制作精良。'
-      ],
-      'en': [
-        'Beautiful melody with strong rhythm, prominent vocals and rich harmonies.',
-        'Clear pop elements, catchy and memorable with layered arrangement.',
-        'Well-produced with strong melodic hooks, easy to sing along.',
-        'Upbeat rhythm with delicate vocal processing, well-balanced.',
-        'Strong pop appeal with smooth melody and high production value.',
-        'Catchy melody with strong rhythm and excellent production.'
-      ]
-    }
-  };
-
-  const baseFallbackMap: Record<string, string> = {
-    pop_vocal: 'Pop',
-    pop_instrumental: 'Pop',
-    techno_percussive: 'Techno',
-    ambient_harmonic: 'Ambient',
-    rock_vocal: 'Rock',
-    hiphop_vocal: 'Hip-Hop',
-    trance_instrumental: 'Trance',
-    edm_instrumental: 'EDM/House',
-    electronic_instrumental: 'Electronic',
-    jazz_ensemble: 'Jazz',
-  };
-
-  const fallbackKey = baseFallbackMap[style] || 'EDM/House';
-  const styleTemplates = templates[style] || templates[fallbackKey] || templates['EDM/House'];
-  const baseComments = styleTemplates[locale] || styleTemplates['zh-CN'];
-  
-  // 结合talking points生成更多个性化评论
-  const personalizedComments = talkingPoints.map(point => {
-    const variations = [
-      `${point}特征明显，音色层次丰富。`,
-      `${point}感很强，整体表现力佳。`,
-      `${point}元素突出，制作精良。`,
-      `${point}处理到位，值得一听。`
-    ];
-    return variations[Math.floor(Math.random() * variations.length)];
-  });
-
-  // 合并基础模板和个性化评论
-  const allComments = [...baseComments, ...personalizedComments];
-  
-  // 随机选择并去重
-  const selected: string[] = [];
-  while (selected.length < need && selected.length < allComments.length) {
-    const comment = allComments[Math.floor(Math.random() * allComments.length)];
-    if (!selected.includes(comment)) {
-      selected.push(comment);
-    }
-  }
-  
-  return selected;
+// 基于风格生成个性化评论 - 已禁用模板备用方案，强制使用LLM
+function generateCommentsByStyle(
+  style: string,
+  talkingPoints: string[],
+  need: number,
+  locale: string
+): string[] {
+  // 强制返回空数组，让调用者使用LLM生成
+  return [];
 }
 
 export async function POST(req: Request) {
@@ -496,14 +307,18 @@ export async function POST(req: Request) {
   const need = Math.max(1, Math.min(8, Number(input.need_comments ?? 4)));
   const locale = (input.locale as string) || 'zh-CN';
   const features = input.features || {};
+  const no_cache = Boolean(input.no_cache);
 
   // 检查缓存
   const featureHash = generateFeatureHash(features);
-  const cacheKey = `${featureHash}-${locale}-${need}`;
-  
-  let style: string, confidence: number, talking_points: string[], comments: string[];
-  
-  if (cache.has(cacheKey)) {
+  const cacheKey = `${PROMPT_VERSION}-${featureHash}-${locale}-${need}`;
+
+  let style: string,
+    confidence: number,
+    talking_points: string[],
+    comments: string[];
+
+  if (!no_cache && cache.has(cacheKey)) {
     // 缓存命中，立即返回
     const cached = cache.get(cacheKey)!;
     style = cached.style;
@@ -516,12 +331,18 @@ export async function POST(req: Request) {
     style = result.style;
     confidence = result.confidence;
     talking_points = result.talking_points;
-    
+
     // 使用LLM生成个性化评论（带fallback）
-    comments = await generateCommentsWithLLM(style, talking_points, features, need, locale);
-    
+    comments = await generateCommentsWithLLM(
+      style,
+      talking_points,
+      features,
+      need,
+      locale
+    );
+
     // 缓存结果（限制缓存大小）
-    if (cache.size < 100) {
+    if (!no_cache && cache.size < 100) {
       cache.set(cacheKey, { style, confidence, talking_points, comments });
     }
   }
@@ -544,7 +365,7 @@ export async function POST(req: Request) {
         // 模拟生成延迟：首条快速，后续稍慢
         const delay = i === 0 ? 100 : 200 + Math.floor(Math.random() * 200);
         await sleep(delay);
-        
+
         controller.enqueue(
           encode(
             JSON.stringify({ type: 'comment', idx: i, text: comments[i] }) +

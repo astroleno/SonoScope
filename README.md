@@ -9,6 +9,7 @@ SonoScope 是一个移动优先的实时音乐可视化系统，能够将音频�
 ## ✨ 核心特性
 
 - 🎵 **实时音频分析** - 支持 RMS、频谱质心、通量、节拍检测等特征提取
+- 🎼 **乐器识别融合** - Mediapipe YAMNet + Meyda 双通道，实时输出主唱/乐器标签并驱动弹幕
 - 🎨 **可视化插件系统** - 基于 p5.js 的可插拔可视化场景
 - 💬 **智能弹幕** - 本地句库 + GLM-4.5 增强的弹幕生成
 - 📱 **移动端优化** - 针对 iOS Safari 和 Chrome 的深度优化
@@ -26,7 +27,8 @@ SonoScope/
 │   ├── visuals-trap/      # Trap 风格可视化插件
 │   └── shared/            # 共享类型和工具
 ├── docs/                  # 技术文档
-├── public/                # 静态资源
+├── public/                # 静态资源（部署到 Vercel 时使用）
+├── app/public/            # Next.js 应用静态资源（含 yamnet.task 模型）
 └── edge/                  # Vercel Edge Functions
 ```
 
@@ -43,6 +45,10 @@ SonoScope/
 ```bash
 # 安装所有依赖
 pnpm install
+
+# 下载乐器分类模型（首次运行需要）
+curl -fL -o app/public/model/yamnet.task \
+  https://storage.googleapis.com/mediapipe-models/audio_classifier/yamnet/float32/1/yamnet.tflite
 
 # 启动开发服务器
 pnpm dev
@@ -76,8 +82,9 @@ pnpm type-check
 
 1. **启动应用** - 访问 `http://localhost:3000`
 2. **授权麦克风** - 点击"开始"按钮授权音频访问
-3. **选择可视化** - 从插件列表中选择可视化场景
-4. **享受效果** - 播放音乐或发出声音，观看实时可视化
+3. **确认模型已加载** - 浏览器应能访问 `http://localhost:3000/model/yamnet.task`
+4. **选择可视化** - 从插件列表中选择可视化场景
+5. **享受效果** - 播放音乐或发出声音，观看实时可视化
 
 ### 开发者指南
 

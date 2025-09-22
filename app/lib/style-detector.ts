@@ -187,7 +187,11 @@ export class StyleDetector {
     return {
       style: bestMatch.style,
       confidence: bestMatch.confidence,
-      talking_points: this.generateTalkingPoints(baseStyle, features, bestMatch.style),
+      talking_points: this.generateTalkingPoints(
+        baseStyle,
+        features,
+        bestMatch.style
+      ),
       subgenres: this.detectSubgenres(baseStyle, features),
     };
   }
@@ -205,7 +209,10 @@ export class StyleDetector {
       let factors = 0;
 
       // 节拍匹配 (权重: 0.25)
-      if (features.tempo_bpm !== undefined && this.isInRange(features.tempo_bpm, rules.tempo_range)) {
+      if (
+        features.tempo_bpm !== undefined &&
+        this.isInRange(features.tempo_bpm, rules.tempo_range)
+      ) {
         score += 0.25;
       }
       factors += 0.25;
@@ -217,7 +224,9 @@ export class StyleDetector {
       factors += 0.2;
 
       // 频谱质心匹配 (权重: 0.2)
-      if (this.isInRange(features.spectralCentroid_mean, rules.centroid_range)) {
+      if (
+        this.isInRange(features.spectralCentroid_mean, rules.centroid_range)
+      ) {
         score += 0.2;
       }
       factors += 0.2;
@@ -235,7 +244,10 @@ export class StyleDetector {
       factors += 0.1;
 
       // 频谱对比度 (权重: 0.08)
-      if (features.spectralContrast_mean && features.spectralContrast_mean[0] > rules.contrast_threshold) {
+      if (
+        features.spectralContrast_mean &&
+        features.spectralContrast_mean[0] > rules.contrast_threshold
+      ) {
         score += 0.08;
       }
       factors += 0.08;
@@ -243,12 +255,18 @@ export class StyleDetector {
       const voice = features.voiceProb_mean ?? 0;
       const percussive = features.percussiveRatio_mean ?? 0;
       const harmonic = features.harmonicRatio_mean ?? 0;
+      const dominantInstrument = (
+        features.dominantInstrument ?? ''
+      ).toLowerCase();
+      const instrumentHistogram = features.instrumentHistogram ?? {};
 
       // 人声存在感 (权重: 0.07)
       if (rules.voiceMin !== undefined || rules.voiceMax !== undefined) {
         let voiceMatch = true;
-        if (rules.voiceMin !== undefined && voice < rules.voiceMin) voiceMatch = false;
-        if (rules.voiceMax !== undefined && voice > rules.voiceMax) voiceMatch = false;
+        if (rules.voiceMin !== undefined && voice < rules.voiceMin)
+          voiceMatch = false;
+        if (rules.voiceMax !== undefined && voice > rules.voiceMax)
+          voiceMatch = false;
         if (voiceMatch) {
           score += 0.07;
         }
@@ -256,10 +274,21 @@ export class StyleDetector {
       }
 
       // 打击乐占比 (权重: 0.07)
-      if (rules.percussiveMin !== undefined || rules.percussiveMax !== undefined) {
+      if (
+        rules.percussiveMin !== undefined ||
+        rules.percussiveMax !== undefined
+      ) {
         let percussionMatch = true;
-        if (rules.percussiveMin !== undefined && percussive < rules.percussiveMin) percussionMatch = false;
-        if (rules.percussiveMax !== undefined && percussive > rules.percussiveMax) percussionMatch = false;
+        if (
+          rules.percussiveMin !== undefined &&
+          percussive < rules.percussiveMin
+        )
+          percussionMatch = false;
+        if (
+          rules.percussiveMax !== undefined &&
+          percussive > rules.percussiveMax
+        )
+          percussionMatch = false;
         if (percussionMatch) {
           score += 0.07;
         }
@@ -269,12 +298,96 @@ export class StyleDetector {
       // 谐波占比 (权重: 0.07)
       if (rules.harmonicMin !== undefined || rules.harmonicMax !== undefined) {
         let harmonicMatch = true;
-        if (rules.harmonicMin !== undefined && harmonic < rules.harmonicMin) harmonicMatch = false;
-        if (rules.harmonicMax !== undefined && harmonic > rules.harmonicMax) harmonicMatch = false;
+        if (rules.harmonicMin !== undefined && harmonic < rules.harmonicMin)
+          harmonicMatch = false;
+        if (rules.harmonicMax !== undefined && harmonic > rules.harmonicMax)
+          harmonicMatch = false;
         if (harmonicMatch) {
           score += 0.07;
         }
         factors += 0.07;
+      }
+
+      // 主导乐器影响 (权重: 0.06)
+      if (dominantInstrument) {
+        let instrumentBonus = 0;
+        switch (styleName) {
+          case 'classical':
+            if (dominantInstrument.includes('strings')) instrumentBonus = 0.06;
+            else if (dominantInstrument.includes('piano'))
+              instrumentBonus = 0.05;
+            break;
+          case 'ambient':
+            if (
+              dominantInstrument.includes('synth') ||
+              dominantInstrument.includes('strings')
+            )
+              instrumentBonus = 0.05;
+            break;
+          case 'techno':
+          case 'edm':
+            if (dominantInstrument.includes('synth')) instrumentBonus = 0.06;
+            break;
+          case 'rock':
+            if (
+              dominantInstrument.includes('guitar') ||
+              dominantInstrument.includes('drum')
+            )
+              instrumentBonus = 0.06;
+            break;
+          case 'hiphop':
+            if (
+              dominantInstrument.includes('voice') ||
+              dominantInstrument.includes('drum')
+            )
+              instrumentBonus = 0.05;
+            break;
+          case 'jazz':
+            if (
+              dominantInstrument.includes('brass') ||
+              dominantInstrument.includes('piano')
+            )
+              instrumentBonus = 0.05;
+            break;
+          case 'trance':
+            if (dominantInstrument.includes('synth')) instrumentBonus = 0.05;
+            break;
+          default:
+            break;
+        }
+        if (instrumentBonus > 0) {
+          score += instrumentBonus;
+          factors += instrumentBonus;
+        }
+      }
+
+      // 分布式乐器概率辅助 (小幅加权)
+      if (instrumentHistogram && Object.keys(instrumentHistogram).length > 0) {
+        const safe = (label: string) => instrumentHistogram[label] ?? 0;
+        const instrumentScore = (() => {
+          switch (styleName) {
+            case 'classical':
+              return safe('strings') + safe('piano');
+            case 'ambient':
+              return safe('synth') + safe('strings');
+            case 'techno':
+            case 'edm':
+              return safe('synth') + safe('drums');
+            case 'rock':
+              return safe('guitar') + safe('drums');
+            case 'hiphop':
+              return safe('voice') + safe('drums') + safe('bass');
+            case 'jazz':
+              return safe('brass') + safe('piano');
+            default:
+              return 0;
+          }
+        })();
+        if (instrumentScore > 0) {
+          const bonus = Math.min(0.06, instrumentScore * 0.12);
+          score += bonus;
+          factors += bonus;
+        }
       }
 
       scores[styleName] = factors > 0 ? score / factors : 0;
@@ -313,11 +426,17 @@ export class StyleDetector {
     if (bestStyle !== 'unknown') {
       if (voice > 0.6) {
         resolvedStyle = `${bestStyle}_vocal`;
-      } else if (voice < 0.2 && (bestStyle === 'pop' || bestStyle === 'edm' || bestStyle === 'trance')) {
+      } else if (
+        voice < 0.2 &&
+        (bestStyle === 'pop' || bestStyle === 'edm' || bestStyle === 'trance')
+      ) {
         resolvedStyle = `${bestStyle}_instrumental`;
       } else if (percussive > 0.6) {
         resolvedStyle = `${bestStyle}_percussive`;
-      } else if (harmonic > 0.6 && (bestStyle === 'ambient' || bestStyle === 'classical')) {
+      } else if (
+        harmonic > 0.6 &&
+        (bestStyle === 'ambient' || bestStyle === 'classical')
+      ) {
         resolvedStyle = `${bestStyle}_harmonic`;
       }
     }
@@ -451,7 +570,10 @@ export class StyleDetector {
       case 'jazz':
         if ((features.voiceProb_mean ?? 0) > 0.5) {
           subgenres.push('Vocal Jazz');
-        } else if (features.spectralContrast_mean && features.spectralContrast_mean.some(c => c > 0.8)) {
+        } else if (
+          features.spectralContrast_mean &&
+          features.spectralContrast_mean.some(c => c > 0.8)
+        ) {
           subgenres.push('Free Jazz');
         } else {
           subgenres.push('Smooth Jazz');
