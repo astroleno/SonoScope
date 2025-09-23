@@ -3,7 +3,11 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(xargs:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm audit:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm:*)"
     ],
     "deny": [],
     "ask": []
