@@ -3,6 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design tokens: neon cyber studio */
+:root {
+  --neon-blue: #00D4FF;
+  --neon-purple: #8B5CF6;
+  --neon-pink: #FF006E;
+  --neon-green: #39FF14;
+  --bg-dark: #0A0A0F;
+  --bg-medium: #1A1A2E;
+  --bg-light: #16213E;
+}
+
 /* 基础重置 */
 * {
   box-sizing: border-box;
@@ -19,7 +30,7 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
-  background: #000;
+  background: var(--bg-dark);
   color: #fff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

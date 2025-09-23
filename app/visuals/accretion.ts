@@ -96,6 +96,7 @@ type AccretionControls = {
   flickerStrength?: number;
   flickerFreq?: number;
   overallBoost?: number;
+  genre?: 'electronic' | 'acoustic' | 'rock' | 'jazz';
 };
 export function applyAccretionAudioUniforms(
   p: any,
@@ -130,18 +131,28 @@ export function applyAccretionAudioUniforms(
   shader.setUniform('uZcr', zcr);
   shader.setUniform('uMfcc', mf);
   const sens = Math.max(0.5, Math.min(3.0, sensitivity || 1));
-  const gainScale = Math.max(0.5, Math.min(2.0, controls?.gainScale ?? 1.1));
+  // Optional genre presets
+  const presets = {
+    electronic: { gainScale: 1.3, flickerStrength: 0.15, flickerFreq: 24.0, overallBoost: 1.1 },
+    acoustic:   { gainScale: 0.9, flickerStrength: 0.08, flickerFreq: 12.0, overallBoost: 0.95 },
+    rock:       { gainScale: 1.5, flickerStrength: 0.25, flickerFreq: 18.0, overallBoost: 1.2 },
+    jazz:       { gainScale: 1.1, flickerStrength: 0.12, flickerFreq: 16.0, overallBoost: 1.05 },
+  } as const;
+  const genre = controls?.genre;
+  const preset = genre ? presets[genre] : undefined;
+
+  const gainScale = Math.max(0.5, Math.min(2.0, controls?.gainScale ?? preset?.gainScale ?? 1.1));
   const flickerStrength = Math.max(
     0.0,
-    Math.min(0.4, controls?.flickerStrength ?? 0.12)
+    Math.min(0.4, controls?.flickerStrength ?? preset?.flickerStrength ?? 0.12)
   );
   const flickerFreq = Math.max(
     4.0,
-    Math.min(48.0, controls?.flickerFreq ?? 16.0)
+    Math.min(48.0, controls?.flickerFreq ?? preset?.flickerFreq ?? 16.0)
   );
   const overallBoost = Math.max(
     0.7,
-    Math.min(1.6, controls?.overallBoost ?? 1.0)
+    Math.min(1.6, controls?.overallBoost ?? preset?.overallBoost ?? 1.0)
   );
   shader.setUniform('uSensitivity', sens);
   shader.setUniform('uGainScale', gainScale);

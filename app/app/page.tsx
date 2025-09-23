@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import NeonButton from '../components/neon-button';
 import Visualizer from '../components/visualizer';
 import Meyda from 'meyda';
 import { useDanmuPipeline } from '../hooks/useDanmuPipeline';
@@ -294,15 +295,29 @@ export default function HomePage() {
       // 关闭临时流，使用指定 deviceId 重新获取媒体流
       provisionalStream.getTracks().forEach(t => t.stop());
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          deviceId: deviceId ? { exact: deviceId } : undefined,
-          echoCancellation: rawMic ? false : true,
-          noiseSuppression: rawMic ? false : true,
-          autoGainControl: rawMic ? false : true,
-          sampleRate: 44100,
-        },
-      });
+      let stream: MediaStream | null = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            deviceId: deviceId ? { exact: deviceId } : undefined,
+            echoCancellation: rawMic ? false : true,
+            noiseSuppression: rawMic ? false : true,
+            autoGainControl: rawMic ? false : true,
+            sampleRate: 44100,
+          },
+        });
+      } catch (err: any) {
+        console.warn('指定设备获取失败，回退为默认设备:', err?.name || err);
+        // 回退：不指定 deviceId 再试一次
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: rawMic ? false : true,
+            noiseSuppression: rawMic ? false : true,
+            autoGainControl: rawMic ? false : true,
+            sampleRate: 44100,
+          },
+        });
+      }
 
       // 显示设备信息
       const nameList = audioInputs.map(d => d.label || '未知设备').join(', ');
@@ -1561,22 +1576,41 @@ export default function HomePage() {
 
       {/* 控制按钮 */}
       <div className="flex gap-4 z-10">
-        {/* 预设选择 */}
-        <select
-          value={preset}
-          onChange={e =>
-            setPreset(
-              e.target.value as 'pulse' | 'accretion' | 'spiral' | 'mosaic'
-            )
-          }
-          className="px-3 py-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="可视化预设"
-        >
-          <option value="pulse">脉冲圆环</option>
-          <option value="accretion">Accretion</option>
-          <option value="spiral">Spiral</option>
-          <option value="mosaic">Mosaic</option>
-        </select>
+        {/* 预设选择 - 霓虹切换按钮组 */}
+        <div className="flex gap-2">
+          <NeonButton
+            variant={preset === 'pulse' ? 'cyan' : 'purple'}
+            size="md"
+            glowing
+            onClick={() => setPreset('pulse')}
+          >
+            脉冲
+          </NeonButton>
+          <NeonButton
+            variant={preset === 'accretion' ? 'cyan' : 'purple'}
+            size="md"
+            glowing
+            onClick={() => setPreset('accretion')}
+          >
+            Accretion
+          </NeonButton>
+          <NeonButton
+            variant={preset === 'spiral' ? 'cyan' : 'purple'}
+            size="md"
+            glowing
+            onClick={() => setPreset('spiral')}
+          >
+            Spiral
+          </NeonButton>
+          <NeonButton
+            variant={preset === 'mosaic' ? 'cyan' : 'purple'}
+            size="md"
+            glowing
+            onClick={() => setPreset('mosaic')}
+          >
+            Mosaic
+          </NeonButton>
+        </div>
 
         {/* 反应强度 */}
         <div className="flex items-center gap-2 text-gray-300">
@@ -1615,20 +1649,12 @@ export default function HomePage() {
           />
           自适应校准
         </label>
-        <button
-          onClick={handleStart}
-          disabled={isStarted}
-          className="px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
+        <NeonButton variant="green" size="lg" glowing onClick={handleStart} disabled={isStarted}>
           开始
-        </button>
-        <button
-          onClick={handleStop}
-          disabled={!isStarted}
-          className="px-8 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
+        </NeonButton>
+        <NeonButton variant="pink" size="lg" glowing onClick={handleStop} disabled={!isStarted}>
           停止
-        </button>
+        </NeonButton>
         <button
           onClick={() => danmuPipeline.trigger()}
           disabled={!isStarted || !danmuPipeline.isActive}

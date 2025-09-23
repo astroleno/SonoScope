@@ -219,7 +219,10 @@ export class MosaicVisual {
     const next: MosaicGrid = [];
     
     // Audio-modulated growth rate
-    const audioGrowthRate = this.controls.growthRate * (1 + this.audio.flux * 0.5 + this.audio.zcr * 0.3);
+    // Include flatness to modulate pattern complexity and spawning tendency
+    const audioGrowthRate = this.controls.growthRate * (
+      1 + this.audio.flux * 0.5 + this.audio.zcr * 0.3 + this.audio.flatness * 0.2
+    );
     
     for (let i = 0; i < this.cols; i++) {
       next[i] = [];
@@ -233,7 +236,7 @@ export class MosaicVisual {
         if (!cell.alive && neighbors >= 2 && this.p.random() < audioGrowthRate) {
           newCell.alive = true;
           newCell.age = 0;
-          newCell.shape = this.p.random(['circle', 'triangle', 'rect']);
+          newCell.shape = this.chooseShapeFromMFCC();
         }
         
         next[i][j] = newCell;
@@ -253,7 +256,7 @@ export class MosaicVisual {
         next[pitchPosition][spawnRow] = {
           alive: true,
           age: 0,
-          shape: this.p.random(['circle', 'triangle', 'rect']),
+          shape: this.chooseShapeFromMFCC(),
         };
       }
     }
@@ -265,8 +268,8 @@ export class MosaicVisual {
     const px = i / this.cols;
     const py = j / this.rows;
     
-    // Enhanced pitch influence on color flow
-    const pitchInfluence = this.audio.centroid * 0.8; // 0-0.8 range
+    // Enhanced pitch influence on color flow (rebalanced lower weight)
+    const pitchInfluence = this.audio.centroid * 0.6; // reduced from 0.8
     const t = this.frameCount * this.controls.colorFlowSpeed * (1 + pitchInfluence);
     
     // Add pitch-based phase shift to create horizontal color waves
@@ -275,8 +278,8 @@ export class MosaicVisual {
     
     const ageFactor = this.p.constrain(age / this.controls.maxAge, 0, 1);
     
-    // Pitch affects color blending - higher pitch shifts colors more
-    const pitchColorShift = this.audio.centroid * 0.3;
+    // Pitch affects color blending - higher pitch shifts colors more (reduced weight)
+    const pitchColorShift = this.audio.centroid * 0.2; // reduced from 0.3
     const blend = (ageFactor + n + pitchColorShift) / 2;
     
     const indexA = Math.floor(blend * (this.colors.length - 1));
@@ -293,6 +296,19 @@ export class MosaicVisual {
     const pitchAlpha = 1 + this.audio.centroid * 0.2;
     c.setAlpha(this.controls.alpha * pitchAlpha * 255);
     return c;
+  }
+
+  // Choose cell shape based on MFCC distribution to increase semantic variety
+  private chooseShapeFromMFCC(): 'circle' | 'triangle' | 'rect' {
+    const m = this.audio.mfcc;
+    if (!m || m.length < 4) {
+      return this.p.random(['circle', 'triangle', 'rect']);
+    }
+    // Weighted combination (normalized roughly into 0..1 domain)
+    const weighted = m[0] * 0.4 + m[1] * 0.3 + m[2] * 0.2 + m[3] * 0.1;
+    const normalized = Math.max(0, Math.min(1, (weighted + 1) / 2));
+    const idx = Math.floor(normalized * 3) % 3;
+    return idx === 0 ? 'circle' : idx === 1 ? 'triangle' : 'rect';
   }
 
   private drawShape(shape: string, size: number) {
