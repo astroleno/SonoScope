@@ -86,6 +86,7 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
   
   private enhancedFrames: EnhancedFeatureFrame[] = [];
   private enhancedWindows: EnhancedFeatureWindow[] = [];
+  private windowSize: number = 8;
 
   constructor() {
     super();
@@ -146,7 +147,7 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
         this.enhancedFrames.push(frame);
         
         // 检查是否需要计算窗口特征
-        if (this.enhancedFrames.length >= this.config.windowSize) {
+        if (this.enhancedFrames.length >= this.windowSize) {
           await this.computeEnhancedWindowFeatures();
         }
         
@@ -160,15 +161,15 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
    * 计算增强窗口特征
    */
   private async computeEnhancedWindowFeatures(): Promise<void> {
-    if (this.enhancedFrames.length < this.config.windowSize) {
+    if (this.enhancedFrames.length < this.windowSize) {
       return;
     }
     
     // 获取窗口内的帧
-    const windowFrames = this.enhancedFrames.slice(-this.config.windowSize);
+    const windowFrames = this.enhancedFrames.slice(-this.windowSize);
     
-    // 计算基础窗口特征
-    const baseWindow = this.computeWindowFeatures(windowFrames);
+    // 计算基础窗口特征（使用父类的窗口计算逻辑）
+    const baseWindow = this.computeWindowFeatures();
     
     // 计算增强窗口特征
     const enhancedWindow: EnhancedFeatureWindow = {
@@ -176,7 +177,7 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
       pitchStats: this.computePitchStats(windowFrames),
       tempoStats: this.computeTempoStats(windowFrames),
       timbreStats: this.computeTimbreStats(windowFrames),
-      instrumentStats: this.computeInstrumentStats(windowFrames),
+      instrumentStats: this.computeEnhancedInstrumentStats(windowFrames),
       enhancedHPSSStats: this.computeEnhancedHPSSStats(windowFrames),
     };
     
@@ -189,8 +190,8 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
     }
     
     // 清理旧的帧
-    if (this.enhancedFrames.length > this.config.windowSize * 2) {
-      this.enhancedFrames.splice(0, this.enhancedFrames.length - this.config.windowSize);
+    if (this.enhancedFrames.length > this.windowSize * 2) {
+      this.enhancedFrames.splice(0, this.enhancedFrames.length - this.windowSize);
     }
   }
 
@@ -344,7 +345,7 @@ export class EnhancedFeatureAggregator extends FeatureAggregator {
   /**
    * 计算乐器统计
    */
-  private computeInstrumentStats(frames: EnhancedFeatureFrame[]): EnhancedFeatureWindow['instrumentStats'] {
+  private computeEnhancedInstrumentStats(frames: EnhancedFeatureFrame[]): EnhancedFeatureWindow['instrumentStats'] {
     const instrumentFrames = frames.filter(f => f.instruments && f.instruments.instruments.length > 0);
     
     if (instrumentFrames.length === 0) {

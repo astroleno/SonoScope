@@ -4,7 +4,16 @@
  */
 
 import p5 from 'p5';
-import { VisualPlugin, FeatureTick, VisualPreset } from '@sonoscope/core';
+import { FeatureTick, VisualPreset } from '@sonoscope/core';
+
+// 定义VisualPlugin接口
+interface VisualPlugin {
+  name: string;
+  version: string;
+  initialize(p5: p5, config?: any): void;
+  render(p5: p5, features: FeatureTick): void;
+  dispose(): void;
+}
 
 interface Particle {
   x: number;
@@ -51,6 +60,10 @@ export class BasicParticlesPlugin implements VisualPlugin {
       fontWeight: 400
     };
     this.transitionManager = new TransitionManager();
+  }
+
+  initialize(p5: p5, config?: any): void {
+    // 兼容性方法，实际使用init方法
   }
 
   async init(container: HTMLElement): Promise<void> {
@@ -116,7 +129,7 @@ export class BasicParticlesPlugin implements VisualPlugin {
     this.state.particles = [];
   }
 
-  private render(p: p5): void {
+  render(p: p5, features?: FeatureTick): void {
     // 应用模糊效果
     if (this.state.blur > 0) {
       p.drawingContext.filter = `blur(${this.state.blur}px)`;

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -9,14 +9,19 @@ export const metadata: Metadata = {
   description: '基于浏览器的实时音乐可视化与弹幕引擎',
   keywords: ['音频可视化', '音乐可视化', '实时渲染', 'Web Audio'],
   authors: [{ name: 'SonoScope Team' }],
-  viewport:
-    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
-  themeColor: '#000000',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#000000',
 };
 
 export default function RootLayout({

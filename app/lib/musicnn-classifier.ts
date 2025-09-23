@@ -175,14 +175,14 @@ export class MusicnnClassifier {
     const preprocessed = this.preprocessAudioForMusicnn(audioBuffer);
     
     // 运行模型推理
-    const prediction = this.model.predict(preprocessed) as tf.Tensor;
+    const prediction: any = (this.model as any).predict(preprocessed as any);
     const probabilities = await prediction.data();
     
     // 后处理结果
     const result = this.postprocessMusicnnResult(probabilities);
     
     // 清理内存
-    prediction.dispose();
+    if (typeof prediction.dispose === 'function') prediction.dispose();
     
     return result;
   }

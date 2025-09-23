@@ -26,6 +26,7 @@ export interface EnhancedHPSSFeatures extends HPSSFeatures {
     percussiveConsistency: number;   // 打击乐一致性
     percussiveClarity: number;       // 打击乐清晰度
     percussiveSharpness: number;     // 打击乐锐度
+    percussiveWarmth: number;        // 打击乐温暖度（与谐波暖色协调性）
   };
   
   // 增强分离特征
@@ -149,6 +150,7 @@ export class EnhancedHPSSExtractor {
       percussiveConsistency: this.calculatePercussiveConsistency(spectrum),
       percussiveClarity: this.calculatePercussiveClarity(spectrum),
       percussiveSharpness: this.calculatePercussiveSharpness(spectrum),
+      percussiveWarmth: this.calculatePercussiveWarmth(spectrum),
     };
   }
 
@@ -382,6 +384,22 @@ export class EnhancedHPSSExtractor {
 
   private calculateMusicalWarmth(harmonicFeatures: EnhancedHPSSFeatures['enhancedHarmonicFeatures'], percussiveFeatures: EnhancedHPSSFeatures['enhancedPercussiveFeatures']): number {
     return (harmonicFeatures.harmonicWarmth + percussiveFeatures.percussiveWarmth) / 2;
+  }
+
+  private calculatePercussiveWarmth(spectrum: Float32Array): number {
+    const len = spectrum.length;
+    if (len === 0) return 0.5;
+    const lowEnd = Math.max(1, Math.floor(len * 0.05));
+    const midEnd = Math.max(lowEnd + 1, Math.floor(len * 0.25));
+    let lowMid = 0;
+    let total = 0;
+    for (let i = 0; i < len; i++) {
+      total += spectrum[i];
+      if (i >= lowEnd && i < midEnd) lowMid += spectrum[i];
+    }
+    if (total <= 1e-9) return 0.5;
+    const ratio = lowMid / total;
+    return Math.max(0, Math.min(1, ratio));
   }
 
   /**

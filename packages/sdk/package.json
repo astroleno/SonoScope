@@ -1,0 +1,37 @@
+{
+  "name": "@sonoscope/sdk",
+  "version": "0.1.0",
+  "description": "SonoScope Core SDK - Audio visualization and danmu engine",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sonoscope/core": "workspace:*",
+    "@sonoscope/danmu-pipeline": "workspace:*",
+    "@sonoscope/visuals-basic": "workspace:*",
+    "@sonoscope/visuals-trap": "workspace:*",
+    "@sonoscope/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "meyda": "^5.6.3"
+  }
+}

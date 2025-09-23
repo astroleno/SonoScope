@@ -4,9 +4,9 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { EventBus } from '../lib/event-bus';
-import { DanmuEngine } from '../lib/danmu-engine';
-import { DanmuPipeline, PipelineConfig } from '../lib/danmu-pipeline';
+import { EventBus } from '@sonoscope/core';
+import { DanmuEngine } from './danmu-engine';
+import { DanmuPipeline, PipelineConfig } from './danmu-pipeline';
 
 export interface UseDanmuPipelineOptions extends PipelineConfig {
   enabled?: boolean;

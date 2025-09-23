@@ -205,7 +205,9 @@ export class DanmuEngine {
     // 限制弹幕数量
     if (this.danmuItems.size >= this.MAX_DANMU_COUNT) {
       const firstId = this.danmuItems.keys().next().value;
-      this.removeDanmu(firstId);
+      if (firstId) {
+        this.removeDanmu(firstId);
+      }
     }
 
     this.createDanmu(text, featureTick);
@@ -218,7 +220,9 @@ export class DanmuEngine {
     if (!text || !text.trim()) return;
     if (this.danmuItems.size >= this.MAX_DANMU_COUNT) {
       const firstId = this.danmuItems.keys().next().value;
-      this.removeDanmu(firstId);
+      if (firstId) {
+        this.removeDanmu(firstId);
+      }
     }
     // 使用轻量特征占位，基于当前数量制造微小变化
     const pseudo: FeatureTick = {

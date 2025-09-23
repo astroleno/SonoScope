@@ -13,6 +13,8 @@
   "dependencies": {
     "@mediapipe/tasks-audio": "0.10.22-rc.20250304",
     "@sonoscope/core": "workspace:*",
+    "@sonoscope/danmu-pipeline": "workspace:*",
+    "@sonoscope/sdk": "workspace:*",
     "@sonoscope/shared": "workspace:*",
     "@sonoscope/visuals-basic": "workspace:*",
     "@sonoscope/visuals-trap": "workspace:*",
