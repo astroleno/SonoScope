@@ -90,19 +90,19 @@ export default function HomePage() {
   const [accretionCtrl, setAccretionCtrl] = useState({
     sensMin: 0.92,
     sensMax: 1.18,
-    gainScale: 1.15,
-    flickerStrength: 0.1,
-    flickerFreq: 14,
-    overallBoost: 1.1,
+    gainScale: 1.2,
+    flickerStrength: 0.16,
+    flickerFreq: 16,
+    overallBoost: 1.2,
   });
   const [mosaicCtrl, setMosaicCtrl] = useState({
     cellSize: 20,
     maxAge: 80,
     growthRate: 0.05,
     spawnRate: 0.02,
-    colorScheme: 0,
-    colorFlowSpeed: 0.01,
-    alpha: 0.7,
+    colorScheme: 2,
+    colorFlowSpeed: 0.02,
+    alpha: 0.85,
   });
   // const [frequencyBars, setFrequencyBars] = useState<number[]>([]); // legacy, not used now
   const [features, setFeatures] = useState<AudioFeatureSnapshot | null>(null);
@@ -274,9 +274,27 @@ export default function HomePage() {
       console.log('请求麦克风权限...');
 
       // 先请求权限，再 enumerateDevices，以避免 Safari/权限策略导致的设备列表空/无标签
-      const provisionalStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      let provisionalStream: MediaStream;
+      try {
+        provisionalStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+      } catch (permErr: any) {
+        const name = permErr?.name || '';
+        if (name === 'NotAllowedError' || name === 'SecurityError') {
+          setError('麦克风权限被拒绝。请在浏览器地址栏右侧为本页开启麦克风权限，然后重试。');
+          setStatus('权限被拒绝');
+          return;
+        }
+        if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+          setError('未检测到音频输入设备。请连接麦克风或耳机后重试。');
+          setStatus('未检测到设备');
+          return;
+        }
+        setError(`无法请求麦克风权限：${name || '未知错误'}`);
+        setStatus('权限请求失败');
+        return;
+      }
 
       setStatus('检查音频设备...');
       console.log('检查音频设备...');

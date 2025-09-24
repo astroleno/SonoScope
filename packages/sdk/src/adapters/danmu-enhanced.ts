@@ -80,10 +80,15 @@ export class EnhancedDanmuAdapter implements DanmuAdapter {
   
   // 弹幕生成状态
   private lastTriggerTime = 0;
-  private triggerCooldown = 2000; // 2秒冷却
+  private triggerCooldown = 2200; // 适度加长冷却，降低密度
   private lastBeatStrength = 0;
   private lastVoiceProb = 0;
   private lastComplexity = 0;
+  // 随机触发概率基础值（可按设备与能量自适应）
+  private baseRandomProb = 0.03;
+  // 观感控制：时间窗限流、重复抑制
+  private recentTimestamps: number[] = [];
+  private lastTextMap: Record<string, { text: string; ts: number }> = {};
 
   constructor() {
     // 初始化
@@ -130,6 +135,10 @@ export class EnhancedDanmuAdapter implements DanmuAdapter {
     if (!this.isActive) return;
 
     const now = Date.now();
+    // 时间窗限流：5 秒最多 6 条
+    this.recentTimestamps = this.recentTimestamps.filter(ts => now - ts <= 5000);
+    if (this.recentTimestamps.length >= 6) return;
+    // 冷却判断
     if (now - this.lastTriggerTime < this.triggerCooldown) return;
 
     this.lastTriggerTime = now;
@@ -149,6 +158,15 @@ export class EnhancedDanmuAdapter implements DanmuAdapter {
       },
       timestamp: now,
     };
+
+    // 重复抑制：同一 style 的相同文本 10 秒内不重复
+    const styleKey = event.command.style || 'default';
+    const last = this.lastTextMap[styleKey];
+    if (last && last.text === event.command.text && now - last.ts < 10000) {
+      return; // 丢弃重复
+    }
+    this.lastTextMap[styleKey] = { text: event.command.text, ts: now };
+    this.recentTimestamps.push(now);
 
     if (this.danmuCallback) {
       this.danmuCallback(event);
@@ -245,27 +263,51 @@ export class EnhancedDanmuAdapter implements DanmuAdapter {
   // 基于特征生成弹幕内容
   private generateDanmuPayload(core: DanmuCoreFeatures, level: number): any | null {
     const now = Date.now();
+    // 动态冷却：按 BPM 调整触发频率（越快的歌，冷却越短，但设下限）
+    const bpm = core.tempo?.bpm || 0;
+    if (bpm > 0) {
+      const beatMs = 60000 / bpm;
+      const dynamic = Math.max(900, Math.min(3000, Math.round(beatMs * 0.75)));
+      this.triggerCooldown = dynamic;
+    } else {
+      this.triggerCooldown = 2200;
+    }
     
-    // 节拍强度变化检测
-    if (core.tempo?.beatStrength && Math.abs(core.tempo.beatStrength - this.lastBeatStrength) > 0.2) {
+    // 节拍强度变化检测（去抖）
+    if (
+      core.tempo?.beatStrength &&
+      Math.abs(core.tempo.beatStrength - this.lastBeatStrength) > 0.22 &&
+      now - this.lastTriggerTime > this.triggerCooldown * 0.6
+    ) {
       this.lastBeatStrength = core.tempo.beatStrength;
       return this.generateBeatDanmu(core);
     }
 
-    // 人声概率变化检测
-    if (core.voice?.probability && Math.abs(core.voice.probability - this.lastVoiceProb) > 0.3) {
+    // 人声概率变化检测（去抖）
+    if (
+      core.voice?.probability &&
+      Math.abs(core.voice.probability - this.lastVoiceProb) > 0.33 &&
+      now - this.lastTriggerTime > this.triggerCooldown * 0.7
+    ) {
       this.lastVoiceProb = core.voice.probability;
       return this.generateVoiceDanmu(core);
     }
 
-    // 复杂度变化检测
-    if (core.combinedFeatures?.complexity && Math.abs(core.combinedFeatures.complexity - this.lastComplexity) > 0.2) {
+    // 复杂度变化检测（去抖）
+    if (
+      core.combinedFeatures?.complexity &&
+      Math.abs(core.combinedFeatures.complexity - this.lastComplexity) > 0.22 &&
+      now - this.lastTriggerTime > this.triggerCooldown * 0.8
+    ) {
       this.lastComplexity = core.combinedFeatures.complexity;
       return this.generateComplexityDanmu(core);
     }
 
-    // 随机触发（低概率）
-    if (Math.random() < 0.05) {
+    // 随机触发（自适应低概率；移动端或低能量时进一步降低）
+    const isMobile = typeof navigator !== 'undefined' && /iphone|ipad|android|mobile/i.test(navigator.userAgent);
+    const energy = Math.max(0, Math.min(1, core.combinedFeatures?.energy ?? 0));
+    const prob = this.baseRandomProb * (isMobile ? 0.5 : 1) * (energy > 0.5 ? 1 : 0.6);
+    if (Math.random() < prob) {
       return this.generateRandomDanmu(core);
     }
 

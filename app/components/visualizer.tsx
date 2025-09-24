@@ -103,34 +103,41 @@ export default function Visualizer({
         const P5 = (mod as any).default ?? mod;
         if (isCancelled) return;
 
-        const [
-          { drawPulse },
-          {
-            ACCRETION_VERTEX,
-            ACCRETION_FRAGMENT,
-            drawAccretion,
-            applyAccretionAudioUniforms,
-          },
-          { SPIRAL_VERTEX, SPIRAL_FRAGMENT, applySpiralUniforms, drawSpiral },
-          {
-            MosaicVisual,
-            applyMosaicUniforms,
-            drawMosaic,
-            MOSAIC_COLOR_SCHEMES,
-          },
-        ] = await Promise.all([
-          import('../visuals/pulse'),
-          import('../visuals/accretion'),
-          import('../visuals/spiral'),
-          import('../visuals/mosaic'),
-        ]);
+        // 按需加载：仅加载当前预设；其余在空闲时预取
+        const presetNow = presetRef.current;
+        const loadPulse = () => import('../visuals/pulse');
+        const loadAccretion = () => import('../visuals/accretion');
+        const loadSpiral = () => import('../visuals/spiral');
+        const loadMosaic = () => import('../visuals/mosaic');
+
+        let pulseMod: any = presetNow === 'pulse' ? await loadPulse() : null;
+        let accretionMod: any = presetNow === 'accretion' ? await loadAccretion() : null;
+        let spiralMod: any = presetNow === 'spiral' ? await loadSpiral() : null;
+        let mosaicMod: any = presetNow === 'mosaic' ? await loadMosaic() : null;
+
+        // 预取其余模块（非阻塞）
+        const ric = (cb: () => void) => {
+          if (typeof (window as any).requestIdleCallback === 'function') {
+            (window as any).requestIdleCallback(cb);
+          } else {
+            setTimeout(cb, 1000);
+          }
+        };
+        ric(async () => { if (!pulseMod) pulseMod = await loadPulse().catch(() => null); });
+        ric(async () => { if (!accretionMod) accretionMod = await loadAccretion().catch(() => null); });
+        ric(async () => { if (!spiralMod) spiralMod = await loadSpiral().catch(() => null); });
+        ric(async () => { if (!mosaicMod) mosaicMod = await loadMosaic().catch(() => null); });
 
         const sketch = (p: any) => {
+          // 简易移动端检测：用于性能模式（降帧/减粒子）
+          const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
+          const isMobile = /iphone|ipad|android|mobile/.test(ua);
           let shaderProgram: any | null = null;
           let spiralProgram: any | null = null;
           let mosaicVisual: any | null = null;
           const particles: Particle[] = [];
-          const maxParticles = 90;
+          // 移动端采用更少的粒子，降低首屏成本
+          const maxParticles = isMobile ? 45 : 90;
           // smoothed feature state for obvious yet stable response
           const smoothed = {
             level: 0,
@@ -174,19 +181,26 @@ export default function Visualizer({
             );
             canvas.parent(containerRef.current!);
             p.pixelDensity(1);
+            // 降低移动端帧率，优先保证交互流畅
+            p.frameRate(isMobile ? 45 : 60);
 
             if (mode === 'accretion') {
               try {
-                shaderProgram = p.createShader(
-                  ACCRETION_VERTEX,
-                  ACCRETION_FRAGMENT
-                );
+                const V = accretionMod?.ACCRETION_VERTEX;
+                const F = accretionMod?.ACCRETION_FRAGMENT;
+                if (V && F) {
+                  shaderProgram = p.createShader(V, F);
+                }
               } catch (e) {
                 console.error('Accretion shader 编译失败:', e);
               }
             } else if (mode === 'spiral') {
               try {
-                spiralProgram = p.createShader(SPIRAL_VERTEX, SPIRAL_FRAGMENT);
+                const V = spiralMod?.SPIRAL_VERTEX;
+                const F = spiralMod?.SPIRAL_FRAGMENT;
+                if (V && F) {
+                  spiralProgram = p.createShader(V, F);
+                }
               } catch (e) {
                 console.error('Spiral shader 编译失败:', e);
               }
@@ -210,7 +224,9 @@ export default function Visualizer({
                   mfcc: [0, 0, 0, 0] as [number, number, number, number],
                   pulse: 0,
                 };
-                mosaicVisual = new MosaicVisual(p, controls, audio);
+                if (mosaicMod?.MosaicVisual) {
+                  mosaicVisual = new mosaicMod.MosaicVisual(p, controls, audio);
+                }
               } catch (e) {
                 console.error('Mosaic 初始化失败:', e);
               }
@@ -297,7 +313,7 @@ export default function Visualizer({
             }
             fluxPulse = Math.max(0, Math.min(1, fluxPulse));
 
-            if (mode === 'accretion' && shaderProgram) {
+            if (mode === 'accretion' && shaderProgram && accretionMod) {
               // Gentle sensitivity; clamp by external controls if provided
               const base = Math.max(smoothed.level, smoothed.flux);
               let sens =
@@ -306,7 +322,11 @@ export default function Visualizer({
               const sMin = Math.max(0.8, Math.min(1.2, c?.sensMin ?? 0.9));
               const sMax = Math.max(sMin, Math.min(1.6, c?.sensMax ?? 1.15));
               sens = Math.max(sMin, Math.min(sMax, sens));
-              applyAccretionAudioUniforms(
+              // 移动端轻量化：轻微降低整体强度，避免过度闪烁
+              if (isMobile) {
+                sens *= 0.9;
+              }
+              accretionMod.applyAccretionAudioUniforms(
                 p,
                 shaderProgram,
                 smoothed.level,
@@ -332,8 +352,8 @@ export default function Visualizer({
                   overallBoost: c?.overallBoost,
                 }
               );
-              drawAccretion(p, shaderProgram);
-            } else if (mode === 'spiral' && spiralProgram) {
+              accretionMod.drawAccretion(p, shaderProgram);
+            } else if (mode === 'spiral' && spiralProgram && spiralMod) {
               const spiralAudio = {
                 level: smoothed.level,
                 flux: smoothed.flux,
@@ -348,14 +368,14 @@ export default function Visualizer({
                 ] as [number, number, number, number],
                 pulse: fluxPulse,
               };
-              applySpiralUniforms(
+              spiralMod.applySpiralUniforms(
                 p,
                 spiralProgram,
                 spiralAudio,
                 sensitivityRef.current ?? 1.5
               );
-              drawSpiral(p, spiralProgram);
-            } else if (mode === 'mosaic' && mosaicVisual) {
+              spiralMod.drawSpiral(p, spiralProgram);
+            } else if (mode === 'mosaic' && mosaicVisual && mosaicMod) {
               const mosaicAudio = {
                 level: smoothed.level,
                 flux: smoothed.flux,
@@ -371,23 +391,27 @@ export default function Visualizer({
                 pulse: fluxPulse,
               };
               const controls = mosaicControlsRef.current;
-              applyMosaicUniforms(
+              mosaicMod.applyMosaicUniforms(
                 p,
                 mosaicVisual,
                 mosaicAudio,
-                sensitivityRef.current ?? 1.5,
-                controls?.cellSize ?? 20,
-                controls?.maxAge ?? 80,
+                // 移动端微降敏感度与寿命，减少画面堆积
+                (sensitivityRef.current ?? 1.5) * (isMobile ? 0.9 : 1),
+                (controls?.cellSize ?? 20),
+                (controls?.maxAge ?? 80) * (isMobile ? 0.85 : 1),
                 controls?.growthRate ?? 0.05,
                 controls?.spawnRate ?? 0.02,
                 controls?.colorScheme ?? 0,
                 controls?.colorFlowSpeed ?? 0.01,
                 controls?.alpha ?? 0.7
               );
-              drawMosaic(p, mosaicVisual);
+              mosaicMod.drawMosaic(p, mosaicVisual);
             } else {
               p.background(0, 0, 0);
-              drawPulse(p, particles, smoothed.level);
+              const drawPulseFn = pulseMod?.drawPulse;
+              if (typeof drawPulseFn === 'function') {
+                drawPulseFn(p, particles, smoothed.level);
+              }
             }
 
             const label =
