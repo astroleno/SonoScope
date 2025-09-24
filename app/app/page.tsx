@@ -85,7 +85,7 @@ export default function HomePage() {
   const [signalOn, setSignalOn] = useState(false);
   const [peak, setPeak] = useState(0);
   const [preset, setPreset] = useState<
-    'pulse' | 'accretion' | 'spiral' | 'mosaic'
+    'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave'
   >('pulse');
   const [accretionCtrl, setAccretionCtrl] = useState({
     sensMin: 0.92,
@@ -1627,6 +1627,14 @@ export default function HomePage() {
             onClick={() => setPreset('mosaic')}
           >
             Mosaic
+          </NeonButton>
+          <NeonButton
+            variant={preset === 'wave' ? 'cyan' : 'purple'}
+            size="md"
+            glowing
+            onClick={() => setPreset('wave')}
+          >
+            Wave
           </NeonButton>
         </div>
 

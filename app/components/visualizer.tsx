@@ -26,7 +26,7 @@ export type Particle = {
 interface VisualizerProps {
   audioLevel: number; // 0 ~ 1
   running: boolean;
-  preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic';
+  preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave';
   features?: Features | null;
   sensitivity?: number;
   accretionControls?: {
@@ -61,7 +61,7 @@ export default function Visualizer({
   const p5InstanceRef = useRef<any | null>(null);
   const levelRef = useRef<number>(0);
   const runningRef = useRef<boolean>(false);
-  const presetRef = useRef<'pulse' | 'accretion' | 'spiral' | 'mosaic'>(preset);
+  const presetRef = useRef<'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave'>(preset);
   const featuresRef = useRef<Features | null>(features);
   const sensitivityRef = useRef<number>(sensitivity);
   const accretionControlsRef = useRef<
@@ -109,11 +109,13 @@ export default function Visualizer({
         const loadAccretion = () => import('../visuals/accretion');
         const loadSpiral = () => import('../visuals/spiral');
         const loadMosaic = () => import('../visuals/mosaic');
+        const loadWave = () => import('../visuals/wave');
 
         let pulseMod: any = presetNow === 'pulse' ? await loadPulse() : null;
         let accretionMod: any = presetNow === 'accretion' ? await loadAccretion() : null;
         let spiralMod: any = presetNow === 'spiral' ? await loadSpiral() : null;
         let mosaicMod: any = presetNow === 'mosaic' ? await loadMosaic() : null;
+        let waveMod: any = presetNow === 'wave' ? await loadWave() : null;
 
         // 预取其余模块（非阻塞）
         const ric = (cb: () => void) => {
@@ -127,6 +129,7 @@ export default function Visualizer({
         ric(async () => { if (!accretionMod) accretionMod = await loadAccretion().catch(() => null); });
         ric(async () => { if (!spiralMod) spiralMod = await loadSpiral().catch(() => null); });
         ric(async () => { if (!mosaicMod) mosaicMod = await loadMosaic().catch(() => null); });
+        ric(async () => { if (!waveMod) waveMod = await loadWave().catch(() => null); });
 
         const sketch = (p: any) => {
           // 简易移动端检测：用于性能模式（降帧/减粒子）
@@ -134,6 +137,7 @@ export default function Visualizer({
           const isMobile = /iphone|ipad|android|mobile/.test(ua);
           let shaderProgram: any | null = null;
           let spiralProgram: any | null = null;
+          let waveProgram: any | null = null;
           let mosaicVisual: any | null = null;
           const particles: Particle[] = [];
           // 移动端采用更少的粒子，降低首屏成本
@@ -173,7 +177,7 @@ export default function Visualizer({
           p.setup = () => {
             const mode = presetRef.current;
             const renderer =
-              mode === 'accretion' || mode === 'spiral' ? p.WEBGL : p.P2D;
+              mode === 'accretion' || mode === 'spiral' || mode === 'wave' ? p.WEBGL : p.P2D;
             const canvas = p.createCanvas(
               p.windowWidth,
               p.windowHeight,
@@ -229,6 +233,16 @@ export default function Visualizer({
                 }
               } catch (e) {
                 console.error('Mosaic 初始化失败:', e);
+              }
+            } else if (mode === 'wave') {
+              try {
+                const V = waveMod?.WAVE_VERTEX;
+                const F = waveMod?.WAVE_FRAGMENT;
+                if (V && F) {
+                  waveProgram = p.createShader(V, F);
+                }
+              } catch (e) {
+                console.error('Wave shader 编译失败:', e);
               }
             } else {
               initParticles();
@@ -406,6 +420,44 @@ export default function Visualizer({
                 controls?.alpha ?? 0.7
               );
               mosaicMod.drawMosaic(p, mosaicVisual);
+            } else if (mode === 'wave' && waveProgram && waveMod) {
+              const waveAudio = {
+                level: smoothed.level,
+                flux: smoothed.flux,
+                centroid: smoothed.centroid,
+                flatness: smoothed.flatness,
+                zcr: smoothed.zcr,
+                mfcc: [
+                  smoothed.mfcc0,
+                  smoothed.mfcc1,
+                  smoothed.mfcc2,
+                  smoothed.mfcc3,
+                ] as [number, number, number, number],
+                pulse: fluxPulse,
+              };
+              const tempoBpm = (f as any)?.tempo?.bpm ?? undefined;
+              const bpmSpeed = tempoBpm ? Math.max(0.04, Math.min(0.18, tempoBpm / 600)) : 0.08;
+              const ampFromLevel = 0.12 + 0.14 * Math.max(0, Math.min(1, smoothed.level));
+              waveMod.applyWaveUniforms(
+                p,
+                waveProgram,
+                waveAudio,
+                (sensitivityRef.current ?? 1.5) * (isMobile ? 0.9 : 1),
+                {
+                  amplitude: ampFromLevel,
+                  frequency: 0.9,
+                  speed: bpmSpeed,
+                  phaseBase: 0.0,
+                  phaseDelta: 0.45,
+                  phaseJitter: 0.02,
+                  phaseSpeed: 0.7,
+                  thickness: 0.02,
+                  glowStrength: 0.55,
+                  rgbSeparation: 0.8,
+                  brightness: 1.15,
+                }
+              );
+              waveMod.drawWave(p, waveProgram);
             } else {
               p.background(0, 0, 0);
               const drawPulseFn = pulseMod?.drawPulse;
