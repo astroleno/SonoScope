@@ -832,7 +832,7 @@ const FlipOption: React.FC<FlipOptionProps> = ({
         {graphemes.map((grapheme, i) => (
           <span
             key={`top-${i}`}
-            className="inline-block transition-transform duration-300 ease-in-out group-hover:-translate-y-[110%]"
+            className={`inline-block transition-transform duration-300 ease-in-out group-hover:-translate-y-[110%] ${selected ? '-translate-y-[180%] opacity-0' : ''}`}
             style={{
               transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
             }}
@@ -847,7 +847,7 @@ const FlipOption: React.FC<FlipOptionProps> = ({
         {graphemes.map((grapheme, i) => (
           <span
             key={`bottom-${i}`}
-            className="inline-block transition-transform duration-300 ease-in-out translate-y-[110%] group-hover:translate-y-0"
+            className={`inline-block transition-transform duration-300 ease-in-out translate-y-[180%] group-hover:translate-y-0 opacity-0 group-hover:opacity-100 ${selected ? 'translate-y-0 opacity-100' : 'pointer-events-none'}`}
             style={{
               transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
             }}
@@ -894,6 +894,15 @@ export default function StandaloneClient() {
   const yamnetModelRef = useRef<tf.LayersModel | null>(null); // YAMNet model reference
   const yamnetBufferRef = useRef<Float32Array | null>(null); // Audio buffer for YAMNet
   const danmuEngineRef = useRef<DanmuEngine | null>(null); // DanmuEngine reference
+  // 轻量 BPM 状态：基于 onset 间隔的滑窗估计
+  const bpmStateRef = useRef<{ lastOnsetSec: number; intervals: number[]; bpm: number; confidence: number }>({
+    lastOnsetSec: 0,
+    intervals: [],
+    bpm: 0,
+    confidence: 0,
+  });
+  // 频谱列平滑缓存
+  const bandColumnsRef = useRef<number[] | null>(null);
 
   // 切换弹幕开关
   const toggleDanmu = useCallback((next?: boolean) => {
@@ -1152,7 +1161,124 @@ export default function StandaloneClient() {
                   voiceProb: calculateVoiceProbability(f),
                   percussiveRatio: calculatePercussiveRatio(f),
                   harmonicRatio: calculateHarmonicRatio(f)
-                };
+                } as any;
+
+                // 频谱三段能量（低/中/高）用于频谱优先映射
+                try {
+                  const analyser = analyserRef.current;
+                  const audioCtx = audioContextRef.current;
+                  if (analyser && audioCtx) {
+                    const binCount = analyser.frequencyBinCount;
+                    const binData = new Uint8Array(binCount);
+                    analyser.getByteFrequencyData(binData); // 0..255 能量
+
+                    const sampleRate = audioCtx.sampleRate;
+                    const fftSize = analyser.fftSize;
+                    const binHz = sampleRate / fftSize;
+
+                    const ranges = [
+                      { min: 20, max: 250 },
+                      { min: 250, max: 2000 },
+                      { min: 2000, max: 8000 },
+                    ];
+                    const sums = [0, 0, 0];
+                    const counts = [0, 0, 0];
+
+                    for (let i = 0; i < binCount; i++) {
+                      const freq = i * binHz;
+                      if (freq < 20) continue; // 忽略直流/次声
+                      const v = binData[i];
+                      if (freq < ranges[0].max) { sums[0] += v; counts[0]++; continue; }
+                      if (freq < ranges[1].max) { sums[1] += v; counts[1]++; continue; }
+                      if (freq < ranges[2].max) { sums[2] += v; counts[2]++; continue; }
+                    }
+
+                    const norm = (sum: number, cnt: number) => {
+                      if (!cnt) return 0;
+                      const avg = sum / (cnt * 255);
+                      return Math.sqrt(Math.max(0, Math.min(1, avg)));
+                    };
+
+                    (processedFeatures as any).bandLow = norm(sums[0], counts[0]);
+                    (processedFeatures as any).bandMid = norm(sums[1], counts[1]);
+                    (processedFeatures as any).bandHigh = norm(sums[2], counts[2]);
+
+                    // 生成固定长度的列向量（低→高频响度），用于 Mosaic 左→右映射
+                    try {
+                      const COLS = 48; // 轻量列数，移动端友好
+                      const minHz = 20, maxHz = 8000;
+                      const hzPerBin = binHz;
+                      const binsPerCol = Math.max(1, Math.floor(((maxHz - minHz) / COLS) / hzPerBin));
+                      const cols: number[] = new Array(COLS).fill(0);
+                      for (let c = 0; c < COLS; c++) {
+                        const startHz = minHz + ((maxHz - minHz) * c) / COLS;
+                        const endHz = minHz + ((maxHz - minHz) * (c + 1)) / COLS;
+                        const startIdx = Math.max(0, Math.floor(startHz / hzPerBin));
+                        const endIdx = Math.min(binCount - 1, Math.ceil(endHz / hzPerBin));
+                        let sumV = 0, cntV = 0;
+                        for (let k = startIdx; k <= endIdx; k++) { sumV += binData[k]; cntV++; }
+                        const avg = cntV ? sumV / (cntV * 255) : 0;
+                        cols[c] = Math.sqrt(Math.max(0, Math.min(1, avg)));
+                      }
+                      (processedFeatures as any).bandColumns = cols;
+                      // 帧间指数平滑，避免列抖动（α 越大越跟随历史）
+                      const prev = bandColumnsRef.current;
+                      const alpha = 0.6; // 移动端友好
+                      if (Array.isArray(prev) && prev.length === COLS) {
+                        const smoothedCols = cols.map((v, i) => alpha * prev[i] + (1 - alpha) * v);
+                        (processedFeatures as any).bandColumns = smoothedCols;
+                        bandColumnsRef.current = smoothedCols;
+                      } else {
+                        bandColumnsRef.current = cols;
+                      }
+                    } catch (colErr) {
+                      console.warn('构建频谱列向量失败:', colErr);
+                    }
+                  }
+                } catch (bandErr) {
+                  console.warn('计算频段能量失败:', bandErr);
+                }
+
+                // 轻量 BPM 估计：使用 spectralFlux 峰值的间隔（滑窗中位数）
+                try {
+                  const flux = typeof f.spectralFlux === 'number' ? Math.max(0, f.spectralFlux) : 0;
+                  const audioCtx = audioContextRef.current;
+                  if (audioCtx) {
+                    const nowSec = audioCtx.currentTime;
+                    const state = bpmStateRef.current;
+                    // 动态阈值（与近期 RMS/能量无关的简单线性）：
+                    const fluxThresh = 0.12; // 经验阈值，移动端稳定
+                    const minIoISec = 0.18;   // 最短 180ms ~ 333 BPM 上限
+                    if (flux > fluxThresh && (nowSec - state.lastOnsetSec) > minIoISec) {
+                      if (state.lastOnsetSec > 0) {
+                        const interval = nowSec - state.lastOnsetSec;
+                        // 合理区间过滤（60–180 BPM）
+                        if (interval >= 0.333 && interval <= 1.0) {
+                          state.intervals.push(interval);
+                          if (state.intervals.length > 16) state.intervals.shift();
+                          // 取中位数抗噪
+                          const sorted = [...state.intervals].sort((a,b)=>a-b);
+                          const mid = sorted.length ? sorted[Math.floor(sorted.length/2)] : interval;
+                          const bpm = 60 / Math.max(1e-6, mid);
+                          // 简单置信度：样本数与方差的函数
+                          const mean = sorted.reduce((s,v)=>s+v,0) / Math.max(1, sorted.length);
+                          const variance = sorted.reduce((s,v)=>s+(v-mean)*(v-mean),0) / Math.max(1, sorted.length);
+                          const conf = Math.max(0, Math.min(1, (sorted.length/16) * (1.0 - Math.min(1, variance/0.1))));
+                          state.bpm = bpm;
+                          state.confidence = conf;
+                        }
+                      }
+                      state.lastOnsetSec = nowSec;
+                    }
+
+                    // 发布条件：置信度足够且 BPM 在 60–180 范围
+                    if (state.bpm > 0 && state.confidence >= 0.45 && state.bpm >= 60 && state.bpm <= 180) {
+                      (processedFeatures as any).tempo = { bpm: Math.round(state.bpm), confidence: state.confidence };
+                    }
+                  }
+                } catch (bpmErr) {
+                  console.warn('BPM 估计失败:', bpmErr);
+                }
                 
                 setFeatures(processedFeatures);
                 
@@ -1404,27 +1530,29 @@ export default function StandaloneClient() {
           {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu' }].map((option, index) => {
             const graphemes = segmentGraphemes(option.label);
             const centerIndex = (graphemes.length - 1) / 2;
+            const isSelected = option.id === 'danmu' ? danmuEnabled : (currentPreset === option.id);
 
             return (
             <button
               key={option.id}
-                onClick={() => {
+                onClick={(e) => {
                   if (option.id === 'danmu') {
                     toggleDanmu();
                   } else {
                     handlePresetChange(option.id);
                   }
+                  try { (e.currentTarget as any)?.blur?.(); } catch (_) {}
                 }}
                     className={`
                       group relative block overflow-hidden whitespace-nowrap
                       text-4xl sm:text-6xl md:text-8xl
                       font-black uppercase
                   ${option.id === 'danmu'
-                    ? (danmuEnabled
-                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]'
-                        : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none')
-                    : (currentPreset === option.id
-                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]'
+                    ? (isSelected
+                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] !blur-none !filter-none'
+                        : 'text-white/40')
+                    : (isSelected
+                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] !blur-none !filter-none'
                       : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none')
                   }
                       cursor-pointer
@@ -1446,12 +1574,12 @@ export default function StandaloneClient() {
                 {graphemes.map((grapheme, i) => (
                   <span
                     key={`top-${i}`}
-                    className="inline-block transition-transform duration-300 ease-in-out group-hover:-translate-y-[120%]"
+                    className={`inline-block transition-transform duration-300 ease-in-out ${option.id !== 'danmu' ? 'group-hover:-translate-y-[120%]' : ''} ${isSelected ? '-translate-y-[180%] opacity-0' : ''} ${option.id === 'danmu' && !isSelected ? 'blur-sm' : ''}`}
                     style={{
                       transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
                     }}
                   >
-                    {grapheme}
+                     {graphemes[i]}
                   </span>
                 ))}
           </div>
@@ -1461,12 +1589,12 @@ export default function StandaloneClient() {
                 {graphemes.map((grapheme, i) => (
                   <span
                     key={`bottom-${i}`}
-                    className="inline-block transition-transform duration-300 ease-in-out translate-y-[120%] group-hover:translate-y-0"
+                    className={`inline-block transition-transform duration-300 ease-in-out ${isSelected ? 'translate-y-0 opacity-100' : 'translate-y-[180%] opacity-0'} ${option.id !== 'danmu' ? 'group-hover:translate-y-0 group-hover:opacity-100' : ''}`}
                     style={{
                       transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
                     }}
                   >
-                    {grapheme}
+                     {graphemes[i]}
                   </span>
                 ))}
               </div>

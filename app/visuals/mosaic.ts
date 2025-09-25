@@ -159,6 +159,10 @@ export type MosaicControls = {
   alpha: number;
 };
 
+type MosaicExtras = {
+  bandColumns?: number[];
+};
+
 export class MosaicVisual {
   private grid: MosaicGrid = [];
   private cols: number = 0;
@@ -170,7 +174,8 @@ export class MosaicVisual {
   constructor(
     private p: any,
     private controls: MosaicControls,
-    private audio: MosaicAudioUniforms
+    private audio: MosaicAudioUniforms,
+    private extras?: MosaicExtras
   ) {
     this.initializeGrid();
   }
@@ -224,6 +229,9 @@ export class MosaicVisual {
       1 + this.audio.flux * 0.5 + this.audio.zcr * 0.3 + this.audio.flatness * 0.2
     );
     
+    const colsArr = Array.isArray(this.extras?.bandColumns) ? this.extras!.bandColumns! : [];
+    const colCount = colsArr.length;
+
     for (let i = 0; i < this.cols; i++) {
       next[i] = [];
       for (let j = 0; j < this.rows; j++) {
@@ -232,8 +240,11 @@ export class MosaicVisual {
         
         const newCell = { ...cell };
         
-        // Growth rule: spawn if 2+ neighbors and random chance
-        if (!cell.alive && neighbors >= 2 && this.p.random() < audioGrowthRate) {
+        // 列响度（左→右=低→高），缺省则取 1
+        const loudCol = colCount ? this.p.constrain(colsArr[Math.floor(i / Math.max(1, Math.floor(this.cols / Math.max(1, colCount))))] || 0, 0, 1) : 1;
+
+        // Growth rule: spawn if 2+ neighbors and random chance（受列响度调制）
+        if (!cell.alive && neighbors >= 2 && this.p.random() < audioGrowthRate * (0.6 + 0.8 * loudCol)) {
           newCell.alive = true;
           newCell.age = 0;
           newCell.shape = this.chooseShapeFromMFCC();
@@ -298,17 +309,64 @@ export class MosaicVisual {
     return c;
   }
 
-  // Choose cell shape based on MFCC distribution to increase semantic variety
+  // Choose cell shape based on MFCC distribution using probability sampling for balance
   private chooseShapeFromMFCC(): 'circle' | 'triangle' | 'rect' {
     const m = this.audio.mfcc;
     if (!m || m.length < 4) {
       return this.p.random(['circle', 'triangle', 'rect']);
     }
-    // Weighted combination (normalized roughly into 0..1 domain)
-    const weighted = m[0] * 0.4 + m[1] * 0.3 + m[2] * 0.2 + m[3] * 0.1;
-    const normalized = Math.max(0, Math.min(1, (weighted + 1) / 2));
-    const idx = Math.floor(normalized * 3) % 3;
-    return idx === 0 ? 'circle' : idx === 1 ? 'triangle' : 'rect';
+
+    // 输入来自可视层已归一到 0..1，映射回 -1..1 区间
+    const m0 = this.p.constrain(m[0], 0, 1) * 2 - 1;
+    const m1 = this.p.constrain(m[1], 0, 1) * 2 - 1;
+    const m2 = this.p.constrain(m[2], 0, 1) * 2 - 1;
+    const m3 = this.p.constrain(m[3], 0, 1) * 2 - 1;
+
+    // 加权组合
+    const weighted = m0 * 0.4 + m1 * 0.3 + m2 * 0.2 + m3 * 0.1; // 约 -1..1
+    const normalized = this.p.constrain((weighted + 1) / 2, 0, 1); // 0..1
+
+    // 使用软概率分配而非硬阈值，确保三类形状长期占比均衡
+    // 基础概率各占1/3，然后根据MFCC值微调
+    let circleProb = 0.33;
+    let triangleProb = 0.33;
+    let rectProb = 0.34;
+
+    // 根据normalized值动态调整概率，但仍保持一定的随机性
+    if (normalized < 0.33) {
+      // 偏向圆形，但仍给其他形状机会
+      circleProb = 0.5 + 0.2 * (1 - normalized / 0.33);
+      triangleProb = 0.25 + 0.1 * (normalized / 0.33);
+      rectProb = 0.25 + 0.1 * (normalized / 0.33);
+    } else if (normalized < 0.67) {
+      // 偏向三角形，但仍给其他形状机会
+      circleProb = 0.25 + 0.1 * ((normalized - 0.33) / 0.34);
+      triangleProb = 0.5 + 0.2 * (1 - Math.abs(normalized - 0.5) / 0.17);
+      rectProb = 0.25 + 0.1 * ((0.67 - normalized) / 0.34);
+    } else {
+      // 偏向矩形，但仍给其他形状机会
+      circleProb = 0.25 + 0.1 * ((1 - normalized) / 0.33);
+      triangleProb = 0.25 + 0.1 * ((1 - normalized) / 0.33);
+      rectProb = 0.5 + 0.2 * ((normalized - 0.67) / 0.33);
+    }
+
+    // 归一化概率
+    const totalProb = circleProb + triangleProb + rectProb;
+    const normalizedCircleProb = circleProb / totalProb;
+    const normalizedTriangleProb = triangleProb / totalProb;
+
+    // 添加时间变化的轻微扰动，增加动态性
+    const timeOffset = this.frameCount * 0.001;
+    const spatialNoise = this.p.noise(weighted * 3.7 + timeOffset);
+    const randomValue = (this.p.random() + spatialNoise * 0.1) % 1;
+
+    if (randomValue < normalizedCircleProb) {
+      return 'circle';
+    } else if (randomValue < normalizedCircleProb + normalizedTriangleProb) {
+      return 'triangle';
+    } else {
+      return 'rect';
+    }
   }
 
   private drawShape(shape: string, size: number) {
@@ -337,6 +395,8 @@ export class MosaicVisual {
     
     // Audio-modulated spawn rate for new cells
     const audioSpawnRate = this.controls.spawnRate * (1 + this.audio.level * 0.5 + this.audio.pulse * 0.3);
+    const colsArr = Array.isArray(this.extras?.bandColumns) ? this.extras!.bandColumns! : [];
+    const colCount = colsArr.length;
     
     for (let i = 0; i < this.cols; i++) {
       for (let j = 0; j < this.rows; j++) {
@@ -350,10 +410,16 @@ export class MosaicVisual {
           // Audio-modulated size with pitch influence
           const audioSizeMultiplier = 1 + this.audio.level * 0.3 + this.audio.flux * 0.2;
           const pitchSizeMultiplier = 1 + this.audio.centroid * 0.4; // Higher pitch = larger cells
-          const size = this.p.map(cell.age, 0, this.controls.maxAge, 1, this.controls.cellSize) * audioSizeMultiplier * pitchSizeMultiplier;
+          const loudCol = colCount ? this.p.constrain(colsArr[Math.floor(i / Math.max(1, Math.floor(this.cols / Math.max(1, colCount))))] || 0, 0, 1) : 1;
+          const baseSize = this.p.map(cell.age, 0, this.controls.maxAge, 1, this.controls.cellSize) * audioSizeMultiplier * pitchSizeMultiplier * (0.8 + 0.6 * loudCol);
+          // 限制最大尺寸，不超过单元格大小的 92%，避免溢出
+          const maxSize = this.controls.cellSize * 0.92;
+          const size = Math.min(baseSize, maxSize);
           
           // Get flowing color
           const c = this.getFlowingColor(i, j, cell.age);
+          const alphaScale = 0.8 + 0.6 * (colCount ? loudCol : 1);
+          c.setAlpha(this.controls.alpha * 255 * this.p.constrain(alphaScale, 0.3, 1.6));
           this.p.fill(c);
           this.p.noStroke();
           
@@ -395,7 +461,8 @@ export function applyMosaicUniforms(
   spawnRate: number = 0.02,
   colorScheme: number = 0,
   colorFlowSpeed: number = 0.01,
-  alpha: number = 0.7
+  alpha: number = 0.7,
+  bandColumns?: number[]
 ) {
   // Update the visual's controls and audio data
   const newControls = {
@@ -413,10 +480,12 @@ export function applyMosaicUniforms(
     console.log('🎨 颜色方案变化:', mosaicVisual['controls'].colorScheme, '->', colorScheme);
     mosaicVisual['controls'] = newControls;
     mosaicVisual['audio'] = audio;
+    mosaicVisual['extras'] = { bandColumns } as any;
     // Update color scheme using the public method
     mosaicVisual.updateColorScheme(colorScheme);
   } else {
     mosaicVisual['controls'] = newControls;
     mosaicVisual['audio'] = audio;
+    mosaicVisual['extras'] = { bandColumns } as any;
   }
 }

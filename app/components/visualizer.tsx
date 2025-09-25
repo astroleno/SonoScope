@@ -335,8 +335,13 @@ export default function Visualizer({
             if (mode === 'accretion' && shaderProgram && accretionMod) {
               // Gentle sensitivity; clamp by external controls if provided
               const base = Math.max(smoothed.level, smoothed.flux);
-              let sens =
-                (1.0 + 0.25 * (base - 0.15)) * (sensitivityRef.current ?? 1);
+              const fAny = f as any;
+              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
+              const bandMid = Math.max(0, Math.min(1, fAny?.bandMid ?? 0));
+              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
+              // 频谱优先：中频提升聚合“稳态”，低频增强整体“重量”，高频影响闪烁与细节
+              let sens = (1.0 + 0.25 * (base - 0.15)) * (sensitivityRef.current ?? 1);
+              sens *= 0.9 + 0.5 * bandMid; // 中频多时更稳定更强
               const c = accretionControlsRef.current;
               const sMin = Math.max(0.8, Math.min(1.2, c?.sensMin ?? 0.9));
               const sMax = Math.max(sMin, Math.min(1.6, c?.sensMax ?? 1.15));
@@ -365,14 +370,22 @@ export default function Visualizer({
                 } as any,
                 sens,
                 {
-                  gainScale: c?.gainScale,
-                  flickerStrength: c?.flickerStrength,
+                  // 低频增强“重量感”
+                  gainScale: Math.max(0.5, Math.min(2.0, (c?.gainScale ?? 1.1) * (0.9 + 0.6 * bandLow))),
+                  // 高频增强“闪烁细节”
+                  flickerStrength: Math.max(0.0, Math.min(0.4, (c?.flickerStrength ?? 0.12) * (0.8 + 0.8 * bandHigh))),
                   flickerFreq: c?.flickerFreq,
-                  overallBoost: c?.overallBoost,
+                  // 总体亮度随低频略升，避免高频刺眼
+                  overallBoost: Math.max(0.7, Math.min(1.6, (c?.overallBoost ?? 1.0) * (0.95 + 0.3 * bandLow))),
                 }
               );
               accretionMod.drawAccretion(p, shaderProgram);
             } else if (mode === 'spiral' && spiralProgram && spiralMod) {
+              const fAny = f as any;
+              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
+              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
+              // 用低频增强半径/亮度基线（通过 level 近似），高频增强扰动（通过 sensitivity）
+              const spiralLevel = Math.max(0, Math.min(1, 0.7 * smoothed.level + 0.3 * bandLow));
               const spiralAudio = {
                 level: smoothed.level,
                 flux: smoothed.flux,
@@ -390,8 +403,8 @@ export default function Visualizer({
               spiralMod.applySpiralUniforms(
                 p,
                 spiralProgram,
-                spiralAudio,
-                sensitivityRef.current ?? 1.5
+                { ...spiralAudio, level: spiralLevel },
+                (sensitivityRef.current ?? 1.5) * (0.9 + 0.35 * bandHigh + 0.2 * bandLow)
               );
               spiralMod.drawSpiral(p, spiralProgram);
             } else if (mode === 'mosaic' && mosaicVisual && mosaicMod) {
@@ -409,6 +422,8 @@ export default function Visualizer({
                 ] as [number, number, number, number],
                 pulse: fluxPulse,
               };
+              // 传递频谱列向量（左→右=低→高），缺失时使用空数组
+              const columns = Array.isArray((f as any)?.bandColumns) ? (f as any).bandColumns : [];
               const controls = mosaicControlsRef.current;
               mosaicMod.applyMosaicUniforms(
                 p,
@@ -422,7 +437,8 @@ export default function Visualizer({
                 controls?.spawnRate ?? 0.02,
                 controls?.colorScheme ?? 0,
                 controls?.colorFlowSpeed ?? 0.01,
-                controls?.alpha ?? 0.7
+                controls?.alpha ?? 0.7,
+                columns
               );
               mosaicMod.drawMosaic(p, mosaicVisual);
             } else if (mode === 'wave' && waveProgram && waveMod) {
@@ -440,21 +456,29 @@ export default function Visualizer({
                 ] as [number, number, number, number],
                 pulse: fluxPulse,
               };
-              const tempoBpm = (f as any)?.tempo?.bpm ?? undefined;
+              // 频段对映射：低频→线宽、
+              const fAny = f as any;
+              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
+              const bandMid = Math.max(0, Math.min(1, fAny?.bandMid ?? 0));
+              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
+              const tempoBpm = fAny?.tempo?.bpm ?? undefined;
               const bpmSpeed = tempoBpm ? Math.max(0.04, Math.min(0.18, tempoBpm / 600)) : 0.08;
-              const ampFromLevel = 0.12 + 0.14 * Math.max(0, Math.min(1, smoothed.level));
+              const ampFromBands = 0.10 + 0.22 * Math.max(0, Math.min(1, bandLow * 0.8 + smoothed.level * 0.2));
+              const freqFromBands = 0.7 + 0.5 * Math.max(0, Math.min(1, bandHigh));
+              const phaseJitter = 0.01 + 0.03 * Math.max(0, Math.min(1, bandMid));
+
               waveMod.applyWaveUniforms(
                 p,
                 waveProgram,
                 waveAudio,
                 (sensitivityRef.current ?? 1.5) * (isMobile ? 0.9 : 1),
                 {
-                  amplitude: ampFromLevel,
-                  frequency: 0.9,
+                  amplitude: Math.max(0.08, Math.min(0.32, ampFromBands)),
+                  frequency: Math.max(0.4, Math.min(1.0, freqFromBands)),
                   speed: bpmSpeed,
                   phaseBase: 0.0,
                   phaseDelta: 0.45,
-                  phaseJitter: 0.02,
+                  phaseJitter: phaseJitter,
                   phaseSpeed: 0.7,
                   thickness: 0.02,
                   glowStrength: 0.55,
