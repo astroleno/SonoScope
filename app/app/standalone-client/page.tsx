@@ -2,6 +2,744 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Visualizer from '../../components/visualizer';
+import Meyda from 'meyda'; // Import Meyda for real audio feature extraction
+import * as tf from '@tensorflow/tfjs'; // Import TensorFlow.js for YAMNet
+import { DanmuEngine } from '../../lib/danmu-engine'; // Import DanmuEngine
+
+// 派生特征计算函数
+function calculateVoiceProbability(f: any): number {
+  const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : 0;
+  const centroid = typeof f?.spectralCentroid === 'number' ? f.spectralCentroid : 0;
+  
+  const flatFactor = Math.max(0, Math.min(1, 1 - flat));
+  const centroidNorm = Math.max(0, Math.min(1, (centroid - 1500) / 2500));
+  
+  return Math.max(0, Math.min(1, 0.35 + 0.4 * flatFactor + 0.25 * centroidNorm));
+}
+
+function calculatePercussiveRatio(f: any): number {
+  const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : 0;
+  const flux = typeof f?.spectralFlux === 'number' ? f.spectralFlux : 0;
+  
+  const fluxNorm = Math.max(0, Math.min(1, flux * 1.4));
+  const flatNorm = Math.max(0, Math.min(1, flat));
+  
+  return Math.max(0, Math.min(1, 0.45 * fluxNorm + 0.4 * flatNorm));
+}
+
+function calculateHarmonicRatio(f: any): number {
+  const percussiveRatio = calculatePercussiveRatio(f);
+  const voiceProb = calculateVoiceProbability(f);
+  
+  const base = 1 - percussiveRatio * 0.7;
+  const voiceBoost = 0.2 * voiceProb;
+  
+  return Math.max(0, Math.min(1, base + voiceBoost));
+}
+
+// YAMNet 相关函数
+async function loadYAMNetModel(): Promise<tf.LayersModel | null> {
+  try {
+    console.log('加载 YAMNet 模型...');
+    const model = await tf.loadLayersModel('/model/yamnet.task');
+    console.log('YAMNet 模型加载成功');
+    return model;
+  } catch (error) {
+    console.error('YAMNet 模型加载失败:', error);
+    return null;
+  }
+}
+
+function classifyWithYAMNet(model: tf.LayersModel, audioBuffer: Float32Array): any {
+  try {
+    // YAMNet 需要 16kHz 采样率，0.975 秒的音频 (15600 样本)
+    const targetLength = 15600;
+    const resampledBuffer = new Float32Array(targetLength);
+    
+    // 简单的线性插值重采样
+    const ratio = audioBuffer.length / targetLength;
+    for (let i = 0; i < targetLength; i++) {
+      const srcIndex = i * ratio;
+      const index = Math.floor(srcIndex);
+      const fraction = srcIndex - index;
+      
+      if (index + 1 < audioBuffer.length) {
+        resampledBuffer[i] = audioBuffer[index] * (1 - fraction) + audioBuffer[index + 1] * fraction;
+      } else {
+        resampledBuffer[i] = audioBuffer[index] || 0;
+      }
+    }
+    
+    // 创建输入张量 [1, 15600]
+    const input = tf.tensor2d([Array.from(resampledBuffer)], [1, targetLength]);
+    
+    // 运行推理
+    const predictions = model.predict(input) as tf.Tensor;
+    const results = predictions.dataSync();
+    
+    // 清理张量
+    input.dispose();
+    predictions.dispose();
+    
+    // 提取前5个最可能的类别
+    const topClasses = [];
+    const resultsArray = Array.from(results);
+    for (let i = 0; i < Math.min(5, resultsArray.length); i++) {
+      const maxIndex = resultsArray.indexOf(Math.max(...resultsArray));
+      topClasses.push({
+        index: maxIndex,
+        confidence: resultsArray[maxIndex],
+        label: getYAMNetLabel(maxIndex)
+      });
+      resultsArray[maxIndex] = -1; // 标记为已处理
+    }
+    
+    return {
+      topClasses,
+      instruments: extractInstruments(topClasses),
+      events: extractEvents(topClasses)
+    };
+  } catch (error) {
+    console.error('YAMNet 分类失败:', error);
+    return null;
+  }
+}
+
+function getYAMNetLabel(index: number): string {
+  // 简化的 YAMNet 标签映射（实际应该有完整的 521 个标签）
+  const labels: { [key: number]: string } = {
+    0: 'Speech',
+    1: 'Child speech, kid speaking',
+    2: 'Conversation',
+    3: 'Narration, monologue',
+    4: 'Babbling',
+    5: 'Speech synthesizer',
+    6: 'Shout',
+    7: 'Bellow',
+    8: 'Whoop',
+    9: 'Yell',
+    10: 'Children shouting',
+    11: 'Screaming',
+    12: 'Whispering',
+    13: 'Laughter',
+    14: 'Baby laughter',
+    15: 'Giggle',
+    16: 'Snicker',
+    17: 'Belly laugh',
+    18: 'Chuckle, chortle',
+    19: 'Crying, sobbing',
+    20: 'Baby cry, infant cry',
+    21: 'Whimper',
+    22: 'Wail, moan',
+    23: 'Sigh',
+    24: 'Singing',
+    25: 'Choir',
+    26: 'Yodeling',
+    27: 'Chant',
+    28: 'Mantra',
+    29: 'Child singing',
+    30: 'Synthetic singing',
+    31: 'Rapping',
+    32: 'Humming',
+    33: 'Groan',
+    34: 'Grunt',
+    35: 'Whistling',
+    36: 'Breathing',
+    37: 'Wheeze',
+    38: 'Snoring',
+    39: 'Gasp',
+    40: 'Pant',
+    41: 'Snort',
+    42: 'Cough',
+    43: 'Throat clearing',
+    44: 'Sneeze',
+    45: 'Sniff',
+    46: 'Run, footsteps',
+    47: 'Shuffle',
+    48: 'Walk, footsteps',
+    49: 'Chewing, mastication',
+    50: 'Biting',
+    51: 'Gargling',
+    52: 'Stomach rumble',
+    53: 'Burping, eructation',
+    54: 'Hiccup',
+    55: 'Fart',
+    56: 'Hands',
+    57: 'Finger snapping',
+    58: 'Clapping',
+    59: 'Heart sounds, heartbeat',
+    60: 'Heart murmur',
+    61: 'Cheering',
+    62: 'Applause',
+    63: 'Chatter',
+    64: 'Crowd',
+    65: 'Hubbub, speech noise, speech babble',
+    66: 'Children playing',
+    67: 'Animal',
+    68: 'Domestic animals, pets',
+    69: 'Dog',
+    70: 'Bark',
+    71: 'Yip',
+    72: 'Howl',
+    73: 'Bow-wow',
+    74: 'Growling',
+    75: 'Whimper (dog)',
+    76: 'Cat',
+    77: 'Meow',
+    78: 'Purr',
+    79: 'Feline growl',
+    80: 'Hiss',
+    81: 'Caterwaul',
+    82: 'Livestock, farm animals, working animals',
+    83: 'Horse',
+    84: 'Clip-clop',
+    85: 'Neigh, whinny',
+    86: 'Cattle, bovinae',
+    87: 'Moo',
+    88: 'Pig',
+    89: 'Oink',
+    90: 'Goat',
+    91: 'Bleat',
+    92: 'Sheep',
+    93: 'Fowl',
+    94: 'Chicken, rooster',
+    95: 'Cluck',
+    96: 'Crowing, cock-a-doodle-doo',
+    97: 'Turkey',
+    98: 'Gobble',
+    99: 'Duck',
+    100: 'Quack',
+    101: 'Goose',
+    102: 'Honk',
+    103: 'Rooster crowing',
+    104: 'Pigeon, dove',
+    105: 'Coo',
+    106: 'Crow',
+    107: 'Caw',
+    108: 'Owl',
+    109: 'Hoot',
+    110: 'Bird',
+    111: 'Squawk',
+    112: 'Parrot',
+    113: 'Chirp, tweet',
+    114: 'Singing bird',
+    115: 'Chirping bird',
+    116: 'Squawk',
+    117: 'Pigeon, dove',
+    118: 'Crow',
+    119: 'Owl',
+    120: 'Wild animals',
+    121: 'Cicada, chirp',
+    122: 'Cricket',
+    123: 'Grasshopper',
+    124: 'Bee, wasp, etc.',
+    125: 'Mosquito',
+    126: 'Fly, housefly',
+    127: 'Buzz',
+    128: 'Frog',
+    129: 'Croak',
+    130: 'Snake',
+    131: 'Rattle',
+    132: 'Whale',
+    133: 'Dolphin',
+    134: 'Seal',
+    135: 'Dog',
+    136: 'Cat',
+    137: 'Horse',
+    138: 'Cattle, bovinae',
+    139: 'Pig',
+    140: 'Goat',
+    141: 'Sheep',
+    142: 'Chicken, rooster',
+    143: 'Turkey',
+    144: 'Duck',
+    145: 'Goose',
+    146: 'Pigeon, dove',
+    147: 'Crow',
+    148: 'Owl',
+    149: 'Bird',
+    150: 'Parrot',
+    151: 'Cicada, chirp',
+    152: 'Cricket',
+    153: 'Grasshopper',
+    154: 'Bee, wasp, etc.',
+    155: 'Mosquito',
+    156: 'Fly, housefly',
+    157: 'Frog',
+    158: 'Snake',
+    159: 'Whale',
+    160: 'Dolphin',
+    161: 'Seal',
+    162: 'Music',
+    163: 'Musical instrument',
+    164: 'Plucked string instrument',
+    165: 'Guitar',
+    166: 'Electric guitar',
+    167: 'Bass guitar',
+    168: 'Acoustic guitar',
+    169: 'Steel guitar, slide guitar',
+    170: 'Tapping (guitar technique)',
+    171: 'Strum',
+    172: 'Banjo',
+    173: 'Sitar',
+    174: 'Mandolin',
+    175: 'Zither',
+    176: 'Ukulele',
+    177: 'Keyboard (musical)',
+    178: 'Piano',
+    179: 'Electric piano',
+    180: 'Organ',
+    181: 'Electronic organ',
+    182: 'Hammond organ',
+    183: 'Synthesizer',
+    184: 'Sampler',
+    185: 'Harpsichord',
+    186: 'Percussion',
+    187: 'Drum kit',
+    188: 'Drum machine',
+    189: 'Drum',
+    190: 'Snare drum',
+    191: 'Rimshot',
+    192: 'Drum roll',
+    193: 'Bass drum',
+    194: 'Timpani',
+    195: 'Tabla',
+    196: 'Cymbal',
+    197: 'Hi-hat',
+    198: 'Crash cymbal',
+    199: 'Ride cymbal',
+    200: 'Splash cymbal',
+    201: 'China cymbal',
+    202: 'Bell',
+    203: 'Jingle bell',
+    204: 'Tuning fork',
+    205: 'Chime',
+    206: 'Wind chime',
+    207: 'Change ringing (campanology)',
+    208: 'Harmonica',
+    209: 'Accordion',
+    210: 'Bagpipes',
+    211: 'Recorder',
+    212: 'Oboe',
+    213: 'Clarinet',
+    214: 'Saxophone',
+    215: 'Bassoon',
+    216: 'French horn',
+    217: 'Trumpet',
+    218: 'Trombone',
+    219: 'Tuba',
+    220: 'Violin, fiddle',
+    221: 'Viola',
+    222: 'Cello',
+    223: 'Double bass',
+    224: 'Contrabassoon',
+    225: 'Vibraphone',
+    226: 'Xylophone',
+    227: 'Marimba',
+    228: 'Glockenspiel',
+    229: 'Vibraphone',
+    230: 'Steelpan',
+    231: 'Tambourine',
+    232: 'Castanets',
+    233: 'Wood block',
+    234: 'Claves',
+    235: 'Whip',
+    236: 'Music box',
+    237: 'Kalimba',
+    238: 'Bagpipes',
+    239: 'Recorder',
+    240: 'Oboe',
+    241: 'Clarinet',
+    242: 'Saxophone',
+    243: 'Bassoon',
+    244: 'French horn',
+    245: 'Trumpet',
+    246: 'Trombone',
+    247: 'Tuba',
+    248: 'Violin, fiddle',
+    249: 'Viola',
+    250: 'Cello',
+    251: 'Double bass',
+    252: 'Contrabassoon',
+    253: 'Vibraphone',
+    254: 'Xylophone',
+    255: 'Marimba',
+    256: 'Glockenspiel',
+    257: 'Vibraphone',
+    258: 'Steelpan',
+    259: 'Tambourine',
+    260: 'Castanets',
+    261: 'Wood block',
+    262: 'Claves',
+    263: 'Whip',
+    264: 'Music box',
+    265: 'Kalimba',
+    266: 'Bagpipes',
+    267: 'Recorder',
+    268: 'Oboe',
+    269: 'Clarinet',
+    270: 'Saxophone',
+    271: 'Bassoon',
+    272: 'French horn',
+    273: 'Trumpet',
+    274: 'Trombone',
+    275: 'Tuba',
+    276: 'Violin, fiddle',
+    277: 'Viola',
+    278: 'Cello',
+    279: 'Double bass',
+    280: 'Contrabassoon',
+    281: 'Vibraphone',
+    282: 'Xylophone',
+    283: 'Marimba',
+    284: 'Glockenspiel',
+    285: 'Vibraphone',
+    286: 'Steelpan',
+    287: 'Tambourine',
+    288: 'Castanets',
+    289: 'Wood block',
+    290: 'Claves',
+    291: 'Whip',
+    292: 'Music box',
+    293: 'Kalimba',
+    294: 'Bagpipes',
+    295: 'Recorder',
+    296: 'Oboe',
+    297: 'Clarinet',
+    298: 'Saxophone',
+    299: 'Bassoon',
+    300: 'French horn',
+    301: 'Trumpet',
+    302: 'Trombone',
+    303: 'Tuba',
+    304: 'Violin, fiddle',
+    305: 'Viola',
+    306: 'Cello',
+    307: 'Double bass',
+    308: 'Contrabassoon',
+    309: 'Vibraphone',
+    310: 'Xylophone',
+    311: 'Marimba',
+    312: 'Glockenspiel',
+    313: 'Vibraphone',
+    314: 'Steelpan',
+    315: 'Tambourine',
+    316: 'Castanets',
+    317: 'Wood block',
+    318: 'Claves',
+    319: 'Whip',
+    320: 'Music box',
+    321: 'Kalimba',
+    322: 'Bagpipes',
+    323: 'Recorder',
+    324: 'Oboe',
+    325: 'Clarinet',
+    326: 'Saxophone',
+    327: 'Bassoon',
+    328: 'French horn',
+    329: 'Trumpet',
+    330: 'Trombone',
+    331: 'Tuba',
+    332: 'Violin, fiddle',
+    333: 'Viola',
+    334: 'Cello',
+    335: 'Double bass',
+    336: 'Contrabassoon',
+    337: 'Vibraphone',
+    338: 'Xylophone',
+    339: 'Marimba',
+    340: 'Glockenspiel',
+    341: 'Vibraphone',
+    342: 'Steelpan',
+    343: 'Tambourine',
+    344: 'Castanets',
+    345: 'Wood block',
+    346: 'Claves',
+    347: 'Whip',
+    348: 'Music box',
+    349: 'Kalimba',
+    350: 'Bagpipes',
+    351: 'Recorder',
+    352: 'Oboe',
+    353: 'Clarinet',
+    354: 'Saxophone',
+    355: 'Bassoon',
+    356: 'French horn',
+    357: 'Trumpet',
+    358: 'Trombone',
+    359: 'Tuba',
+    360: 'Violin, fiddle',
+    361: 'Viola',
+    362: 'Cello',
+    363: 'Double bass',
+    364: 'Contrabassoon',
+    365: 'Vibraphone',
+    366: 'Xylophone',
+    367: 'Marimba',
+    368: 'Glockenspiel',
+    369: 'Vibraphone',
+    370: 'Steelpan',
+    371: 'Tambourine',
+    372: 'Castanets',
+    373: 'Wood block',
+    374: 'Claves',
+    375: 'Whip',
+    376: 'Music box',
+    377: 'Kalimba',
+    378: 'Bagpipes',
+    379: 'Recorder',
+    380: 'Oboe',
+    381: 'Clarinet',
+    382: 'Saxophone',
+    383: 'Bassoon',
+    384: 'French horn',
+    385: 'Trumpet',
+    386: 'Trombone',
+    387: 'Tuba',
+    388: 'Violin, fiddle',
+    389: 'Viola',
+    390: 'Cello',
+    391: 'Double bass',
+    392: 'Contrabassoon',
+    393: 'Vibraphone',
+    394: 'Xylophone',
+    395: 'Marimba',
+    396: 'Glockenspiel',
+    397: 'Vibraphone',
+    398: 'Steelpan',
+    399: 'Tambourine',
+    400: 'Castanets',
+    401: 'Wood block',
+    402: 'Claves',
+    403: 'Whip',
+    404: 'Music box',
+    405: 'Kalimba',
+    406: 'Recorder',
+    407: 'Oboe',
+    408: 'Clarinet',
+    409: 'Saxophone',
+    410: 'Bassoon',
+    411: 'French horn',
+    412: 'Trumpet',
+    413: 'Trombone',
+    414: 'Tuba',
+    415: 'Violin, fiddle',
+    416: 'Viola',
+    417: 'Cello',
+    418: 'Double bass',
+    419: 'Contrabassoon',
+    420: 'Vibraphone',
+    421: 'Xylophone',
+    422: 'Marimba',
+    423: 'Glockenspiel',
+    424: 'Vibraphone',
+    425: 'Steelpan',
+    426: 'Tambourine',
+    427: 'Castanets',
+    428: 'Wood block',
+    429: 'Claves',
+    430: 'Whip',
+    431: 'Music box',
+    432: 'Kalimba',
+    433: 'Bagpipes',
+    434: 'Recorder',
+    435: 'Oboe',
+    436: 'Clarinet',
+    437: 'Saxophone',
+    438: 'Bassoon',
+    439: 'French horn',
+    440: 'Trumpet',
+    441: 'Trombone',
+    442: 'Tuba',
+    443: 'Violin, fiddle',
+    444: 'Viola',
+    445: 'Cello',
+    446: 'Double bass',
+    447: 'Contrabassoon',
+    448: 'Vibraphone',
+    449: 'Xylophone',
+    450: 'Marimba',
+    451: 'Glockenspiel',
+    452: 'Vibraphone',
+    453: 'Steelpan',
+    454: 'Tambourine',
+    455: 'Castanets',
+    456: 'Wood block',
+    457: 'Claves',
+    458: 'Whip',
+    459: 'Music box',
+    460: 'Kalimba',
+    461: 'Bagpipes',
+    462: 'Recorder',
+    463: 'Oboe',
+    464: 'Clarinet',
+    465: 'Saxophone',
+    466: 'Bassoon',
+    467: 'French horn',
+    468: 'Trumpet',
+    469: 'Trombone',
+    470: 'Tuba',
+    471: 'Violin, fiddle',
+    472: 'Viola',
+    473: 'Cello',
+    474: 'Double bass',
+    475: 'Contrabassoon',
+    476: 'Vibraphone',
+    477: 'Xylophone',
+    478: 'Marimba',
+    479: 'Glockenspiel',
+    480: 'Vibraphone',
+    481: 'Steelpan',
+    482: 'Tambourine',
+    483: 'Castanets',
+    484: 'Wood block',
+    485: 'Claves',
+    486: 'Whip',
+    487: 'Music box',
+    488: 'Kalimba',
+    489: 'Bagpipes',
+    490: 'Recorder',
+    491: 'Oboe',
+    492: 'Clarinet',
+    493: 'Saxophone',
+    494: 'Bassoon',
+    495: 'French horn',
+    496: 'Trumpet',
+    497: 'Trombone',
+    498: 'Tuba',
+    499: 'Violin, fiddle',
+    500: 'Viola',
+    501: 'Cello',
+    502: 'Double bass',
+    503: 'Contrabassoon',
+    504: 'Vibraphone',
+    505: 'Xylophone',
+    506: 'Marimba',
+    507: 'Glockenspiel',
+    508: 'Vibraphone',
+    509: 'Steelpan',
+    510: 'Tambourine',
+    511: 'Castanets',
+    512: 'Wood block',
+    513: 'Claves',
+    514: 'Whip',
+    515: 'Music box',
+    516: 'Kalimba',
+    517: 'Bagpipes',
+    518: 'Recorder',
+    519: 'Oboe',
+    520: 'Clarinet',
+    521: 'Saxophone'
+  };
+  
+  return labels[index] || `Unknown (${index})`;
+}
+
+function extractInstruments(topClasses: any[]): string[] {
+  const instrumentKeywords = [
+    'guitar', 'piano', 'violin', 'drum', 'bass', 'saxophone', 'trumpet', 'flute',
+    'clarinet', 'oboe', 'bassoon', 'trombone', 'tuba', 'organ', 'synthesizer',
+    'harmonica', 'accordion', 'bagpipes', 'recorder', 'cello', 'viola', 'double bass',
+    'vibraphone', 'xylophone', 'marimba', 'glockenspiel', 'steelpan', 'tambourine',
+    'castanets', 'wood block', 'claves', 'whip', 'music box', 'kalimba'
+  ];
+  
+  return topClasses
+    .filter(cls => instrumentKeywords.some(keyword => 
+      cls.label.toLowerCase().includes(keyword)
+    ))
+    .map(cls => cls.label);
+}
+
+function extractEvents(topClasses: any[]): string[] {
+  const eventKeywords = [
+    'speech', 'singing', 'laughter', 'crying', 'applause', 'cheering', 'clapping',
+    'footsteps', 'breathing', 'coughing', 'sneezing', 'snoring', 'whistling',
+    'animal', 'bird', 'dog', 'cat', 'horse', 'cow', 'pig', 'chicken', 'duck'
+  ];
+  
+  return topClasses
+    .filter(cls => eventKeywords.some(keyword => 
+      cls.label.toLowerCase().includes(keyword)
+    ))
+    .map(cls => cls.label);
+}
+
+// 弹幕生成函数
+function generateDanmuMessage(features: any, yamnetResults: any): string {
+  const messages = [];
+  
+  // 基于音频特征生成弹幕
+  if (features) {
+    const { rms, spectralCentroid, zcr, voiceProb, percussiveRatio, harmonicRatio } = features;
+    
+    // 音量相关
+    if (rms > 0.7) {
+      messages.push('音量很大！', '很有力量！', '震撼！');
+    } else if (rms > 0.4) {
+      messages.push('音量适中', '听起来不错', '很好听');
+    } else if (rms > 0.1) {
+      messages.push('音量较小', '很轻柔', '安静的感觉');
+    }
+    
+    // 音色相关
+    if (spectralCentroid > 2000) {
+      messages.push('音色很亮', '高音很清晰', '很清脆');
+    } else if (spectralCentroid < 800) {
+      messages.push('音色很暖', '低音很丰富', '很温暖');
+    }
+    
+    // 人声相关
+    if (voiceProb > 0.7) {
+      messages.push('人声很清晰', '唱得很好', '声音很棒');
+    } else if (voiceProb < 0.3) {
+      messages.push('纯音乐', '没有歌词', '器乐演奏');
+    }
+    
+    // 节奏相关
+    if (percussiveRatio > 0.6) {
+      messages.push('节奏感很强', '很有节拍', '很动感');
+    } else if (harmonicRatio > 0.6) {
+      messages.push('和声很美', '很和谐', '旋律优美');
+    }
+  }
+  
+  // 基于YAMNet分类生成弹幕
+  if (yamnetResults && yamnetResults.instruments.length > 0) {
+    const instruments = yamnetResults.instruments;
+    if (instruments.some((inst: string) => inst.toLowerCase().includes('guitar'))) {
+      messages.push('吉他很好听', '吉他演奏很棒', '喜欢这个吉他');
+    }
+    if (instruments.some((inst: string) => inst.toLowerCase().includes('piano'))) {
+      messages.push('钢琴很优美', '钢琴演奏很棒', '喜欢这个钢琴');
+    }
+    if (instruments.some((inst: string) => inst.toLowerCase().includes('drum'))) {
+      messages.push('鼓点很棒', '节奏很好', '很有节拍感');
+    }
+    if (instruments.some((inst: string) => inst.toLowerCase().includes('violin'))) {
+      messages.push('小提琴很优美', '弦乐很棒', '很优雅');
+    }
+  }
+  
+  // 基于事件生成弹幕
+  if (yamnetResults && yamnetResults.events.length > 0) {
+    const events = yamnetResults.events;
+    if (events.some((event: string) => event.toLowerCase().includes('singing'))) {
+      messages.push('唱得很好', '歌声很美', '很有感情');
+    }
+    if (events.some((event: string) => event.toLowerCase().includes('applause'))) {
+      messages.push('掌声！', '太棒了！', '精彩！');
+    }
+  }
+  
+  // 默认弹幕
+  if (messages.length === 0) {
+    messages.push('很好听', '不错', '很棒', '喜欢这个', '继续播放');
+  }
+  
+  // 随机选择一个消息
+  return messages[Math.floor(Math.random() * messages.length)];
+}
 
 // 字素簇拆分函数 - 支持中文、emoji等复杂字符
 function segmentGraphemes(input: string): string[] {
@@ -143,6 +881,8 @@ export default function StandaloneClient() {
   const [audioLevel, setAudioLevel] = useState(0);
   const [features, setFeatures] = useState(null);
   const [sensitivity, setSensitivity] = useState(1.5);
+  const [yamnetResults, setYamnetResults] = useState(null); // YAMNet classification results
+  const [danmuEnabled, setDanmuEnabled] = useState(true); // Danmu toggle state
   
   // 音频处理引用
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -150,6 +890,39 @@ export default function StandaloneClient() {
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const meydaAnalyzerRef = useRef<any | null>(null); // Meyda analyzer reference
+  const yamnetModelRef = useRef<tf.LayersModel | null>(null); // YAMNet model reference
+  const yamnetBufferRef = useRef<Float32Array | null>(null); // Audio buffer for YAMNet
+  const danmuEngineRef = useRef<DanmuEngine | null>(null); // DanmuEngine reference
+
+  // 切换弹幕开关
+  const toggleDanmu = useCallback((next?: boolean) => {
+    try {
+      const enable = typeof next === 'boolean' ? next : !danmuEnabled;
+      setDanmuEnabled(enable);
+
+      const engine = danmuEngineRef.current;
+      const container = document.getElementById('danmu-container');
+      if (engine) {
+        if (enable) {
+          engine.start();
+        } else {
+          engine.stop();
+          // 清理屏幕上已有弹幕元素
+          if (container) {
+            try {
+              container.innerHTML = '';
+            } catch (_) {}
+          }
+        }
+      } else if (!enable && container) {
+        // 没有引擎实例时也清一次容器
+        try { container.innerHTML = ''; } catch (_) {}
+      }
+    } catch (err) {
+      console.warn('切换弹幕失败:', err);
+    }
+  }, [danmuEnabled]);
 
   // 检测用户偏好
   useEffect(() => {
@@ -166,7 +939,7 @@ export default function StandaloneClient() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // 音频分析循环 - 参考主页面的实现
+  // 音频分析循环 - 使用Meyda进行真实特征提取
   const analyzeAudio = useCallback(() => {
     if (!analyserRef.current) return;
 
@@ -174,7 +947,7 @@ export default function StandaloneClient() {
     const bufferLength = analyser.fftSize;
     const timeDomainData = new Float32Array(bufferLength);
 
-    // 使用时域数据计算 RMS 与峰值 - 这是关键！
+    // 使用时域数据计算 RMS 与峰值
     analyser.getFloatTimeDomainData(timeDomainData);
 
     let sumSquares = 0;
@@ -199,31 +972,11 @@ export default function StandaloneClient() {
     // 调试信息：检查是否所有值都是0
     if (zeroCount === bufferLength) {
       console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
-      // 输出前10个样本值用于调试
       const sampleValues = Array.from(timeDomainData.slice(0, 10));
       console.log('前10个音频样本值:', sampleValues);
     }
 
-    // 检查是否是固定值（如91-92%可能表示读取问题）
-    if (normalizedLevel > 0.9 && normalizedLevel < 0.93) {
-      console.warn('⚠️ 检测到可能的固定音频值:', normalizedLevel.toFixed(6));
-    }
-
     setAudioLevel(normalizedLevel);
-    
-    // 简单的特征提取
-    const features = {
-      rms: normalizedLevel,
-      spectralCentroid: normalizedLevel * 0.5,
-      zcr: normalizedLevel * 0.3,
-      mfcc: [normalizedLevel * 0.8, normalizedLevel * 0.6, normalizedLevel * 0.4, normalizedLevel * 0.2],
-      spectralFlatness: normalizedLevel * 0.7,
-      spectralFlux: normalizedLevel * 0.4,
-      voiceProb: normalizedLevel * 0.6,
-      percussiveRatio: normalizedLevel * 0.5,
-      harmonicRatio: normalizedLevel * 0.8
-    };
-    setFeatures(features);
     
     // 调试日志 - 每100帧输出一次
     if (Math.random() < 0.01) {
@@ -306,6 +1059,179 @@ export default function StandaloneClient() {
 
       console.log('开始音频分析...');
 
+      // 初始化弹幕引擎
+      try {
+        if (!danmuEngineRef.current) {
+          console.log('初始化弹幕引擎...');
+          // 创建一个简单的事件总线
+          const eventBus = {
+            emit: (event: string, data: any) => {
+              console.log('EventBus emit:', event, data);
+            },
+            on: (event: string, callback: (data: any) => void) => {
+              console.log('EventBus on:', event);
+            }
+          };
+          
+          danmuEngineRef.current = new DanmuEngine(eventBus as any);
+          await danmuEngineRef.current.initialize();
+          if (danmuEnabled) {
+            danmuEngineRef.current.start();
+            console.log('弹幕引擎已启动');
+          } else {
+            danmuEngineRef.current.stop();
+            console.log('弹幕引擎已准备（默认关闭）');
+          }
+        }
+      } catch (e) {
+        console.warn('弹幕引擎初始化失败:', e);
+      }
+
+      // 初始化 YAMNet 模型
+      try {
+        if (!yamnetModelRef.current) {
+          console.log('加载 YAMNet 模型...');
+          yamnetModelRef.current = await loadYAMNetModel();
+          if (yamnetModelRef.current) {
+            console.log('YAMNet 模型加载成功');
+            // 初始化音频缓冲区
+            yamnetBufferRef.current = new Float32Array(15600); // YAMNet 需要的缓冲区大小
+          }
+        }
+      } catch (e) {
+        console.warn('YAMNet 模型加载失败:', e);
+      }
+
+      // 初始化 Meyda 特征提取
+      try {
+        if (Meyda && (Meyda as any).isBrowser) {
+          console.log('初始化 Meyda 特征提取...');
+          meydaAnalyzerRef.current = Meyda.createMeydaAnalyzer({
+            audioContext,
+            source,
+            bufferSize: 1024,
+            featureExtractors: [
+              'rms',
+              'spectralCentroid',
+              'zcr',
+              'mfcc',
+              'spectralFlatness',
+              'spectralFlux',
+              'chroma',
+              'spectralBandwidth',
+              'spectralRolloff',
+              'spectralContrast',
+              'spectralSpread',
+              'spectralSkewness',
+              'spectralKurtosis',
+              'loudness',
+              'perceptualSpread',
+              'perceptualSharpness',
+            ],
+            callback: (f: any) => {
+              try {
+                // 处理 Meyda 特征数据
+                const processedFeatures = {
+                  rms: typeof f.rms === 'number' ? f.rms : 0,
+                  spectralCentroid: typeof f.spectralCentroid === 'number' ? f.spectralCentroid : 0,
+                  zcr: typeof f.zcr === 'number' ? f.zcr : 0,
+                  mfcc: Array.isArray(f.mfcc) ? f.mfcc : [],
+                  spectralFlatness: typeof f.spectralFlatness === 'number' ? f.spectralFlatness : 0,
+                  spectralFlux: typeof f.spectralFlux === 'number' ? f.spectralFlux : 0,
+                  chroma: Array.isArray(f.chroma) ? f.chroma : [],
+                  spectralBandwidth: typeof f.spectralBandwidth === 'number' ? f.spectralBandwidth : 0,
+                  spectralRolloff: typeof f.spectralRolloff === 'number' ? f.spectralRolloff : 0,
+                  spectralContrast: Array.isArray(f.spectralContrast) ? f.spectralContrast : [],
+                  spectralSpread: typeof f.spectralSpread === 'number' ? f.spectralSpread : 0,
+                  spectralSkewness: typeof f.spectralSkewness === 'number' ? f.spectralSkewness : 0,
+                  spectralKurtosis: typeof f.spectralKurtosis === 'number' ? f.spectralKurtosis : 0,
+                  loudness: typeof f.loudness === 'number' ? f.loudness : 0,
+                  perceptualSpread: typeof f.perceptualSpread === 'number' ? f.perceptualSpread : 0,
+                  perceptualSharpness: typeof f.perceptualSharpness === 'number' ? f.perceptualSharpness : 0,
+                  // 计算派生特征
+                  voiceProb: calculateVoiceProbability(f),
+                  percussiveRatio: calculatePercussiveRatio(f),
+                  harmonicRatio: calculateHarmonicRatio(f)
+                };
+                
+                setFeatures(processedFeatures);
+                
+                // 生成弹幕（每60帧执行一次，减少频率）
+                if (danmuEngineRef.current && Math.random() < 0.017) {
+                  try {
+                    const danmuMessage = generateDanmuMessage(processedFeatures, yamnetResults);
+                    if (danmuMessage) {
+                      // 使用ingestText方法注入弹幕
+                      danmuEngineRef.current.ingestText(danmuMessage);
+                      
+                      // 调试日志
+          if (Math.random() < 0.1) {
+                        console.log('🎵 生成弹幕:', danmuMessage);
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('弹幕生成错误:', e);
+                  }
+                }
+                
+                // YAMNet 分类（每30帧执行一次，减少计算负载）
+                if (yamnetModelRef.current && yamnetBufferRef.current && Math.random() < 0.033) {
+                  try {
+                    // 获取当前音频缓冲区
+                    const currentBuffer = new Float32Array(analyser.fftSize);
+                    analyser.getFloatTimeDomainData(currentBuffer);
+                    
+                    // 更新 YAMNet 缓冲区（滑动窗口）
+                    const bufferSize = yamnetBufferRef.current.length;
+                    const newDataSize = Math.min(currentBuffer.length, bufferSize);
+                    
+                    // 移动旧数据
+                    yamnetBufferRef.current.copyWithin(0, newDataSize);
+                    // 添加新数据
+                    yamnetBufferRef.current.set(currentBuffer.slice(0, newDataSize), bufferSize - newDataSize);
+                    
+                    // 执行 YAMNet 分类
+                    const yamnetResults = classifyWithYAMNet(yamnetModelRef.current, yamnetBufferRef.current);
+                    if (yamnetResults) {
+                      setYamnetResults(yamnetResults);
+                      
+                      // 调试日志
+                      if (Math.random() < 0.1) {
+                        console.log('YAMNet 分类结果:', {
+                          topClass: yamnetResults.topClasses[0]?.label,
+                          confidence: yamnetResults.topClasses[0]?.confidence?.toFixed(3),
+                          instruments: yamnetResults.instruments.slice(0, 3),
+                          events: yamnetResults.events.slice(0, 3)
+                        });
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('YAMNet 分类错误:', e);
+                  }
+                }
+                
+                // 调试日志 - 每100帧输出一次
+                if (Math.random() < 0.01) {
+                  console.log('Meyda 特征:', {
+                    rms: processedFeatures.rms.toFixed(3),
+                    spectralCentroid: processedFeatures.spectralCentroid.toFixed(3),
+                    zcr: processedFeatures.zcr.toFixed(3),
+                    mfccLength: processedFeatures.mfcc.length,
+                    chromaLength: processedFeatures.chroma.length
+                  });
+                }
+              } catch (e) {
+                console.warn('Meyda 特征处理错误:', e);
+              }
+            },
+          });
+          meydaAnalyzerRef.current.start();
+          console.log('Meyda 特征提取已启动');
+        }
+      } catch (e) {
+        console.warn('Meyda 初始化失败:', e);
+      }
+
       // 先标记为运行，再启动循环
       setIsRunning(true);
       
@@ -325,7 +1251,7 @@ export default function StandaloneClient() {
         
         analyzeAudio();
       }, 100);
-
+      
       console.log('音频处理已启动');
     } catch (error) {
       console.error('启动音频处理失败:', error);
@@ -338,6 +1264,40 @@ export default function StandaloneClient() {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
+    }
+
+    // 停止 Meyda 分析器
+    if (meydaAnalyzerRef.current) {
+      try {
+        meydaAnalyzerRef.current.stop();
+        meydaAnalyzerRef.current = null;
+        console.log('Meyda 分析器已停止');
+      } catch (e) {
+        console.warn('停止 Meyda 分析器时出错:', e);
+      }
+    }
+
+    // 清理 YAMNet 模型
+    if (yamnetModelRef.current) {
+      try {
+        yamnetModelRef.current.dispose();
+        yamnetModelRef.current = null;
+        yamnetBufferRef.current = null;
+        console.log('YAMNet 模型已清理');
+      } catch (e) {
+        console.warn('清理 YAMNet 模型时出错:', e);
+      }
+    }
+
+    // 清理弹幕引擎
+    if (danmuEngineRef.current) {
+      try {
+        danmuEngineRef.current.stop();
+        danmuEngineRef.current = null;
+        console.log('弹幕引擎已清理');
+      } catch (e) {
+        console.warn('清理弹幕引擎时出错:', e);
+      }
     }
 
     // 断开音频连接
@@ -357,6 +1317,7 @@ export default function StandaloneClient() {
     setIsRunning(false);
     setAudioLevel(0);
     setFeatures(null);
+    setYamnetResults(null);
 
     console.log('音频处理已停止');
   }, []);
@@ -390,11 +1351,17 @@ export default function StandaloneClient() {
         e.preventDefault();
         handlePresetChange(PRESET_OPTIONS[keyIndex].id);
       }
+
+      // 隐藏热键：按下 D 切换 Danmu 开关
+      if (e.code === 'KeyD') {
+        e.preventDefault();
+        toggleDanmu();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePresetChange]);
+  }, [handlePresetChange, toggleDanmu]);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col relative">
@@ -422,31 +1389,44 @@ export default function StandaloneClient() {
           audioLevel={audioLevel}
           running={isRunning}
           preset={currentPreset as 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave'}
-          features={features}
+            features={features}
           sensitivity={sensitivity}
         />
+
+        {/* 弹幕容器 */}
+        <div id="danmu-container" className="absolute inset-0 pointer-events-none z-20"></div>
         
-        </div>
+      </div>
       
       {/* 预设选择器 - 放在顶部但不贴边 */}
       <div className="relative z-10 pt-16 pb-8">
         <div className="flex gap-8 flex-wrap justify-center">
-          {PRESET_OPTIONS.map((option, index) => {
+          {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu' }].map((option, index) => {
             const graphemes = segmentGraphemes(option.label);
             const centerIndex = (graphemes.length - 1) / 2;
 
             return (
             <button
               key={option.id}
-              onClick={() => handlePresetChange(option.id)}
+                onClick={() => {
+                  if (option.id === 'danmu') {
+                    toggleDanmu();
+                  } else {
+                    handlePresetChange(option.id);
+                  }
+                }}
                     className={`
                       group relative block overflow-hidden whitespace-nowrap
                       text-4xl sm:text-6xl md:text-8xl
                       font-black uppercase
-                      ${currentPreset === option.id
+                  ${option.id === 'danmu'
+                    ? (danmuEnabled
                         ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]'
-                        : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none'
-                      }
+                        : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none')
+                    : (currentPreset === option.id
+                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]'
+                      : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none')
+                  }
                       cursor-pointer
                       focus:outline-none focus:ring-0 focus:border-0
                       min-h-[44px] min-w-[44px]
@@ -458,7 +1438,9 @@ export default function StandaloneClient() {
               style={{
                 lineHeight: 0.75,
               }}
-            >
+                  aria-pressed={option.id === 'danmu' ? danmuEnabled : currentPreset === option.id}
+                  aria-label={option.id === 'danmu' ? 'Toggle Danmu' : option.label}
+                >
               {/* 上层文字 - 悬停时向上移动 */}
               <div className="flex relative">
                 {graphemes.map((grapheme, i) => (
@@ -472,7 +1454,7 @@ export default function StandaloneClient() {
                     {grapheme}
                   </span>
                 ))}
-              </div>
+          </div>
 
               {/* 下层文字 - 悬停时从下方滑入 */}
               <div className="absolute inset-0 flex justify-center items-center">
