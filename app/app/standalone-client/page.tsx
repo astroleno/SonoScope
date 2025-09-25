@@ -865,12 +865,12 @@ const FlipOption: React.FC<FlipOptionProps> = ({
   );
 };
 
-// 预设选项配置
+// 预设选项配置（移动端使用两字母缩写展示）
 const PRESET_OPTIONS = [
-  { id: 'wave', label: 'Wave' },
-  { id: 'accretion', label: 'Accretion' },
-  { id: 'spiral', label: 'Spiral' },
-  { id: 'mosaic', label: 'Mosaic' }
+  { id: 'wave', label: 'Wave', abbrMobile: 'WA' },
+  { id: 'accretion', label: 'Accretion', abbrMobile: 'AC' },
+  { id: 'spiral', label: 'Spiral', abbrMobile: 'SP' },
+  { id: 'mosaic', label: 'Mosaic', abbrMobile: 'MO' }
 ];
 
 export default function StandaloneClient() {
@@ -883,6 +883,14 @@ export default function StandaloneClient() {
   const [sensitivity, setSensitivity] = useState(1.5);
   const [yamnetResults, setYamnetResults] = useState(null); // YAMNet classification results
   const [danmuEnabled, setDanmuEnabled] = useState(true); // Danmu toggle state
+  // 调试面板显示：避免 SSR/CSR 初始不一致，挂载后再决定
+  const [debugVisible, setDebugVisible] = useState<boolean>(false);
+  const [debugInfo, setDebugInfo] = useState<{ ctxState: string; sampleRate: number; hasStream: boolean; hasAnalyser: boolean; rms: number; maxAbs: number; zeroCount: number; lastSamples: number[]; isSecure: boolean; hasMedia: boolean; micPermission: string; lastError?: string }>({
+    ctxState: 'unknown', sampleRate: 0, hasStream: false, hasAnalyser: false, rms: 0, maxAbs: 0, zeroCount: 0, lastSamples: [],
+    isSecure: typeof window !== 'undefined' ? !!(window as any).isSecureContext : false,
+    hasMedia: typeof navigator !== 'undefined' ? !!navigator.mediaDevices : false,
+    micPermission: 'unknown'
+  });
   
   // 音频处理引用
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -986,6 +994,24 @@ export default function StandaloneClient() {
     }
 
     setAudioLevel(normalizedLevel);
+    // 低频率更新调试面板，避免高频 setState 造成性能问题
+    try {
+      if (Math.random() < 0.1) {
+        setDebugInfo(prev => ({
+          ...prev,
+          ctxState: audioContextRef.current?.state || 'unknown',
+          sampleRate: audioContextRef.current?.sampleRate || 0,
+          hasStream: !!streamRef.current,
+          hasAnalyser: !!analyserRef.current,
+          rms,
+          maxAbs,
+          zeroCount,
+          lastSamples: Array.from(timeDomainData.slice(0, 8))
+        }));
+      }
+    } catch (e) {
+      console.warn('更新调试信息失败:', e);
+    }
     
     // 调试日志 - 每100帧输出一次
     if (Math.random() < 0.01) {
@@ -1002,25 +1028,38 @@ export default function StandaloneClient() {
       console.log('请求麦克风权限...');
 
       // 获取麦克风权限
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 44100,
+      let stream: MediaStream | null = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          }
+        });
+      } catch (primaryErr) {
+        console.warn('带约束的 getUserMedia 失败，退化为 audio: true', primaryErr);
+        // 某些移动端浏览器不支持上述约束，回退为最简约束
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (fallbackErr) {
+          try { setDebugInfo(prev => ({ ...prev, lastError: String(fallbackErr) })); } catch (_) {}
+          throw fallbackErr;
         }
-      });
+      }
 
       console.log('创建音频上下文...');
 
       // 创建音频上下文
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // 在 iOS/Safari 上，AudioContext 需要在用户手势后 resume
+      const AudioContextCtor = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextCtor({ latencyHint: 'interactive' });
       const analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaStreamSource(stream);
+      const source = audioContext.createMediaStreamSource(stream!);
 
       // 配置分析器 - 使用与主页面相同的配置
-      analyser.fftSize = 2048; // 改为2048，与主页面一致
-      analyser.smoothingTimeConstant = 0.5; // 改为0.5，与主页面一致
+      analyser.fftSize = 2048; // 与主页面一致
+      analyser.smoothingTimeConstant = 0.5; // 与主页面一致
 
       // 连接音频节点
       source.connect(analyser);
@@ -1042,7 +1081,7 @@ export default function StandaloneClient() {
         console.log('AudioContext 状态:', audioContext.state);
         console.log('AudioContext 采样率:', audioContext.sampleRate);
       } catch (resumeErr) {
-        console.warn('AudioContext 恢复失败:', resumeErr);
+        console.warn('AudioContext 恢复失败（可能需要用户手势）:', resumeErr);
       }
 
       // 启用音轨
@@ -1064,7 +1103,7 @@ export default function StandaloneClient() {
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
       dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-      streamRef.current = stream;
+      streamRef.current = stream!;
 
       console.log('开始音频分析...');
 
@@ -1381,6 +1420,7 @@ export default function StandaloneClient() {
       console.log('音频处理已启动');
     } catch (error) {
       console.error('启动音频处理失败:', error);
+      try { setDebugInfo(prev => ({ ...prev, lastError: String(error) })); } catch (_) {}
     }
   }, [analyzeAudio]);
 
@@ -1489,6 +1529,52 @@ export default function StandaloneClient() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePresetChange, toggleDanmu]);
 
+  // 移动端/浏览器解锁：在首次触摸/点击时尝试 resume AudioContext
+  useEffect(() => {
+    // 挂载后再检查是否为移动端，从而决定是否默认显示调试面板（避免 hydration 差异）
+    try {
+      const ua = navigator.userAgent || '';
+      if (/Mobile|Android|iPhone|iPad|iPod/i.test(ua)) {
+        setDebugVisible(true);
+      }
+      // 采集一次权限与环境状态
+      (async () => {
+        try {
+          const micPerm = (navigator as any).permissions?.query
+            ? await (navigator as any).permissions.query({ name: 'microphone' as any })
+            : null;
+          setDebugInfo(prev => ({
+            ...prev,
+            isSecure: !!(window as any).isSecureContext,
+            hasMedia: !!navigator.mediaDevices,
+            micPermission: micPerm?.state || 'unknown'
+          }));
+        } catch (_) {
+          setDebugInfo(prev => ({
+            ...prev,
+            isSecure: !!(window as any).isSecureContext,
+            hasMedia: !!navigator.mediaDevices
+          }));
+        }
+      })();
+    } catch (_) {}
+
+    const tryResume = async () => {
+      try {
+        const ctx = audioContextRef.current;
+        if (ctx && ctx.state !== 'running') {
+          await ctx.resume();
+          console.log('在用户手势下恢复 AudioContext:', ctx.state);
+        }
+      } catch (e) {
+        console.warn('用户手势恢复 AudioContext 失败:', e);
+      }
+    };
+    const events = ['touchend', 'touchstart', 'click'];
+    events.forEach(ev => window.addEventListener(ev, tryResume, { passive: true } as any));
+    return () => events.forEach(ev => window.removeEventListener(ev, tryResume as any));
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col relative">
       {/* 全局样式 - 移除所有按钮的焦点样式 */}
@@ -1524,10 +1610,62 @@ export default function StandaloneClient() {
         
       </div>
       
+      {/* 调试面板（右上角） */}
+      {debugVisible && (
+        <div className="fixed top-2 right-2 z-30 bg-black/70 text-white/90 border border-white/10 rounded-md px-3 py-2 text-xs leading-relaxed max-w-[90vw]">
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-bold">Mic Debug</span>
+            <button
+              onClick={() => setDebugVisible(false)}
+              className="px-1 py-0.5 bg-white/10 hover:bg-white/20 rounded"
+            >隐藏</button>
+          </div>
+          <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-1">
+            <div>ctx: {debugInfo.ctxState}</div>
+            <div>rate: {debugInfo.sampleRate}</div>
+            <div>stream: {String(debugInfo.hasStream)}</div>
+            <div>analyser: {String(debugInfo.hasAnalyser)}</div>
+            <div>rms: {debugInfo.rms.toFixed(3)}</div>
+            <div>maxAbs: {debugInfo.maxAbs.toFixed(3)}</div>
+            <div>zero: {debugInfo.zeroCount}</div>
+            <div>running: {String(isRunning)}</div>
+            <div>secure: {String(debugInfo.isSecure)}</div>
+            <div>media: {String(debugInfo.hasMedia)}</div>
+            <div>perm: {debugInfo.micPermission}</div>
+          </div>
+          <div className="mt-1">samples: {debugInfo.lastSamples.map(v => v.toFixed(2)).join(', ')}</div>
+          {debugInfo.lastError && (
+            <div className="mt-1 text-red-400 break-all">error: {debugInfo.lastError}</div>
+          )}
+          <div className="mt-2 flex gap-2">
+            <button
+              onClick={() => { try { startAudioProcessing(); } catch (_) {} }}
+              className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 rounded"
+            >启动麦克风</button>
+            <button
+              onClick={() => { try { stopAudioProcessing(); } catch (_) {} }}
+              className="px-2 py-1 bg-rose-600 hover:bg-rose-500 rounded"
+            >停止</button>
+            <button
+              onClick={async () => {
+                try {
+                  if (!audioContextRef.current) return;
+                  await audioContextRef.current.resume();
+                  setDebugInfo(prev => ({ ...prev, ctxState: audioContextRef.current?.state || 'unknown' }));
+                } catch (e) {
+                  console.warn('手动恢复失败:', e);
+                }
+              }}
+              className="px-2 py-1 bg-sky-700 hover:bg-sky-600 rounded"
+            >手动恢复</button>
+          </div>
+        </div>
+      )}
+
       {/* 预设选择器 - 放在顶部但不贴边 */}
-      <div className="relative z-10 pt-16 pb-8">
-        <div className="flex gap-8 flex-wrap justify-center">
-          {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu' }].map((option, index) => {
+      <div className="relative z-10 pt-16 portrait:pt-8 pb-8">
+        <div className="flex gap-4 sm:gap-8 flex-wrap portrait:flex-nowrap justify-center items-center w-full px-2">
+          {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu', abbrMobile: 'DA' }].map((option, index) => {
             const graphemes = segmentGraphemes(option.label);
             const centerIndex = (graphemes.length - 1) / 2;
             const isSelected = option.id === 'danmu' ? danmuEnabled : (currentPreset === option.id);
@@ -1544,13 +1682,15 @@ export default function StandaloneClient() {
                   try { (e.currentTarget as any)?.blur?.(); } catch (_) {}
                 }}
                     className={`
-                      group relative block overflow-hidden whitespace-nowrap
-                      text-4xl sm:text-6xl md:text-8xl
+                      group relative block overflow-visible sm:overflow-hidden whitespace-nowrap
+                      text-3xl sm:text-6xl md:text-8xl
+                      text-center sm:text-left
                       font-black uppercase
+                      mx-auto portrait:px-3
                   ${option.id === 'danmu'
                     ? (isSelected
                         ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] !blur-none !filter-none'
-                        : 'text-white/40')
+                        : 'text-white/40 blur-sm')
                     : (isSelected
                         ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] !blur-none !filter-none'
                       : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none')
@@ -1564,13 +1704,19 @@ export default function StandaloneClient() {
                       // transform-gpu
                     `}
               style={{
-                lineHeight: 0.75,
+                lineHeight: 1,
               }}
                   aria-pressed={option.id === 'danmu' ? danmuEnabled : currentPreset === option.id}
-                  aria-label={option.id === 'danmu' ? 'Toggle Danmu' : option.label}
+                  aria-label={option.label}
                 >
+              {/* 移动端：显示两字母缩写（隐藏复杂逐字动画） */}
+              <span className="sm:hidden inline-block w-full text-center" aria-hidden>
+                {option.abbrMobile || option.label.slice(0, 2).toUpperCase()}
+              </span>
+
+              {/* 桌面端：保留原有逐字动画效果 */}
               {/* 上层文字 - 悬停时向上移动 */}
-              <div className="flex relative">
+              <div className="hidden sm:flex relative">
                 {graphemes.map((grapheme, i) => (
                   <span
                     key={`top-${i}`}
@@ -1585,7 +1731,7 @@ export default function StandaloneClient() {
           </div>
 
               {/* 下层文字 - 悬停时从下方滑入 */}
-              <div className="absolute inset-0 flex justify-center items-center">
+              <div className="hidden sm:flex absolute inset-0 justify-center items-center">
                 {graphemes.map((grapheme, i) => (
                   <span
                     key={`bottom-${i}`}
