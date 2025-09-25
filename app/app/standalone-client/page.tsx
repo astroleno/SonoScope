@@ -63,6 +63,9 @@ const FlipOption: React.FC<FlipOptionProps> = ({
     ? 'opacity-50 cursor-not-allowed' 
     : 'cursor-pointer';
 
+  const graphemes = segmentGraphemes(label);
+  const centerIndex = (graphemes.length - 1) / 2;
+
   return (
     <button
       onClick={handleClick}
@@ -88,12 +91,12 @@ const FlipOption: React.FC<FlipOptionProps> = ({
     >
       {/* 上层文字 - 悬停时向上移动 */}
       <div className="flex">
-        {segmentGraphemes(label).map((grapheme, i) => (
+        {graphemes.map((grapheme, i) => (
           <span
             key={`top-${i}`}
             className="inline-block transition-transform duration-300 ease-in-out group-hover:-translate-y-[110%]"
             style={{
-              transitionDelay: `${i * 25}ms`,
+              transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
             }}
           >
             {grapheme}
@@ -103,12 +106,12 @@ const FlipOption: React.FC<FlipOptionProps> = ({
       
       {/* 下层文字 - 悬停时从下方滑入 */}
       <div className="absolute inset-0 flex">
-        {segmentGraphemes(label).map((grapheme, i) => (
+        {graphemes.map((grapheme, i) => (
           <span
             key={`bottom-${i}`}
             className="inline-block transition-transform duration-300 ease-in-out translate-y-[110%] group-hover:translate-y-0"
             style={{
-              transitionDelay: `${i * 25}ms`,
+              transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
             }}
           >
             {grapheme}
@@ -146,6 +149,7 @@ export default function StandaloneClient() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   // 检测用户偏好
   useEffect(() => {
@@ -162,100 +166,198 @@ export default function StandaloneClient() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // 音频分析循环
+  // 音频分析循环 - 参考主页面的实现
   const analyzeAudio = useCallback(() => {
-    if (!analyserRef.current || !dataArrayRef.current) return;
-    
-    const dataArray = dataArrayRef.current;
-    if (dataArray && analyserRef.current) {
-      (analyserRef.current as any).getByteFrequencyData(dataArray);
+    if (!analyserRef.current) return;
+
+    const analyser = analyserRef.current;
+    const bufferLength = analyser.fftSize;
+    const timeDomainData = new Float32Array(bufferLength);
+
+    // 使用时域数据计算 RMS 与峰值 - 这是关键！
+    analyser.getFloatTimeDomainData(timeDomainData);
+
+    let sumSquares = 0;
+    let maxAbs = 0;
+    let minVal = 1;
+    let maxVal = -1;
+    let zeroCount = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      const sample = timeDomainData[i]; // [-1, 1]
+      if (sample === 0) zeroCount++;
+      sumSquares += sample * sample;
+      if (sample > maxVal) maxVal = sample;
+      if (sample < minVal) minVal = sample;
+      const abs = Math.abs(sample);
+      if (abs > maxAbs) maxAbs = abs;
     }
-    
-    // 计算音频级别
-    let sum = 0;
-    for (let i = 0; i < dataArrayRef.current.length; i++) {
-      sum += dataArrayRef.current[i];
+
+    const rms = Math.sqrt(sumSquares / bufferLength); // [0, 1]
+    let normalizedLevel = Math.min(Math.max(rms, 0), 1);
+
+    // 调试信息：检查是否所有值都是0
+    if (zeroCount === bufferLength) {
+      console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
+      // 输出前10个样本值用于调试
+      const sampleValues = Array.from(timeDomainData.slice(0, 10));
+      console.log('前10个音频样本值:', sampleValues);
     }
-    const level = sum / (dataArrayRef.current.length * 255);
-    setAudioLevel(level);
+
+    // 检查是否是固定值（如91-92%可能表示读取问题）
+    if (normalizedLevel > 0.9 && normalizedLevel < 0.93) {
+      console.warn('⚠️ 检测到可能的固定音频值:', normalizedLevel.toFixed(6));
+    }
+
+    setAudioLevel(normalizedLevel);
     
     // 简单的特征提取
     const features = {
-      rms: level,
-      spectralCentroid: level * 0.5,
-      zcr: level * 0.3,
-      mfcc: [level * 0.8, level * 0.6, level * 0.4, level * 0.2],
-      spectralFlatness: level * 0.7,
-      spectralFlux: level * 0.4,
-      voiceProb: level * 0.6,
-      percussiveRatio: level * 0.5,
-      harmonicRatio: level * 0.8
+      rms: normalizedLevel,
+      spectralCentroid: normalizedLevel * 0.5,
+      zcr: normalizedLevel * 0.3,
+      mfcc: [normalizedLevel * 0.8, normalizedLevel * 0.6, normalizedLevel * 0.4, normalizedLevel * 0.2],
+      spectralFlatness: normalizedLevel * 0.7,
+      spectralFlux: normalizedLevel * 0.4,
+      voiceProb: normalizedLevel * 0.6,
+      percussiveRatio: normalizedLevel * 0.5,
+      harmonicRatio: normalizedLevel * 0.8
     };
     setFeatures(features);
     
-    if (isRunning) {
-      animationFrameRef.current = requestAnimationFrame(analyzeAudio);
+    // 调试日志 - 每100帧输出一次
+    if (Math.random() < 0.01) {
+      console.log('音频级别:', normalizedLevel.toFixed(3), 'RMS:', rms.toFixed(3), 'MaxAbs:', maxAbs.toFixed(3), 'ZeroCount:', zeroCount, 'BufferLength:', bufferLength);
     }
-  }, [isRunning]);
+    
+    // 继续循环
+    animationFrameRef.current = requestAnimationFrame(analyzeAudio);
+  }, []);
 
-  // 启动音频处理
+  // 启动音频处理 - 参考主页面的实现
   const startAudioProcessing = useCallback(async () => {
     try {
+      console.log('请求麦克风权限...');
+
       // 获取麦克风权限
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
           sampleRate: 44100,
-        } 
+        }
       });
-      
+
+      console.log('创建音频上下文...');
+
       // 创建音频上下文
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
-      
-      // 配置分析器
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.8;
-      
+
+      // 配置分析器 - 使用与主页面相同的配置
+      analyser.fftSize = 2048; // 改为2048，与主页面一致
+      analyser.smoothingTimeConstant = 0.5; // 改为0.5，与主页面一致
+
       // 连接音频节点
       source.connect(analyser);
       
+      // 调试：检查连接状态
+      console.log('音频节点连接状态:', {
+        sourceConnected: source.context.state,
+        analyserConnected: analyser.context.state,
+        analyserFftSize: analyser.fftSize,
+        analyserFrequencyBinCount: analyser.frequencyBinCount
+      });
+
+      // 确保音频上下文运行
+      try {
+        if (audioContext.state !== 'running') {
+          await audioContext.resume();
+          console.log('AudioContext 已恢复:', audioContext.state);
+        }
+        console.log('AudioContext 状态:', audioContext.state);
+        console.log('AudioContext 采样率:', audioContext.sampleRate);
+      } catch (resumeErr) {
+        console.warn('AudioContext 恢复失败:', resumeErr);
+      }
+
+      // 启用音轨
+      try {
+        stream.getAudioTracks().forEach(track => {
+          console.log('音轨状态:', {
+            enabled: track.enabled,
+            muted: track.muted,
+            readyState: track.readyState,
+            label: track.label
+          });
+          if (!track.enabled) track.enabled = true;
+        });
+      } catch (e) {
+        console.warn('无法设置音轨启用状态:', e);
+      }
+
       // 保存引用
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
       dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-      
-      // 开始分析
+      streamRef.current = stream;
+
+      console.log('开始音频分析...');
+
+      // 先标记为运行，再启动循环
       setIsRunning(true);
-      analyzeAudio();
       
+      // 延迟启动分析循环，确保状态已更新
+      setTimeout(() => {
+        console.log('启动音频分析循环...');
+        console.log('isRunning状态:', isRunning);
+        console.log('analyserRef.current:', !!analyserRef.current);
+        
+        // 测试音频数据获取
+        const testAnalyser = analyserRef.current;
+        if (testAnalyser) {
+          const testBuffer = new Float32Array(testAnalyser.fftSize);
+          testAnalyser.getFloatTimeDomainData(testBuffer);
+          console.log('测试音频数据前10个值:', Array.from(testBuffer.slice(0, 10)));
+        }
+        
+        analyzeAudio();
+      }, 100);
+
       console.log('音频处理已启动');
     } catch (error) {
       console.error('启动音频处理失败:', error);
     }
   }, [analyzeAudio]);
 
-  // 停止音频处理
+  // 停止音频处理 - 参考主页面的实现
   const stopAudioProcessing = useCallback(() => {
+    // 停止音频分析循环
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
-    
+
+    // 断开音频连接
     if (audioContextRef.current) {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
-    
+
+    // 停止媒体流
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+
     analyserRef.current = null;
     dataArrayRef.current = null;
     setIsRunning(false);
     setAudioLevel(0);
     setFeatures(null);
-    
+
     console.log('音频处理已停止');
   }, []);
 
@@ -296,6 +398,24 @@ export default function StandaloneClient() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col relative">
+      {/* 全局样式 - 移除所有按钮的焦点样式 */}
+      <style jsx global>{`
+        button:focus {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        button:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        button:active {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+      `}</style>
       {/* 可视化组件 - 全屏背景 */}
       <div className="absolute inset-0 z-0">
         <Visualizer
@@ -305,56 +425,63 @@ export default function StandaloneClient() {
           features={features}
           sensitivity={sensitivity}
         />
-      </div>
+        
+        </div>
       
       {/* 预设选择器 - 放在顶部但不贴边 */}
       <div className="relative z-10 pt-16 pb-8">
         <div className="flex gap-8 flex-wrap justify-center">
-          {PRESET_OPTIONS.map((option, index) => (
+          {PRESET_OPTIONS.map((option, index) => {
+            const graphemes = segmentGraphemes(option.label);
+            const centerIndex = (graphemes.length - 1) / 2;
+
+            return (
             <button
               key={option.id}
               onClick={() => handlePresetChange(option.id)}
-              className={`
-                group relative block overflow-hidden whitespace-nowrap
-                text-4xl sm:text-6xl md:text-8xl
-                font-black uppercase
-                ${currentPreset === option.id 
-                  ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]' 
-                  : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none'
-                }
-                cursor-pointer
-                focus:outline-none
-                min-h-[44px] min-w-[44px]
-                px-4 py-2
-                transition-all duration-300 ease-in-out
-              `}
+                    className={`
+                      group relative block overflow-hidden whitespace-nowrap
+                      text-4xl sm:text-6xl md:text-8xl
+                      font-black uppercase
+                      ${currentPreset === option.id
+                        ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]'
+                        : 'text-white/40 blur-sm hover:text-white/60 hover:blur-none'
+                      }
+                      cursor-pointer
+                      focus:outline-none focus:ring-0 focus:border-0
+                      min-h-[44px] min-w-[44px]
+                      px-4 py-2
+                      transition-all duration-300 ease-in-out
+                      // will-change-transform
+                      // transform-gpu
+                    `}
               style={{
                 lineHeight: 0.75,
               }}
             >
               {/* 上层文字 - 悬停时向上移动 */}
-              <div className="flex">
-                {segmentGraphemes(option.label).map((grapheme, i) => (
+              <div className="flex relative">
+                {graphemes.map((grapheme, i) => (
                   <span
                     key={`top-${i}`}
                     className="inline-block transition-transform duration-300 ease-in-out group-hover:-translate-y-[120%]"
                     style={{
-                      transitionDelay: `${i * 25}ms`,
+                      transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
                     }}
                   >
                     {grapheme}
                   </span>
                 ))}
               </div>
-              
+
               {/* 下层文字 - 悬停时从下方滑入 */}
-              <div className="absolute inset-0 flex">
-                {segmentGraphemes(option.label).map((grapheme, i) => (
+              <div className="absolute inset-0 flex justify-center items-center">
+                {graphemes.map((grapheme, i) => (
                   <span
                     key={`bottom-${i}`}
                     className="inline-block transition-transform duration-300 ease-in-out translate-y-[120%] group-hover:translate-y-0"
                     style={{
-                      transitionDelay: `${i * 25}ms`,
+                      transitionDelay: `${Math.abs(i - centerIndex) * 25}ms`,
                     }}
                   >
                     {grapheme}
@@ -363,7 +490,8 @@ export default function StandaloneClient() {
               </div>
 
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

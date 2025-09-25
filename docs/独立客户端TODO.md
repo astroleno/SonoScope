@@ -1,88 +1,64 @@
-# 独立客户端 TODO（SonoScope 客户端外壳）
+# 独立客户端 TODO（交付端 Facade 方案）
 
-> 目标：将“音频采集/特征/可视化/弹幕”能力沉到可复用核心（monorepo packages），构建独立客户端外壳（Web/Electron/移动壳），通过稳定 SDK 调用核心。
+## 目标
+- 与测试端体验一致，隐藏核心接口，仅暴露受控微调项。
+- 保证无网络/无模型/无麦克风时可正常降级运行。
 
-## 0. 基线与范围
-- **核心不重写**：沿用 `packages/*` 能力；抽出统一 SDK 接口
-- **首期目标**：桌面 Web/Electron 外壳可运行；可切换可视化与弹幕；可配置主题
-- **不纳入**：支付/登录等业务，另立模块
+## 待办清单
 
-## 1. 包结构与抽象
-- [ ] 整理核心包边界（保留）
-  - [ ] `packages/core`: 事件总线、特征聚合、调度、类型
-  - [ ] `packages/danmu-pipeline`: 弹幕状态机、风格映射、渲染适配层
-  - [ ] `packages/visuals-*`: 视觉预设（p5/WebGL）
-  - [ ] `packages/shared`: 公共类型/工具
-- [ ] 新增 `packages/sdk`（对外 API）
-  - [ ] 打包为 ESM + CJS，类型导出
-  - [ ] 不直接依赖 UI；仅暴露接口与事件
+### 1. Facade 封装（高优先级）
+- [ ] 新建 `packages/sdk` 扩展：`ClientFacade`（组合 Core + 适配器）
+  - [ ] 方法：`start/stop/dispose/setPreset/applyConfig/getStatus`
+  - [ ] 状态：运行状态、当前预设、简要特征统计、弹幕计数
+  - [ ] 事件桥接：`danmu` 事件透传（隐藏内部总线）
+  - [ ] 入参校验：范围限制 + 防抖 + 默认回退
 
-## 2. Core SDK 接口（packages/sdk）
-- [ ] 初始化
-  - [ ] `Core.init(options: { transports, storage, modelProviders })`
-  - [ ] 生命周期：`start() / stop() / dispose()`
-- [ ] 订阅
-  - [ ] `on('features', (f: AudioFeatures)=>void)`
-  - [ ] `on('danmu', (d: DanmuEvent)=>void)`
-  - [ ] `on('log'|'error', ...)`
-- [ ] 控制
-  - [ ] `visual.setPreset(name, controls?)`
-  - [ ] `visual.render(canvas | p5Instance)`
-  - [ ] `danmu.trigger(payload?)`
-  - [ ] `audio.setSource(deviceId|MediaStream|File)`
-  - [ ] `config.set({ themeTokens, sensitivity, genre, flags })`
-- [ ] 类型与协议
-  - [ ] `AudioFeatures`, `VisualizationControls`, `DanmuCommand`, `ThemeTokens`
+### 2. 配置与预设（高优先级）
+- [ ] 定义 `client.config.schema.json`（白名单 + 范围）
+- [ ] 默认预设：`vocal_first` / `percussive_first` / `electronic` / `pop`
+- [ ] 主题令牌：与 `app/app/globals.css` 对齐，暴露安全子集
+- [ ] 导入/导出：JSON（可选签名校验）
 
-## 3. 传输与运行时
-- [ ] Web Worker 通道
-  - [ ] 主线程 <-> Worker：`postMessage`，传递音频帧/特征
-  - [ ] 大对象使用 `transferables`
-- [ ] Electron IPC 通道（第二期）
-  - [ ] 主进程/渲染进程：`ipcMain/ipcRenderer`
-- [ ] WebSocket（可选，远端推理）
-  - [ ] 统一封装为 `Transports` 插件
+### 3. 弹幕链路（高优先级）
+- [x] 默认使用 `EnhancedDanmuAdapter`
+- [ ] 回退 `SimpleDanmuAdapter`（异常或性能受限）
+- [x] 冷却/密度：`cooldownMs`（已实现）／`maxDensityPerMin`（待定）
+- [ ] 文案模板：本地简短模板（无LLM时）
 
-## 4. 音频源与特征
-- [ ] 设备选择与回退（默认设备容错）
-- [ ] Meyda 基础特征与增强聚合器接入
-- [ ] 采样率/缓冲区参数暴露为配置
-- [ ] 自动校准与噪声底跟踪
+### 4. 可视化与性能（高优先级）
+- [x] 适配 `SimpleVisualAdapter`，预设参数限制（基础已接入）
+- [ ] 质量档位：`low/med/high`（分辨率/特效）
+- [ ] Worker 开关与回退（与现有 WorkerManager 对齐）
 
-## 5. 可视化层
-- [ ] 预设接入：`pulse | accretion | spiral | mosaic`
-- [ ] 统一 `applyUniforms` 适配器（SDK 内部）
-- [ ] 主题令牌映射到视觉（色彩/发光）
-- [ ] 性能开关：低端设备降级策略
+### 5. UI 外壳（中优先级）
+- [ ] “基础微调”面板（滑块 + 选择器）
+- [ ] 只读状态面板（运行/预设/简要特征/弹幕数）
+- [ ] 预设下拉 + 一键恢复默认
 
-## 6. 弹幕引擎
-- [ ] 触发状态机接入（已完成于现项目，封装为 SDK 方法）
-- [ ] 样式层解耦：文本描边/发光/入场动效；安全区域布局
-- [ ] 音频驱动参数（level/flux/centroid/pulse） -> 速度/字号/发光
-- [ ] 风格预设与可扩展主题（EDM/Lo-fi/Trap 等）
+### 6. 运行与打包（中优先级）
+- [x] Web 构建：`pnpm -r build` 一体化打包
+- [ ] 桌面封装（可选）：Tauri/Electron 脚手架与 CI 脚本
+- [ ] 资源离线：本地模型可选放置与加载策略
 
-## 7. 客户端外壳（Web/Electron）
-- [ ] Web 壳（现有 `app/` 抽稀为 Demo 壳）
-  - [ ] 仅保留：设备选择、开始/停止、预设切换、少量调参
-  - [ ] UI 使用 `ThemeTokens`，与企业主题解耦
-- [ ] Electron 壳（第二期）
-  - [ ] 菜单/窗口/音频输入权限、文件拖放
+### 7. 验证与回归（高优先级）
+- [x] Node 侧：Worker/HPSS/性能三套脚本跑通
+- [x] 浏览器端：/client-shell 端到端点击验证（开始/停止/预设/弹幕）
+- [ ] 降级链路：断网/无模型/无麦克风场景
+- [ ] 压力测试：密度/帧率与内存观察
 
-## 8. 打包与分发
-- [ ] SDK：`tsup/rollup` 产出 ESM+CJS+类型
-- [ ] Web 壳：Next.js 生产构建，禁用调试日志
-- [ ] Electron：`electron-builder` 目标（mac/win）
+### 8. 文档与交付（中优先级）
+- [x] 更新 `客户端说明.md`（已完成基础更新，待补 Facade API 与预设说明）
+- [ ] 发布说明与变更日志
+- [ ] 客户参数手册（白名单与范围）
 
-## 9. 质量与监控
-- [ ] 单测：SDK 类型/事件/边界条件
-- [ ] 集成测试：Worker 通路、设备回退
-- [ ] 性能基线：CPU/GPU 利用与帧率
-- [ ] 远程日志与崩溃上报接口
+## 风险与对策
+- LLM/模型网络不稳定 → 本地模板/启发式回退
+- 浏览器权限差异 → 设备选择回退与提示
+- 性能波动 → 质量档位与 Worker 优先
 
-## 10. 迁移次序（建议一周节奏）
-- [ ] 第1天：梳理类型与事件，起草 `packages/sdk` 骨架
-- [ ] 第2天：接入音频/特征与可视化适配器
-- [ ] 第3天：弹幕引擎封装到 SDK；提供 `danmu.trigger()`
-- [ ] 第4天：Web 壳最小界面+主题令牌
-- [ ] 第5天：传输抽象（Worker）与设备容错；打包与文档
-- [ ] 第6-7天：测试与修复，准备客户 Demo
+## 完成标准
+- 一键启动（Web）与可选桌面打包
+- 断网/无模型可用，体验与测试端一致
+- 仅通过 Facade 暴露可调项，越权操作被拒绝
+
+

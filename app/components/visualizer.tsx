@@ -262,6 +262,11 @@ export default function Visualizer({
             const mode = presetRef.current;
             const rawLvl = levelRef.current;
             const f = featuresRef.current;
+            
+            // 调试日志 - 每100帧输出一次
+            if (Math.random() < 0.01) {
+              console.log('Visualizer - 模式:', mode, '音频级别:', rawLvl.toFixed(3), '特征:', f);
+            }
 
             // update smoothed features (attack/decay)
             const attack = 0.35;
