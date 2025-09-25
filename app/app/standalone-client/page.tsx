@@ -38,16 +38,46 @@ function calculateHarmonicRatio(f: any): number {
 }
 
 // YAMNet 相关函数
-async function loadYAMNetModel(): Promise<tf.LayersModel | null> {
+async function loadYAMNetModel(): Promise<any | null> {
+  const TIMEOUT_MS = 2500;
+  const withTimeout = <T,>(p: Promise<T>): Promise<T> => new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('加载超时')), TIMEOUT_MS);
+    p.then(v => { clearTimeout(t); resolve(v); }).catch(e => { clearTimeout(t); reject(e); });
+  });
+
+  // 1) 优先尝试 TFLite（移动端更稳）
   try {
-    console.log('加载 YAMNet 模型...');
-    const model = await tf.loadLayersModel('/model/yamnet.task');
-    console.log('YAMNet 模型加载成功');
-    return model;
-  } catch (error) {
-    console.error('YAMNet 模型加载失败:', error);
-    return null;
+    console.log('尝试加载 YAMNet (TFLite)...');
+    const tfliteNs = await withTimeout(import('@tensorflow/tfjs-tflite'));
+    const tfliteModel = await withTimeout((tfliteNs as any).loadTFLiteModel('/model/yamnet_tflite/yamnet.tflite'));
+    console.log('YAMNet (TFLite) 加载成功');
+    return tfliteModel; // 作为 any 返回，后续以 predict 调用
+  } catch (e) {
+    console.warn('YAMNet (TFLite) 加载失败，将尝试 TFJS:', e);
   }
+
+  // 2) 回退尝试 TFJS GraphModel（若后续我们提供了 /model/yamnet/model.json）
+  try {
+    console.log('尝试加载 YAMNet (TFJS GraphModel)...');
+    const graph = await withTimeout((tf as any).loadGraphModel('/model/yamnet/model.json'));
+    console.log('YAMNet (GraphModel) 加载成功');
+    return graph;
+  } catch (e) {
+    console.warn('YAMNet (GraphModel) 加载失败:', e);
+  }
+
+  // 3) 最后兼容旧错误路径（大概率失败）
+  try {
+    console.log('尝试加载 旧路径（不推荐）/model/yamnet.task');
+    const legacy = await withTimeout(tf.loadLayersModel('/model/yamnet.task'));
+    console.log('YAMNet 旧路径加载成功（不推荐）');
+    return legacy;
+  } catch (e) {
+    console.warn('旧路径加载失败（预期）:', e);
+  }
+
+  console.warn('YAMNet 不可用，继续使用启发式特征（功能不阻塞）。');
+  return null;
 }
 
 function classifyWithYAMNet(model: tf.LayersModel, audioBuffer: Float32Array): any {
@@ -891,6 +921,7 @@ export default function StandaloneClient() {
     hasMedia: typeof navigator !== 'undefined' ? !!navigator.mediaDevices : false,
     micPermission: 'unknown'
   });
+  const [embedInfo, setEmbedInfo] = useState<{ inIframe: boolean; policyMicrophone?: string; policyCamera?: string }>({ inIframe: false });
   
   // 音频处理引用
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -1063,6 +1094,17 @@ export default function StandaloneClient() {
 
       // 连接音频节点
       source.connect(analyser);
+      // 为避免 Safari 在未连向输出时优化掉音频图（导致数据全 0），
+      // 我们将 analyser 通过 0 增益的 GainNode 接到 destination，
+      // 不产生回放但保持音频图活跃。
+      try {
+        const silentGain = audioContext.createGain();
+        silentGain.gain.value = 0;
+        analyser.connect(silentGain);
+        silentGain.connect(audioContext.destination);
+      } catch (chainErr) {
+        console.warn('连接静音增益节点失败（可忽略）:', chainErr);
+      }
       
       // 调试：检查连接状态
       console.log('音频节点连接状态:', {
@@ -1557,6 +1599,20 @@ export default function StandaloneClient() {
           }));
         }
       })();
+
+      // 检测是否在 iframe 中以及权限策略（若可用）
+      try {
+        const inIframe = window.top !== window.self;
+        let policyMic: string | undefined;
+        let policyCam: string | undefined;
+        const anyDoc: any = document as any;
+        const fp = anyDoc.permissionsPolicy || anyDoc.featurePolicy; // Chrome 有 featurePolicy，新的为 permissionsPolicy
+        if (fp && typeof fp.allowsFeature === 'function') {
+          try { policyMic = fp.allowsFeature('microphone') ? 'allowed' : 'blocked'; } catch (_) {}
+          try { policyCam = fp.allowsFeature('camera') ? 'allowed' : 'blocked'; } catch (_) {}
+        }
+        setEmbedInfo({ inIframe, policyMicrophone: policyMic, policyCamera: policyCam });
+      } catch (_) {}
     } catch (_) {}
 
     const tryResume = async () => {
@@ -1632,6 +1688,9 @@ export default function StandaloneClient() {
             <div>secure: {String(debugInfo.isSecure)}</div>
             <div>media: {String(debugInfo.hasMedia)}</div>
             <div>perm: {debugInfo.micPermission}</div>
+            <div>iframe: {String(embedInfo.inIframe)}</div>
+            {embedInfo.policyMicrophone && (<div>pol-mic: {embedInfo.policyMicrophone}</div>)}
+            {embedInfo.policyCamera && (<div>pol-cam: {embedInfo.policyCamera}</div>)}
           </div>
           <div className="mt-1">samples: {debugInfo.lastSamples.map(v => v.toFixed(2)).join(', ')}</div>
           {debugInfo.lastError && (

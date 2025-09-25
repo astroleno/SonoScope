@@ -19,6 +19,7 @@
     "@sonoscope/visuals-basic": "workspace:*",
     "@sonoscope/visuals-trap": "workspace:*",
     "@tensorflow/tfjs": "4.22.0",
+    "@tensorflow/tfjs-tflite": "0.0.1-alpha.8",
     "@types/p5": "^1.7.4",
     "ajv": "^8.12.0",
     "fuse.js": "^7.0.0",
