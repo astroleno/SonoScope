@@ -508,7 +508,7 @@ export default function Visualizer({
         console.warn('Visualizer 卸载时出错:', e);
       }
     };
-  }, []);
+  }, [preset]);
 
   return <div ref={containerRef} className="absolute inset-0" aria-hidden />;
 }
