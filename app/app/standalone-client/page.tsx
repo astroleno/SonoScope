@@ -128,8 +128,8 @@ function classifyWithYAMNet(model: any, audioBuffer: Float32Array): any {
     try { predictions.dispose?.(); } catch(_) {}
     
     // 提取前5个最可能的类别
-    const topClasses = [];
-    const resultsArray = Array.from(results);
+    const topClasses = [] as Array<{ index: number; confidence: number; label: string }>;
+    const resultsArray: number[] = Array.from(results as number[]);
     for (let i = 0; i < Math.min(5, resultsArray.length); i++) {
       const maxIndex = resultsArray.indexOf(Math.max(...resultsArray));
       topClasses.push({
@@ -961,6 +961,9 @@ export default function StandaloneClient() {
     hasMedia: typeof navigator !== 'undefined' ? !!navigator.mediaDevices : false,
     micPermission: 'unknown'
   });
+  // 调试面板长按触发引用
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressStartRef = useRef<number>(0);
   const [embedInfo, setEmbedInfo] = useState<{ inIframe: boolean; policyMicrophone?: string; policyCamera?: string }>({ inIframe: false });
   
   // 音频处理引用
@@ -970,7 +973,7 @@ export default function StandaloneClient() {
   const animationFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const meydaAnalyzerRef = useRef<any | null>(null); // Meyda analyzer reference
-  const yamnetModelRef = useRef<tf.LayersModel | null>(null); // YAMNet model reference
+  const yamnetModelRef = useRef<any | null>(null); // YAMNet model reference（动态加载 TFJS 后统一 any）
   const yamnetBufferRef = useRef<Float32Array | null>(null); // Audio buffer for YAMNet
   // 轻量 BPM 状态：基于 onset 间隔的滑窗估计
   const bpmStateRef = useRef<{ lastOnsetSec: number; intervals: number[]; bpm: number; confidence: number }>({
@@ -1790,14 +1793,11 @@ export default function StandaloneClient() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePresetChange, toggleDanmu, spectrumPriority]);
 
-  // 移动端/浏览器解锁：在首次触摸/点击时尝试 resume AudioContext
+  // 移动端/浏览器解锁：在首次触摸/点击时尝试 resume AudioContext；解析 ?debug=1
   useEffect(() => {
-    // 挂载后再检查是否为移动端，从而决定是否默认显示调试面板（避免 hydration 差异）
     try {
-      const ua = navigator.userAgent || '';
-      if (/Mobile|Android|iPhone|iPad|iPod/i.test(ua)) {
-        setDebugVisible(true);
-      }
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('debug') === '1') setDebugVisible(true);
       // 采集一次权限与环境状态
       (async () => {
         try {
