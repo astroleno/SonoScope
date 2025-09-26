@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonoScope YAMNet & 弹幕功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #0052a3;
+        }
+        .test-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #1a4d1a;
+            border: 1px solid #2d7d2d;
+        }
+        .status.error {
+            background: #4d1a1a;
+            border: 1px solid #7d2d2d;
+        }
+        .status.info {
+            background: #1a3a4d;
+            border: 1px solid #2d5a7d;
+        }
+        .log {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .danmu-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .danmu-item {
+            position: absolute;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 SonoScope YAMNet & 弹幕功能测试</h1>
+        
+        <!-- 测试控制面板 -->
+        <div class="test-section">
+            <h2>🧪 测试控制</h2>
+            <button class="test-button" onclick="testModelAccess()">1. 测试模型文件访问</button>
+            <button class="test-button" onclick="testAudioContext()">2. 测试音频上下文</button>
+            <button class="test-button" onclick="testYAMNetLoading()">3. 测试YAMNet加载</button>
+            <button class="test-button" onclick="testDanmuEngine()">4. 测试弹幕引擎</button>
+            <button class="test-button" onclick="testFullIntegration()">5. 完整集成测试</button>
+            <button class="test-button" onclick="clearLogs()">清空日志</button>
+        </div>
+
+        <!-- 状态显示 -->
+        <div class="test-section">
+            <h2>📊 测试状态</h2>
+            <div id="status-container"></div>
+        </div>
+
+        <!-- 日志输出 -->
+        <div class="test-section">
+            <h2>📝 测试日志</h2>
+            <div id="log-container" class="log"></div>
+        </div>
+    </div>
+
+    <!-- 弹幕容器 -->
+    <div id="danmu-container" class="danmu-container"></div>
+
+    <script>
+        // 全局变量
+        let audioContext = null;
+        let analyser = null;
+        let stream = null;
+        let yamnetModel = null;
+        let danmuEngine = null;
+        let testResults = {};
+
+        // 日志函数
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logContainer = document.getElementById('log-container');
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logContainer.textContent += logEntry;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusContainer.appendChild(statusDiv);
+        }
+
+        function clearLogs() {
+            document.getElementById('log-container').textContent = '';
+            document.getElementById('status-container').innerHTML = '';
+        }
+
+        // 测试1: 模型文件访问
+        async function testModelAccess() {
+            log('🔍 开始测试模型文件访问...');
+            updateStatus('正在测试模型文件访问...', 'info');
+            
+            try {
+                const response = await fetch('/model/yamnet_tflite/yamnet.tflite');
+                if (response.ok) {
+                    const size = response.headers.get('content-length');
+                    log(`✅ YAMNet模型文件可访问，大小: ${size} bytes`);
+                    updateStatus('✅ 模型文件访问成功', 'success');
+                    testResults.modelAccess = true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`❌ 模型文件访问失败: ${error.message}`);
+                updateStatus('❌ 模型文件访问失败', 'error');
+                testResults.modelAccess = false;
+            }
+        }
+
+        // 测试2: 音频上下文
+        async function testAudioContext() {
+            log('🎤 开始测试音频上下文...');
+            updateStatus('正在测试音频上下文...', 'info');
+            
+            try {
+                // 检查浏览器支持
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('浏览器不支持getUserMedia');
+                }
+                
+                if (!window.AudioContext && !window.webkitAudioContext) {
+                    throw new Error('浏览器不支持AudioContext');
+                }
+                
+                log('✅ 浏览器支持检查通过');
+                
+                // 获取麦克风权限
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+                log('✅ 麦克风权限获取成功');
+                
+                // 创建音频上下文
+                const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContextCtor({ latencyHint: 'interactive' });
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                
+                // 配置分析器
+                analyser.fftSize = 2048;
+                analyser.smoothingTimeConstant = 0.5;
+                source.connect(analyser);
+                
+                // 确保音频上下文运行
+                if (audioContext.state !== 'running') {
+                    await audioContext.resume();
+                }
+                
+                log(`✅ 音频上下文创建成功，状态: ${audioContext.state}，采样率: ${audioContext.sampleRate}`);
+                updateStatus('✅ 音频上下文测试成功', 'success');
+                testResults.audioContext = true;
+                
+            } catch (error) {
+                log(`❌ 音频上下文测试失败: ${error.message}`);
+                updateStatus('❌ 音频上下文测试失败', 'error');
+                testResults.audioContext = false;
+            }
+        }
+
+        // 测试3: YAMNet加载
+        async function testYAMNetLoading() {
+            log('🧠 开始测试YAMNet模型加载...');
+            updateStatus('正在加载YAMNet模型...', 'info');
+            
+            try {
+                // 动态导入TensorFlow.js
+                const tf = await import('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
+                
+                // 尝试加载TFLite模型
+                try {
+                    log('尝试加载TFLite模型...');
+                    const tfliteModule = await import('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.8/dist/tf-tflite.min.js');
+                    yamnetModel = await tfliteModule.loadTFLiteModel('/model/yamnet_tflite/yamnet.tflite');
+                    log('✅ TFLite模型加载成功');
+                } catch (tfliteError) {
+                    log(`TFLite加载失败，尝试TFJS: ${tfliteError.message}`);
+                    // 回退到TFJS
+                    yamnetModel = await tf.loadGraphModel('/model/yamnet/model.json');
+                    log('✅ TFJS模型加载成功');
+                }
+                
+                // 测试模型推理
+                if (yamnetModel) {
+                    const testInput = tf.tensor2d([new Array(15600).fill(0)], [1, 15600]);
+                    const prediction = yamnetModel.predict(testInput);
+                    const results = await prediction.data();
+                    testInput.dispose();
+                    prediction.dispose();
+                    
+                    log(`✅ YAMNet推理测试成功，输出维度: ${results.length}`);
+                    updateStatus('✅ YAMNet模型加载成功', 'success');
+                    testResults.yamnet = true;
+                } else {
+                    throw new Error('模型加载失败');
+                }
+                
+            } catch (error) {
+                log(`❌ YAMNet加载失败: ${error.message}`);
+                updateStatus('❌ YAMNet加载失败', 'error');
+                testResults.yamnet = false;
+            }
+        }
+
+        // 测试4: 弹幕引擎
+        function testDanmuEngine() {
+            log('💬 开始测试弹幕引擎...');
+            updateStatus('正在测试弹幕引擎...', 'info');
+            
+            try {
+                // 创建简单的弹幕引擎
+                danmuEngine = {
+                    container: document.getElementById('danmu-container'),
+                    danmuItems: new Map(),
+                    isActive: false,
+                    
+                    start() {
+                        this.isActive = true;
+                        log('✅ 弹幕引擎启动');
+                    },
+                    
+                    stop() {
+                        this.isActive = false;
+                        this.clearAll();
+                        log('✅ 弹幕引擎停止');
+                    },
+                    
+                    createDanmu(text) {
+                        if (!this.isActive) return;
+                        
+                        const id = `danmu-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                        const element = document.createElement('div');
+                        element.textContent = text;
+                        element.className = 'danmu-item';
+                        element.id = id;
+                        
+                        // 设置样式
+                        element.style.fontSize = '16px';
+                        element.style.color = '#fff';
+                        element.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+                        element.style.position = 'absolute';
+                        element.style.whiteSpace = 'nowrap';
+                        element.style.pointerEvents = 'none';
+                        element.style.userSelect = 'none';
+                        element.style.zIndex = '1000';
+                        
+                        // 随机位置
+                        const x = window.innerWidth + 50;
+                        const y = Math.random() * (window.innerHeight - 100) + 50;
+                        element.style.left = `${x}px`;
+                        element.style.top = `${y}px`;
+                        
+                        this.container.appendChild(element);
+                        
+                        // 动画
+                        const duration = 8000 + Math.random() * 4000;
+                        const speed = (window.innerWidth + 200) / duration * 16.67;
+                        
+                        const animate = () => {
+                            const currentX = parseFloat(element.style.left);
+                            const newX = currentX - speed;
+                            element.style.left = `${newX}px`;
+                            
+                            if (newX > -200) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                element.remove();
+                            }
+                        };
+                        
+                        requestAnimationFrame(animate);
+                        
+                        log(`✅ 弹幕创建: "${text}"`);
+                    },
+                    
+                    clearAll() {
+                        this.container.innerHTML = '';
+                        this.danmuItems.clear();
+                    }
+                };
+                
+                // 测试弹幕创建
+                danmuEngine.start();
+                danmuEngine.createDanmu('测试弹幕1: 音量很大！');
+                danmuEngine.createDanmu('测试弹幕2: 很有力量！');
+                danmuEngine.createDanmu('测试弹幕3: 震撼！');
+                
+                updateStatus('✅ 弹幕引擎测试成功', 'success');
+                testResults.danmu = true;
+                
+            } catch (error) {
+                log(`❌ 弹幕引擎测试失败: ${error.message}`);
+                updateStatus('❌ 弹幕引擎测试失败', 'error');
+                testResults.danmu = false;
+            }
+        }
+
+        // 测试5: 完整集成测试
+        async function testFullIntegration() {
+            log('🔄 开始完整集成测试...');
+            updateStatus('正在进行完整集成测试...', 'info');
+            
+            try {
+                // 检查所有前置条件
+                if (!testResults.modelAccess) {
+                    throw new Error('模型文件访问失败');
+                }
+                if (!testResults.audioContext) {
+                    throw new Error('音频上下文未就绪');
+                }
+                if (!testResults.yamnet) {
+                    throw new Error('YAMNet模型未加载');
+                }
+                if (!testResults.danmu) {
+                    throw new Error('弹幕引擎未就绪');
+                }
+                
+                log('✅ 所有前置条件检查通过');
+                
+                // 模拟音频分析
+                if (analyser && audioContext) {
+                    const bufferLength = analyser.fftSize;
+                    const timeDomainData = new Float32Array(bufferLength);
+                    analyser.getFloatTimeDomainData(timeDomainData);
+                    
+                    // 计算RMS
+                    let sumSquares = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sumSquares += timeDomainData[i] * timeDomainData[i];
+                    }
+                    const rms = Math.sqrt(sumSquares / bufferLength);
+                    
+                    log(`✅ 音频分析成功，RMS: ${rms.toFixed(3)}`);
+                    
+                    // 根据音频特征生成弹幕
+                    if (rms > 0.1) {
+                        const messages = [
+                            '音量很大！', '很有力量！', '震撼！',
+                            '音量适中', '听起来不错', '很好听',
+                            '音色很亮', '高音很清晰', '很清脆'
+                        ];
+                        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                        danmuEngine.createDanmu(randomMessage);
+                        log(`✅ 基于音频特征生成弹幕: "${randomMessage}"`);
+                    }
+                }
+                
+                // 模拟YAMNet分类
+                if (yamnetModel) {
+                    const testBuffer = new Float32Array(15600);
+                    for (let i = 0; i < 15600; i++) {
+                        testBuffer[i] = Math.random() * 0.1; // 模拟音频数据
+                    }
+                    
+                    const input = tf.tensor2d([Array.from(testBuffer)], [1, 15600]);
+                    const prediction = yamnetModel.predict(input);
+                    const results = await prediction.data();
+                    input.dispose();
+                    prediction.dispose();
+                    
+                    // 找到最高置信度的类别
+                    const maxIndex = results.indexOf(Math.max(...results));
+                    log(`✅ YAMNet分类完成，最高置信度类别: ${maxIndex}, 置信度: ${results[maxIndex].toFixed(3)}`);
+                    
+                    // 根据分类结果生成弹幕
+                    if (maxIndex < 100) {
+                        danmuEngine.createDanmu('检测到语音内容');
+                    } else if (maxIndex < 200) {
+                        danmuEngine.createDanmu('检测到音乐内容');
+                    } else {
+                        danmuEngine.createDanmu('检测到环境声音');
+                    }
+                }
+                
+                updateStatus('✅ 完整集成测试成功', 'success');
+                log('🎉 所有测试完成！YAMNet和弹幕功能运行正常');
+                
+            } catch (error) {
+                log(`❌ 完整集成测试失败: ${error.message}`);
+                updateStatus('❌ 完整集成测试失败', 'error');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', () => {
+            log('🚀 测试页面加载完成');
+            log('📋 请按顺序点击测试按钮进行功能验证');
+            log('💡 建议测试顺序: 1→2→3→4→5');
+        });
+
+        // 定期生成测试弹幕
+        setInterval(() => {
+            if (danmuEngine && danmuEngine.isActive) {
+                const testMessages = [
+                    '自动测试弹幕1', '自动测试弹幕2', '自动测试弹幕3',
+                    '音量检测中...', '音频分析进行中', 'YAMNet分类中...'
+                ];
+                const randomMessage = testMessages[Math.floor(Math.random() * testMessages.length)];
+                danmuEngine.createDanmu(randomMessage);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

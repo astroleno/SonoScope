@@ -3,8 +3,8 @@
  * 测试所有Phase 1功能的集成和协同工作
  */
 
-const TestUtils = require('./test-utils');
-const config = require('./test-config');
+const TestUtils = require('./test-utils.cjs');
+const config = require('./test-config.cjs');
 
 const utils = new TestUtils();
 

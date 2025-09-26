@@ -2,8 +2,8 @@
  * Phase 1 - Loudness (LKFS) 计算功能测试
  */
 
-const TestUtils = require('./test-utils');
-const config = require('./test-config');
+const TestUtils = require('./test-utils.cjs');
+const config = require('./test-config.cjs');
 
 const utils = new TestUtils();
 

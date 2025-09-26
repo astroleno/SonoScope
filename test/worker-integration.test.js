@@ -3,8 +3,8 @@
  * 测试Worker管理器和FeatureAggregator的Worker集成
  */
 
-const TestUtils = require('./test-utils');
-const config = require('./test-config');
+const TestUtils = require('./test-utils.cjs');
+const config = require('./test-config.cjs');
 
 const utils = new TestUtils();
 

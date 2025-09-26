@@ -24,6 +24,10 @@ export interface PipelineConfig {
   stabilityConfidence?: number;
   energyEnterThreshold?: number;
   energyExitThreshold?: number;
+  // persona / AB 配置
+  personaId?: 'auto' | 'quiet' | 'cheer' | 'steady' | 'playful' | 'critic' | 'enthusiast';
+  personaDiversity?: number; // 0..1
+  abBucket?: string;
 }
 
 function clamp01Number(value: number | undefined): number {
@@ -54,6 +58,8 @@ export class DanmuPipelineEnhanced {
   private activityScore = 0;
   private pipelinePhase: 'idle' | 'ready' = 'idle';
   private phaseSince = Date.now();
+  // 最近已显示的弹幕文本（供 existingDanmu 去重），最大50条
+  private recentShownTexts: string[] = [];
 
   constructor(danmuEngine: DanmuEngine, config?: PipelineConfig) {
     this.danmuEngine = danmuEngine;
@@ -71,6 +77,9 @@ export class DanmuPipelineEnhanced {
       stabilityConfidence: 0.45,
       energyEnterThreshold: 0.08,
       energyExitThreshold: 0.035,
+      personaId: 'auto',
+      personaDiversity: 0,
+      abBucket: '',
       ...config,
     };
     this.featureAggregator.updateStabilityThresholds({
@@ -313,39 +322,8 @@ export class DanmuPipelineEnhanced {
         `风格检测: ${styleResult.style} (置信度: ${styleResult.confidence})`
       );
 
-      // 调用API生成弹幕
-      await fetchAnalyze(
-        this.config.apiPath,
-        {
-          window_ms: windowFeatures.window_ms,
-          features: windowFeatures.features,
-          need_comments: this.config.needComments,
-          locale: this.config.locale,
-          style: styleResult.style,
-          confidence: styleResult.confidence,
-          talking_points: styleResult.talking_points,
-          dominant_instrument:
-            windowFeatures.features.dominantInstrument ?? this.lastInstrument,
-          instrument_histogram: windowFeatures.features.instrumentHistogram,
-        },
-        {
-          onStyle: e => {
-            this.currentStyle = e.style;
-            console.log(`API风格确认: ${e.style} (置信度: ${e.confidence})`);
-          },
-          onComment: e => {
-            this.enqueueComment(e.text);
-          },
-          onDone: () => {
-            console.log('弹幕流完成');
-            this.scheduleCommentFlush();
-          },
-          onError: err => {
-            console.warn('弹幕生成失败:', err);
-            // 不使用默认弹幕，只记录错误
-          },
-        }
-      );
+      // 调用LLM弹幕API生成批量弹幕
+      await this.generateBatchDanmu(windowFeatures.features, styleResult);
     } catch (error) {
       console.error('弹幕生成请求失败:', error);
       // 不使用默认弹幕，只记录错误
@@ -366,6 +344,67 @@ export class DanmuPipelineEnhanced {
       this.pendingComments.length
     );
     this.scheduleCommentFlush();
+  }
+
+  // 批量生成弹幕
+  private async generateBatchDanmu(features: any, styleResult: any): Promise<void> {
+    try {
+      const response = await fetch('/api/llm-danmu', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          features: features,
+          // 让后端一次性生成 5 条常规 + 1-2 条鼓励/陪伴型（范围由后端采样）
+          needDanmu: this.config.needComments || 3,
+          encouragementExtraMin: 1,
+          encouragementExtraMax: 2,
+          // persona/AB 配置
+          personaId: this.config.personaId,
+          personaDiversity: this.config.personaDiversity,
+          abBucket: this.config.abBucket,
+          // 历史弹幕（供去重）
+          existingDanmu: this.recentShownTexts.slice(-50)
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+      }
+
+      const result = await response.json();
+      if (result.success && result.danmuList) {
+        console.log(`批量弹幕生成成功: ${result.count}条弹幕`);
+        
+        // 将批量弹幕加入队列，分批次发出（动态间隔 + 抖动）
+        const bpm = Number((features?.tempo_bpm ?? features?.tempo) || 0);
+        const baseBeatMs = bpm > 0 ? 60000 / bpm : 1500; // 无BPM时采用1.5s基准
+        const energy = Math.max(0, Math.min(1, Number(features?.rms ?? 0.25)));
+        // 基于能量缩放间隔（能量越高，间隔越短；但设定下限）
+        const energyFactor = 1.0 - 0.45 * energy; // 0.55x ~ 1.0x
+
+        for (let i = 0; i < result.danmuList.length; i++) {
+          const danmu = result.danmuList[i];
+          // 抖动：在 [0.75, 1.25] * base 内随机
+          const jitter = 0.75 + Math.random() * 0.5;
+          const intervalMs = Math.max(600, Math.min(4000, Math.round(baseBeatMs * energyFactor * jitter)));
+
+          setTimeout(() => {
+            this.enqueueComment(danmu.text);
+            // 直接显示弹幕
+            this.danmuEngine.ingestText(danmu.text);
+          }, i * intervalMs);
+        }
+        
+        // 设置评论刷新
+        this.scheduleCommentFlush();
+      } else {
+        console.warn('批量弹幕生成失败:', result.error);
+      }
+    } catch (error) {
+      console.error('批量弹幕生成请求失败:', error);
+    }
   }
 
   private scheduleCommentFlush() {
@@ -391,6 +430,13 @@ export class DanmuPipelineEnhanced {
     if (this.isActive) {
       this.danmuEngine.ingestText(next);
       this.danmuCount++;
+      // 记录最近显示文本供后端去重
+      try {
+        this.recentShownTexts.push(next);
+        if (this.recentShownTexts.length > 50) {
+          this.recentShownTexts.splice(0, this.recentShownTexts.length - 50);
+        }
+      } catch {}
       this.lastCommentTimestamp = Date.now();
       console.log(
         '弹幕管线: 发送评论，剩余缓冲区长度:',

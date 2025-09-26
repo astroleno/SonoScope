@@ -12,6 +12,12 @@ interface Features {
   voiceProb?: number;
   percussiveRatio?: number;
   harmonicRatio?: number;
+  // 频谱优先模型
+  bandLow?: number;
+  bandMid?: number;
+  bandHigh?: number;
+  bandColumns?: number[];
+  tempo?: { bpm: number; confidence: number };
 }
 
 export type Particle = {
@@ -23,12 +29,26 @@ export type Particle = {
   vy: number;
 };
 
+// 统一的音频权重配置
+interface AudioWeights {
+  level: number;
+  bandLow: number;
+  bandMid: number;
+  bandHigh: number;
+  fluxPulse: number;
+  tempo: number;
+}
+
 interface VisualizerProps {
   audioLevel: number; // 0 ~ 1
   running: boolean;
   preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave';
   features?: Features | null;
   sensitivity?: number;
+  // 频谱优先模式开关
+  spectrumPriority?: boolean;
+  // 统一音频权重配置
+  audioWeights?: Partial<AudioWeights>;
   accretionControls?: {
     sensMin?: number;
     sensMax?: number;
@@ -54,6 +74,8 @@ export default function Visualizer({
   preset = 'pulse',
   features = null,
   sensitivity = 1.5,
+  spectrumPriority = false,
+  audioWeights,
   accretionControls,
   mosaicControls,
 }: VisualizerProps) {
@@ -70,6 +92,8 @@ export default function Visualizer({
   const mosaicControlsRef = useRef<
     VisualizerProps['mosaicControls'] | undefined
   >(mosaicControls);
+  const spectrumPriorityRef = useRef<boolean>(spectrumPriority);
+  const audioWeightsRef = useRef<Partial<AudioWeights> | undefined>(audioWeights);
 
   useEffect(() => {
     levelRef.current = audioLevel;
@@ -92,6 +116,12 @@ export default function Visualizer({
   useEffect(() => {
     mosaicControlsRef.current = mosaicControls;
   }, [mosaicControls]);
+  useEffect(() => {
+    spectrumPriorityRef.current = spectrumPriority;
+  }, [spectrumPriority]);
+  useEffect(() => {
+    audioWeightsRef.current = audioWeights;
+  }, [audioWeights]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -142,9 +172,15 @@ export default function Visualizer({
           const particles: Particle[] = [];
           // 移动端采用更少的粒子，降低首屏成本
           const maxParticles = isMobile ? 45 : 90;
-          // smoothed feature state for obvious yet stable response
-          const smoothed = {
+          // 统一音频模型：频谱优先的核心参数
+          const audioModel = {
             level: 0,
+            bandLow: 0,
+            bandMid: 0,
+            bandHigh: 0,
+            fluxPulse: 0,
+            tempo: 0,
+            // 保留原始特征用于兼容
             centroid: 0,
             zcr: 0,
             flatness: 0,
@@ -157,8 +193,15 @@ export default function Visualizer({
             perc: 0,
             harmonic: 0,
           };
-          // transient pulse driven by spectralFlux peaks
-          let fluxPulse = 0;
+          // 频谱优先权重配置
+          const defaultWeights: AudioWeights = {
+            level: 1.0,
+            bandLow: 1.2,
+            bandMid: 1.0,
+            bandHigh: 1.4,
+            fluxPulse: 1.6,
+            tempo: 1.0,
+          };
 
           const initParticles = () => {
             particles.length = 0;
@@ -268,9 +311,13 @@ export default function Visualizer({
               console.log('Visualizer - 模式:', mode, '音频级别:', rawLvl.toFixed(3), '特征:', f);
             }
 
-            // update smoothed features (attack/decay)
-            const attack = 0.35;
-            const decay = 0.12;
+            // 频谱优先模式：更激进的响应，减少平滑
+            const isSpectrumPriority = spectrumPriorityRef.current;
+            const weights = { ...defaultWeights, ...audioWeightsRef.current };
+            
+            // 根据模式调整平滑参数
+            const attack = isSpectrumPriority ? 0.6 : 0.35;
+            const decay = isSpectrumPriority ? 0.25 : 0.12;
             const smooth = (cur: number, target: number) =>
               cur + (target > cur ? attack : decay) * (target - cur);
 
@@ -279,10 +326,18 @@ export default function Visualizer({
             const sqrt01 = (x: number) =>
               Math.sqrt(Math.max(0, Math.min(1, x)));
 
+            // 频谱优先：直接使用频段数据，减少计算
+            const bandLow = Math.max(0, Math.min(1, f?.bandLow ?? 0));
+            const bandMid = Math.max(0, Math.min(1, f?.bandMid ?? 0));
+            const bandHigh = Math.max(0, Math.min(1, f?.bandHigh ?? 0));
+            const tempoBpm = f?.tempo?.bpm ?? 0;
+            const tempoConf = f?.tempo?.confidence ?? 0;
+            
+            // 传统特征（兼容模式）
             const centroidNorm =
               f?.spectralCentroid != null
                 ? sqrt01(norm(f.spectralCentroid, 200, 6000))
-                : 0; // emphasize highs
+                : 0;
             const zcrNorm =
               f?.zcr != null ? Math.max(0, Math.min(1, f.zcr)) : 0;
             const flatNorm =
@@ -310,177 +365,316 @@ export default function Visualizer({
             const mapM = (v: number) =>
               Math.max(0, Math.min(1, (v + 100) / 200));
 
-            smoothed.level = smooth(smoothed.level, rawLvl);
-            smoothed.centroid = smooth(smoothed.centroid, centroidNorm);
-            smoothed.zcr = smooth(smoothed.zcr, zcrNorm);
-            smoothed.flatness = smooth(smoothed.flatness, flatNorm);
-            smoothed.flux = smooth(smoothed.flux, fluxRaw);
-            smoothed.mfcc0 = smooth(smoothed.mfcc0, mapM(m0));
-            smoothed.mfcc1 = smooth(smoothed.mfcc1, mapM(m1));
-            smoothed.mfcc2 = smooth(smoothed.mfcc2, mapM(m2));
-            smoothed.mfcc3 = smooth(smoothed.mfcc3, mapM(m3));
-            smoothed.voice = smooth(smoothed.voice, voiceRaw);
-            smoothed.perc = smooth(smoothed.perc, percRaw);
-            smoothed.harmonic = smooth(smoothed.harmonic, harmRaw);
+            // 更新统一音频模型
+            audioModel.level = smooth(audioModel.level, rawLvl);
+            audioModel.bandLow = smooth(audioModel.bandLow, bandLow);
+            audioModel.bandMid = smooth(audioModel.bandMid, bandMid);
+            audioModel.bandHigh = smooth(audioModel.bandHigh, bandHigh);
+            audioModel.tempo = smooth(audioModel.tempo, tempoBpm > 0 ? tempoConf : 0);
+            
+            // 保留传统特征用于兼容
+            audioModel.centroid = smooth(audioModel.centroid, centroidNorm);
+            audioModel.zcr = smooth(audioModel.zcr, zcrNorm);
+            audioModel.flatness = smooth(audioModel.flatness, flatNorm);
+            audioModel.flux = smooth(audioModel.flux, fluxRaw);
+            audioModel.mfcc0 = smooth(audioModel.mfcc0, mapM(m0));
+            audioModel.mfcc1 = smooth(audioModel.mfcc1, mapM(m1));
+            audioModel.mfcc2 = smooth(audioModel.mfcc2, mapM(m2));
+            audioModel.mfcc3 = smooth(audioModel.mfcc3, mapM(m3));
+            audioModel.voice = smooth(audioModel.voice, voiceRaw);
+            audioModel.perc = smooth(audioModel.perc, percRaw);
+            audioModel.harmonic = smooth(audioModel.harmonic, harmRaw);
 
-            // trigger/decay a visible pulse on flux spikes
-            const fluxThresh = 0.12;
-            if (fluxRaw > fluxThresh && fluxRaw > smoothed.flux + 0.02) {
-              fluxPulse = 1;
+            // 频谱优先的脉冲检测：更敏感
+            const fluxThresh = isSpectrumPriority ? 0.08 : 0.12;
+            if (fluxRaw > fluxThresh && fluxRaw > audioModel.flux + 0.02) {
+              audioModel.fluxPulse = 1;
             } else {
-              fluxPulse *= 0.92; // decay
+              audioModel.fluxPulse *= isSpectrumPriority ? 0.88 : 0.92; // 更快的衰减
             }
-            fluxPulse = Math.max(0, Math.min(1, fluxPulse));
+            audioModel.fluxPulse = Math.max(0, Math.min(1, audioModel.fluxPulse));
+
+            // 自适应权重微调：低频长期占优时，降低高频权重；无可靠节拍且脉冲频繁时，降低脉冲权重
+            const lowDominant = audioModel.bandLow > audioModel.bandHigh + 0.12;
+            const hasStableTempo = !!(f as any)?.tempo && ((f as any).tempo.confidence ?? 0) >= 0.6;
+            let effBandHigh = weights.bandHigh;
+            if (lowDominant) effBandHigh = Math.max(1.0, effBandHigh - 0.2);
+            let effPulse = weights.fluxPulse;
+            if (!hasStableTempo && audioModel.flux > 0.35) effPulse = Math.min(effPulse, 1.3);
 
             if (mode === 'accretion' && shaderProgram && accretionMod) {
-              // Gentle sensitivity; clamp by external controls if provided
-              const base = Math.max(smoothed.level, smoothed.flux);
-              const fAny = f as any;
-              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
-              const bandMid = Math.max(0, Math.min(1, fAny?.bandMid ?? 0));
-              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
-              // 频谱优先：中频提升聚合“稳态”，低频增强整体“重量”，高频影响闪烁与细节
-              let sens = (1.0 + 0.25 * (base - 0.15)) * (sensitivityRef.current ?? 1);
-              sens *= 0.9 + 0.5 * bandMid; // 中频多时更稳定更强
+              // 频谱优先：Accretion 简化为 bandLow→整体增益、bandHigh→闪烁、level→亮度
               const c = accretionControlsRef.current;
-              const sMin = Math.max(0.8, Math.min(1.2, c?.sensMin ?? 0.9));
-              const sMax = Math.max(sMin, Math.min(1.6, c?.sensMax ?? 1.15));
-              sens = Math.max(sMin, Math.min(sMax, sens));
-              // 移动端轻量化：轻微降低整体强度，避免过度闪烁
-              if (isMobile) {
-                sens *= 0.9;
+              let sens = sensitivityRef.current ?? 1;
+              
+              if (isSpectrumPriority) {
+                // 频谱优先：更直接的映射，减少钳制
+                sens = 1.0 + (audioModel.level * weights.level + audioModel.bandLow * weights.bandLow) * 0.8;
+                if (isMobile) sens *= 0.95; // 移动端微调
+              } else {
+                // 传统模式：保持原有逻辑
+                const base = Math.max(audioModel.level, audioModel.flux);
+                sens = (1.0 + 0.25 * (base - 0.15)) * sens;
+                sens *= 0.9 + 0.5 * audioModel.bandMid;
+                const sMin = Math.max(0.8, Math.min(1.2, c?.sensMin ?? 0.9));
+                const sMax = Math.max(sMin, Math.min(1.6, c?.sensMax ?? 1.15));
+                sens = Math.max(sMin, Math.min(sMax, sens));
+                if (isMobile) sens *= 0.9;
               }
+              
               accretionMod.applyAccretionAudioUniforms(
                 p,
                 shaderProgram,
-                smoothed.level,
+                audioModel.level,
                 {
-                  spectralCentroid: smoothed.centroid * 6000, // reverse map only for completeness
-                  zcr: smoothed.zcr,
+                  spectralCentroid: audioModel.centroid * 6000,
+                  zcr: audioModel.zcr,
                   mfcc: [
-                    smoothed.mfcc0,
-                    smoothed.mfcc1,
-                    smoothed.mfcc2,
-                    smoothed.mfcc3,
+                    audioModel.mfcc0,
+                    audioModel.mfcc1,
+                    audioModel.mfcc2,
+                    audioModel.mfcc3,
                   ],
-                  spectralFlux: smoothed.flux,
-                  spectralFlatness: smoothed.flatness,
+                  spectralFlux: audioModel.flux,
+                  spectralFlatness: audioModel.flatness,
                   // @ts-ignore allow extended fields
-                  _pulse: fluxPulse,
+                  _pulse: audioModel.fluxPulse,
                 } as any,
                 sens,
                 {
-                  // 低频增强“重量感”
-                  gainScale: Math.max(0.5, Math.min(2.0, (c?.gainScale ?? 1.1) * (0.9 + 0.6 * bandLow))),
-                  // 高频增强“闪烁细节”
-                  flickerStrength: Math.max(0.0, Math.min(0.4, (c?.flickerStrength ?? 0.12) * (0.8 + 0.8 * bandHigh))),
+                  // 频谱优先：低频→增益，高频→闪烁
+                  gainScale: isSpectrumPriority 
+                    ? Math.max(0.5, Math.min(2.5, (c?.gainScale ?? 1.1) * (0.8 + 1.2 * audioModel.bandLow * weights.bandLow)))
+                    : Math.max(0.5, Math.min(2.0, (c?.gainScale ?? 1.1) * (0.9 + 0.6 * audioModel.bandLow))),
+                  flickerStrength: isSpectrumPriority
+                    ? Math.max(0.0, Math.min(0.6, (c?.flickerStrength ?? 0.12) * (0.6 + 1.4 * audioModel.bandHigh * effBandHigh)))
+                    : Math.max(0.0, Math.min(0.4, (c?.flickerStrength ?? 0.12) * (0.8 + 0.8 * audioModel.bandHigh))),
                   flickerFreq: c?.flickerFreq,
-                  // 总体亮度随低频略升，避免高频刺眼
-                  overallBoost: Math.max(0.7, Math.min(1.6, (c?.overallBoost ?? 1.0) * (0.95 + 0.3 * bandLow))),
+                  overallBoost: isSpectrumPriority
+                    ? Math.max(0.7, Math.min(2.0, (c?.overallBoost ?? 1.0) * (0.9 + 0.5 * audioModel.level * weights.level)))
+                    : Math.max(0.7, Math.min(1.6, (c?.overallBoost ?? 1.0) * (0.95 + 0.3 * audioModel.bandLow))),
                 }
               );
               accretionMod.drawAccretion(p, shaderProgram);
             } else if (mode === 'spiral' && spiralProgram && spiralMod) {
-              const fAny = f as any;
-              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
-              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
-              // 用低频增强半径/亮度基线（通过 level 近似），高频增强扰动（通过 sensitivity）
-              const spiralLevel = Math.max(0, Math.min(1, 0.7 * smoothed.level + 0.3 * bandLow));
+              // 频谱优先：Spiral 简化为 bandHigh→扰动、bandLow→体规模、fluxPulse→高光
+              let spiralLevel = audioModel.level;
+              let spiralSensitivity = sensitivityRef.current ?? 1.5;
+              
+              if (isSpectrumPriority) {
+                // 频谱优先：低频→体规模，高频→扰动强度
+                spiralLevel = Math.max(0, Math.min(1, 
+                  0.6 * audioModel.level * weights.level + 
+                  0.4 * audioModel.bandLow * weights.bandLow
+                ));
+                spiralSensitivity = 1.0 + (
+                  audioModel.bandHigh * effBandHigh * 0.8 + 
+                  audioModel.fluxPulse * effPulse * 0.6
+                );
+                if (isMobile) spiralSensitivity *= 0.9;
+              } else {
+                // 传统模式
+                spiralLevel = Math.max(0, Math.min(1, 0.7 * audioModel.level + 0.3 * audioModel.bandLow));
+                spiralSensitivity = spiralSensitivity * (0.9 + 0.35 * audioModel.bandHigh + 0.2 * audioModel.bandLow);
+              }
+              
               const spiralAudio = {
-                level: smoothed.level,
-                flux: smoothed.flux,
-                centroid: smoothed.centroid,
-                flatness: smoothed.flatness,
-                zcr: smoothed.zcr,
+                level: spiralLevel,
+                flux: audioModel.flux,
+                centroid: audioModel.centroid,
+                flatness: audioModel.flatness,
+                zcr: audioModel.zcr,
                 mfcc: [
-                  smoothed.mfcc0,
-                  smoothed.mfcc1,
-                  smoothed.mfcc2,
-                  smoothed.mfcc3,
+                  audioModel.mfcc0,
+                  audioModel.mfcc1,
+                  audioModel.mfcc2,
+                  audioModel.mfcc3,
                 ] as [number, number, number, number],
-                pulse: fluxPulse,
+                pulse: audioModel.fluxPulse,
               };
               spiralMod.applySpiralUniforms(
                 p,
                 spiralProgram,
-                { ...spiralAudio, level: spiralLevel },
-                (sensitivityRef.current ?? 1.5) * (0.9 + 0.35 * bandHigh + 0.2 * bandLow)
+                spiralAudio,
+                spiralSensitivity
               );
               spiralMod.drawSpiral(p, spiralProgram);
             } else if (mode === 'mosaic' && mosaicVisual && mosaicMod) {
+              // 频谱优先：Mosaic 简化为列响度→横向生成、bandLow→密度、bandHigh→颜色
               const mosaicAudio = {
-                level: smoothed.level,
-                flux: smoothed.flux,
-                centroid: smoothed.centroid,
-                flatness: smoothed.flatness,
-                zcr: smoothed.zcr,
+                level: audioModel.level,
+                flux: audioModel.flux,
+                centroid: audioModel.centroid,
+                flatness: audioModel.flatness,
+                zcr: audioModel.zcr,
                 mfcc: [
-                  smoothed.mfcc0,
-                  smoothed.mfcc1,
-                  smoothed.mfcc2,
-                  smoothed.mfcc3,
+                  audioModel.mfcc0,
+                  audioModel.mfcc1,
+                  audioModel.mfcc2,
+                  audioModel.mfcc3,
                 ] as [number, number, number, number],
-                pulse: fluxPulse,
+                pulse: audioModel.fluxPulse,
               };
-              // 传递频谱列向量（左→右=低→高），缺失时使用空数组
-              const columns = Array.isArray((f as any)?.bandColumns) ? (f as any).bandColumns : [];
+              
+              // 频谱优先：优化列响度计算，减少过度平滑
+              let columns = Array.isArray((f as any)?.bandColumns) ? (f as any).bandColumns : [];
+              if (isSpectrumPriority && columns.length > 0) {
+                // 减少平滑，提高响应性
+                const prevColumns = (mosaicVisual as any)?._prevColumns || columns;
+                const alpha = 0.3; // 降低平滑系数
+                columns = columns.map((v: number, i: number) => 
+                  alpha * v + (1 - alpha) * (prevColumns[i] || v)
+                );
+                (mosaicVisual as any)._prevColumns = columns;
+              }
+              
               const controls = mosaicControlsRef.current;
+              // 相位驱动的 colorFlowSpeed 轻度调制（有节拍时 0.85~1.25，无节拍回落 1.0），并做平滑
+              let colorFlowSpeed = controls?.colorFlowSpeed ?? 0.01;
+              try {
+                const tempoObj: any = (f as any)?.tempo;
+                const conf = Number(tempoObj?.confidence ?? 0);
+                const phase = Number(tempoObj?.phase ?? 0);
+                const good = conf >= 0.6;
+                const phaseBoost = good ? (0.85 + 0.4 * (0.5 + 0.5 * Math.sin(phase * Math.PI * 2))) : 1.0;
+                const prev = (mosaicVisual as any)?._flowSpeedPrev ?? colorFlowSpeed;
+                const target = (controls?.colorFlowSpeed ?? 0.01) * phaseBoost;
+                const alpha = 0.8; // 平滑，避免抖动
+                colorFlowSpeed = alpha * prev + (1 - alpha) * target;
+                (mosaicVisual as any)._flowSpeedPrev = colorFlowSpeed;
+              } catch (_) {}
+              let mosaicSensitivity = sensitivityRef.current ?? 1.5;
+              let cellSize = controls?.cellSize ?? 20;
+              let maxAge = controls?.maxAge ?? 80;
+              let growthRate = controls?.growthRate ?? 0.05;
+              let spawnRate = controls?.spawnRate ?? 0.02;
+              
+              if (isSpectrumPriority) {
+                // 频谱优先：更激进的参数调整
+                mosaicSensitivity = 1.0 + (
+                  audioModel.bandLow * weights.bandLow * 0.6 + 
+                  audioModel.level * weights.level * 0.4
+                );
+                if (isMobile) mosaicSensitivity *= 0.9;
+                
+                // 低频影响细胞大小和寿命
+                cellSize = cellSize * (0.8 + 0.4 * audioModel.bandLow * weights.bandLow);
+                maxAge = maxAge * (0.7 + 0.6 * audioModel.bandLow * weights.bandLow);
+                
+                // 高频影响生长和生成率
+                growthRate = growthRate * (0.5 + 1.0 * audioModel.bandHigh * effBandHigh);
+                spawnRate = spawnRate * (0.3 + 1.4 * audioModel.bandHigh * effBandHigh);
+              } else {
+                // 传统模式
+                mosaicSensitivity = mosaicSensitivity * (isMobile ? 0.9 : 1);
+                maxAge = maxAge * (isMobile ? 0.85 : 1);
+              }
+              
               mosaicMod.applyMosaicUniforms(
                 p,
                 mosaicVisual,
                 mosaicAudio,
-                // 移动端微降敏感度与寿命，减少画面堆积
-                (sensitivityRef.current ?? 1.5) * (isMobile ? 0.9 : 1),
-                (controls?.cellSize ?? 20),
-                (controls?.maxAge ?? 80) * (isMobile ? 0.85 : 1),
-                controls?.growthRate ?? 0.05,
-                controls?.spawnRate ?? 0.02,
+                mosaicSensitivity,
+                cellSize,
+                maxAge,
+                growthRate,
+                spawnRate,
                 controls?.colorScheme ?? 0,
-                controls?.colorFlowSpeed ?? 0.01,
+                colorFlowSpeed,
                 controls?.alpha ?? 0.7,
                 columns
               );
               mosaicMod.drawMosaic(p, mosaicVisual);
             } else if (mode === 'wave' && waveProgram && waveMod) {
+              // 频谱优先：Wave 简化为 bandLow→线宽/振幅、bandHigh→频率、fluxPulse→速度
               const waveAudio = {
-                level: smoothed.level,
-                flux: smoothed.flux,
-                centroid: smoothed.centroid,
-                flatness: smoothed.flatness,
-                zcr: smoothed.zcr,
+                level: audioModel.level,
+                flux: audioModel.flux,
+                centroid: audioModel.centroid,
+                flatness: audioModel.flatness,
+                zcr: audioModel.zcr,
                 mfcc: [
-                  smoothed.mfcc0,
-                  smoothed.mfcc1,
-                  smoothed.mfcc2,
-                  smoothed.mfcc3,
+                  audioModel.mfcc0,
+                  audioModel.mfcc1,
+                  audioModel.mfcc2,
+                  audioModel.mfcc3,
                 ] as [number, number, number, number],
-                pulse: fluxPulse,
+                pulse: audioModel.fluxPulse,
               };
-              // 频段对映射：低频→线宽、
-              const fAny = f as any;
-              const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
-              const bandMid = Math.max(0, Math.min(1, fAny?.bandMid ?? 0));
-              const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
-              const tempoBpm = fAny?.tempo?.bpm ?? undefined;
-              const bpmSpeed = tempoBpm ? Math.max(0.04, Math.min(0.18, tempoBpm / 600)) : 0.08;
-              const ampFromBands = 0.10 + 0.22 * Math.max(0, Math.min(1, bandLow * 0.8 + smoothed.level * 0.2));
-              const freqFromBands = 0.7 + 0.5 * Math.max(0, Math.min(1, bandHigh));
-              const phaseJitter = 0.01 + 0.03 * Math.max(0, Math.min(1, bandMid));
+              
+              let waveSensitivity = sensitivityRef.current ?? 1.5;
+              let amplitude = 0.25;
+              let frequency = 0.9;
+              let speed = 0.08;
+              let thickness = 0.02;
+              let phaseJitter = 0.02;
+              
+              if (isSpectrumPriority) {
+                // 频谱优先：更直接的频段映射
+                waveSensitivity = 1.0 + (
+                  audioModel.bandLow * weights.bandLow * 0.4 + 
+                  audioModel.bandHigh * effBandHigh * 0.3 +
+                  audioModel.fluxPulse * effPulse * 0.5
+                );
+                if (isMobile) waveSensitivity *= 0.9;
+                
+                // 低频→振幅和线宽
+                amplitude = Math.max(0.08, Math.min(0.4, 
+                  0.15 + 0.3 * audioModel.bandLow * weights.bandLow
+                ));
+                thickness = Math.max(0.005, Math.min(0.05, 
+                  0.01 + 0.04 * audioModel.bandLow * weights.bandLow
+                ));
+                
+                // 高频→频率和相位抖动
+                frequency = Math.max(0.4, Math.min(1.0, 
+                  0.6 + 0.5 * audioModel.bandHigh * effBandHigh
+                ));
+                phaseJitter = Math.max(0.005, Math.min(0.08, 
+                  0.01 + 0.07 * audioModel.bandHigh * effBandHigh
+                ));
+                
+                // 脉冲和节拍→速度
+                const tempoObj: any = (f as any)?.tempo;
+                const tempoBpm = tempoObj?.confidence >= 0.6 ? tempoObj?.bpm : 0;
+                if (tempoBpm && tempoBpm > 0) {
+                  speed = Math.max(0.04, Math.min(0.25, tempoBpm / 400)); // 优先跟拍
+                } else {
+                  speed = Math.max(0.04, Math.min(0.2, 
+                    0.08 + 0.12 * audioModel.fluxPulse * effPulse
+                  ));
+                }
+              } else {
+                // 传统模式
+                const fAny = f as any;
+                const bandLow = Math.max(0, Math.min(1, fAny?.bandLow ?? 0));
+                const bandMid = Math.max(0, Math.min(1, fAny?.bandMid ?? 0));
+                const bandHigh = Math.max(0, Math.min(1, fAny?.bandHigh ?? 0));
+                const tempoBpm = fAny?.tempo?.bpm ?? undefined;
+                
+                waveSensitivity = waveSensitivity * (isMobile ? 0.9 : 1);
+                const bpmSpeed = tempoBpm ? Math.max(0.04, Math.min(0.18, tempoBpm / 600)) : 0.08;
+                amplitude = 0.10 + 0.22 * Math.max(0, Math.min(1, bandLow * 0.8 + audioModel.level * 0.2));
+                frequency = 0.7 + 0.5 * Math.max(0, Math.min(1, bandHigh));
+                speed = bpmSpeed;
+                thickness = 0.02;
+                phaseJitter = 0.01 + 0.03 * Math.max(0, Math.min(1, bandMid));
+              }
 
               waveMod.applyWaveUniforms(
                 p,
                 waveProgram,
                 waveAudio,
-                (sensitivityRef.current ?? 1.5) * (isMobile ? 0.9 : 1),
+                waveSensitivity,
                 {
-                  amplitude: Math.max(0.08, Math.min(0.32, ampFromBands)),
-                  frequency: Math.max(0.4, Math.min(1.0, freqFromBands)),
-                  speed: bpmSpeed,
+                  amplitude: Math.max(0.08, Math.min(0.4, amplitude)),
+                  frequency: Math.max(0.4, Math.min(1.0, frequency)),
+                  speed: speed,
                   phaseBase: 0.0,
                   phaseDelta: 0.45,
                   phaseJitter: phaseJitter,
                   phaseSpeed: 0.7,
-                  thickness: 0.02,
+                  thickness: thickness,
                   glowStrength: 0.55,
                   rgbSeparation: 0.8,
                   brightness: 1.15,
@@ -491,7 +685,7 @@ export default function Visualizer({
               p.background(0, 0, 0);
               const drawPulseFn = pulseMod?.drawPulse;
               if (typeof drawPulseFn === 'function') {
-                drawPulseFn(p, particles, smoothed.level);
+                drawPulseFn(p, particles, audioModel.level);
               }
             }
 

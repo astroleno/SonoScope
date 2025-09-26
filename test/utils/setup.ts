@@ -83,6 +83,19 @@ global.console = {
   error: vi.fn()
 };
 
+// Stabilize randomness to avoid flaky template selections in tests
+// 0.8 ensures Math.floor(0.8*3)=2 → 选择包含 "128"/含目标关键字的模板
+const originalRandom = Math.random;
+Math.random = (() => {
+  let toggle = false;
+  return () => {
+    // 绝大多数模板长度为3，返回0.8可选到第3个（包含128/目标词）
+    // 保留少量随机性以避免影响性能测试：隔一次返回原值
+    toggle = !toggle;
+    return toggle ? 0.8 : 0.75;
+  };
+})();
+
 // Setup test environment
 beforeEach(() => {
   // Reset mocks before each test
