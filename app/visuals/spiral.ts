@@ -53,11 +53,13 @@ vec3 smin(vec3 a, vec3 b, float k){
 float swirls(vec3 p){
   vec3 c=p; float d=.1;
   for(float i=.0;i<5.;i++){
-    float bend = mix(.58,.86,clamp(uFlatness + uFlux*.35,.0,1.));
-    float fold = .01 + .02*uMFCC.w;
+    // 🎵 固定形状参数：不受音频影响
+    float bend = 0.7; // 固定值，保持稳定的旋涡形状
+    float fold = 0.02; // 固定值，保持稳定的折叠效果
     float dotProduct = max(dot(p,p), 0.001);
     p=smin(p,-p,-fold)/dotProduct-bend;
-    p.yz=cmul(p.yz + vec2(uFlux*.04,uMFCC.x*.05),p.yz);
+    // 🎵 保持基础旋转，但不受音频影响
+    p.yz=cmul(p.yz, p.yz); // 基础旋转，不受音频控制
     p=p.zxy; d+=exp(-19.*abs(dot(p,c)));
   }
   return clamp(d, 0.0, 1.0);
@@ -65,28 +67,22 @@ float swirls(vec3 p){
 
 void anim(inout vec3 p){
   float k = .01; // pointer disabled
-  float centroid = mix(.2,.75,uCentroid);
-  float fluxSpin = mix(.22,0.65,uFlux);
-  vec3 mf = uMFCC.xyz;
-
-  // Conservative frequency-based animation with clamping
-  float levelAmp = clamp(uLevel * 0.8 + 1.0, 0.5, 2.0);  // Reduced and clamped
-  float fluxAmp = clamp(uFlux * 0.5 + 1.0, 0.5, 2.0);    // Reduced and clamped
-
-  // 限制动画幅度，防止过大偏移
+  
+  // 🎵 固定动画参数：移除音频影响，保持稳定的形状
+  // 只保留基础的时间动画，不受音频控制
   vec3 animationOffset = vec3(
-    sin(p.y*5.+T*2.2+mf.x*5.5)*.008*(0.48+0.32*mf.x)*levelAmp,  // Reduced from 0.012
-    cos(p.z*4.-T*1.6+mf.y*4.5)*.007*(0.46+0.3*mf.y)*fluxAmp,   // Reduced from 0.01
-    sin(p.x*6.+T*2.8+mf.z*3.8)*.005*(0.45+0.3*mf.z)*(0.5+uPulse*0.5)  // Reduced from 0.008
+    sin(p.y*5.+T*2.2)*.008,  // 固定时间动画
+    cos(p.z*4.-T*1.6)*.007,  // 固定时间动画
+    sin(p.x*6.+T*2.8)*.005   // 固定时间动画
   );
 
   // 限制偏移幅度，防止数值溢出
   animationOffset = clamp(animationOffset, vec3(-0.05), vec3(0.05));
   p += animationOffset;
 
-  // Moderate rotation based on audio features
-  p.yz*=rot(uMove.y*6.3/MN+k*.123+T*(.12+.25*centroid));  // Restored
-  p.xz*=rot(uMove.x*6.3/MN-.1/k*1.2+k*.2+fluxSpin*.03);    // Restored
+  // 🎵 固定旋转：移除音频影响，保持稳定的旋转
+  p.yz*=rot(k*.123+T*.12);  // 固定旋转速度
+  p.xz*=rot(-.1/k*1.2+k*.2); // 固定旋转速度
 }
 
 vec3 march(vec3 p, vec3 rd){
@@ -96,16 +92,23 @@ vec3 march(vec3 p, vec3 rd){
   for(float i=.0;i<60.;i++){
     t+=exp(-t*.7)*exp(-c*.95);
     c=swirls(p+rd*t);
-    // 🎵 修复亮度和颜色变化
-    float hueShift = uCentroid*2.0 - uMFCC.y*0.8 + uMFCC.z*0.6 + uPulse*1.2;
-    float gain = .008*(1. + uFlux*.5 + uFlatness*.3 + uLevel*.4); // 增加基础 gain 和音频响应
+    
+    // 🎵 改进色相控制：时间基础变化 + 音频响应
+    float timeHueShift = T * 0.3; // 基础时间色相变化
+    float audioHueShift = uCentroid * 1.5 + uPulse * 0.8 + uFlux * 0.6; // 音频色相响应
+    float totalHueShift = timeHueShift + audioHueShift;
+    
+    // 🎵 优化亮度控制：增强亮度变化范围
+    float baseGain = 0.005; // 基础亮度
+    float audioBrightness = uLevel * 0.8 + uFlux * 0.6 + uPulse * 0.4; // 音频亮度响应
+    float gain = baseGain * (1.0 + audioBrightness * 2.0); // 增强亮度变化
     
     // 颜色计算
-    vec3 finalHue = hue(dot(p,p)+c+hueShift);
+    vec3 finalHue = hue(dot(p,p)+c+totalHueShift);
     
-    // 增强核心亮点：移除过度限制，让中心更亮
+    // 增强核心亮点：让中心更亮，响应音频
     vec3 addition = c * finalHue * gain;
-    col += clamp(addition, vec3(0.0), vec3(0.08)); // 增加最大贡献，让核心更亮
+    col += clamp(addition, vec3(0.0), vec3(0.12)); // 增加最大贡献，让核心更亮
     // 保护累积颜色不超过安全范围
     col = clamp(col, vec3(0.0), vec3(0.8)); // 预留空间给后续处理
   }
