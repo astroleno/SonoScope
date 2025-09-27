@@ -7,7 +7,9 @@
       "Bash(npm audit:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

@@ -699,7 +699,7 @@ export class FeatureAggregator {
     }
 
     if (value < min || value > max) {
-      console.warn(`特征 ${name} 超出范围 [${min}, ${max}]: ${value}，进行截断`);
+      // 静默截断，避免日志刷屏
       return Math.max(min, Math.min(max, value));
     }
 

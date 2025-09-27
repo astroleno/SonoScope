@@ -78,50 +78,64 @@ void main(){
   col *= 0.98 + 0.02*cos(uTime*0.2);
   col *= vignette(uv)*0.9 + 0.1;
 
-  // 相位呼吸（R/G/B 会周期性分离与重合），抖动改为连续正弦，避免跳变
-  float phaseBreath = uPhaseDelta * (0.5 + 0.5*sin(uTime*uPhaseSpeed));
-  float jr = uPhaseJitter * sin(uTime*(1.3*uPhaseSpeed)+1.23);
-  float jg = uPhaseJitter * sin(uTime*(1.1*uPhaseSpeed)+3.14);
-  float jb = uPhaseJitter * sin(uTime*(1.5*uPhaseSpeed)+6.28);
-
-  float basePhase = uPhaseBase + 0.15*sin(uTime*0.7);
-  float phaseR = basePhase - phaseBreath*(0.6*uRgbSeparation) + jr;
-  float phaseG = basePhase + jg;
-  float phaseB = basePhase + phaseBreath*(0.6*uRgbSeparation) + jb;
-
-  // 水平流动
-  float x = uv.x + uSpeed*uTime;
+  // 核心相位：固定速度水平推进
+  float x = uv.x + uSpeed * uTime;
   float w = 6.2831853 * uFrequency;
+  float theta = w * x + uPhaseBase;
 
-  // 三条目标曲线（R/G/B）
-  float yR = uAmplitude * sin(w*x + phaseR);
-  float yG = uAmplitude * sin(w*x + phaseG);
-  float yB = uAmplitude * sin(w*x + phaseB);
+  // 呼吸：分离幅度缓慢起伏，同时沿着波形局部化分离
+  float breath = 0.5 + 0.5 * sin(uTime * uPhaseSpeed);
+  float ampNorm = clamp(uAmplitude / 0.5, 0.0, 1.0);
+  float separationBase = mix(0.62, 0.36, ampNorm);
+  float separation = separationBase * uPhaseDelta * (0.45 + 0.55 * breath) * cos(theta);
 
-  // 厚度轻度受音频影响
-  float t = max(0.001, uThickness * (1.0 - 0.18*uLevel - 0.10*uFlux));
+  // 细微相位扰动，保持柔和流动
+  float jitter = uPhaseJitter * sin(uTime * (1.1 * uPhaseSpeed) + 1.23);
+  float jr = jitter;
+  float jb = -jitter;
+
+  float phaseR = theta - separation * uRgbSeparation + jr;
+  float phaseG = theta;
+  float phaseB = theta + separation * uRgbSeparation + jb;
+
+  // 三条目标曲线（R/G/B）：在零点两次分离，峰谷两次重合
+  float yR = uAmplitude * sin(phaseR);
+  float yG = uAmplitude * sin(phaseG);
+  float yB = uAmplitude * sin(phaseB);
+
+  // 固定厚度，避免音频带来的闪烁
+  float t = max(0.001, uThickness);
 
   // 带形强度
   float iR = band(uv, yR, t);
   float iG = band(uv, yG, t);
   float iB = band(uv, yB, t);
 
-  // 柔光（沿法线近似取样）
-  float gOff = t*1.2 + 0.001;
-  iR += uGlowStrength*0.35*(band(uv+vec2(0.0, gOff), yR, t*1.35) + band(uv-vec2(0.0, gOff), yR, t*1.35));
-  iG += uGlowStrength*0.35*(band(uv+vec2(0.0, gOff), yG, t*1.35) + band(uv-vec2(0.0, gOff), yG, t*1.35));
-  iB += uGlowStrength*0.35*(band(uv+vec2(0.0, gOff), yB, t*1.35) + band(uv-vec2(0.0, gOff), yB, t*1.35));
+  // 高频变化的扩散光强度 - 只影响光条周围的扩散光晕，不改变光条本身
+  float highFreqModulation = sin(uTime * 20.0 + uCentroid * 15.0) * 0.5 + 0.5; // 20Hz高频调制
+  float pulseModulation = sin(uTime * 12.0 + uPulse * 8.0) * 0.4 + 0.6;   // 12Hz脉冲调制
 
-  // 轻微色相偏移与去饱和混合
-  float hueBias = (uCentroid-0.5)*0.15;
-  vec3 waves = vec3(iR*(1.0+0.05*hueBias), iG, iB*(1.0-0.05*hueBias));
+  // 强烈的音频响应 - 只影响扩散光晕
+  float audioGlowIntensity = (uLevel * 4.0 + uFlux * 3.0 + uPulse * 4.5) * highFreqModulation * pulseModulation;
+  audioGlowIntensity = clamp(audioGlowIntensity, 0.2, 8.0); // 强烈的扩散光响应
+
+  // 固定的光晕采样距离，只改变强度，不改变距离
+  float gOff = t * 1.8 + 0.001; // 保持原始的扩散距离
+
+  // 只增强扩散光的强度，不改变光条本身
+  float glowBoost = uGlowStrength * 0.35 * audioGlowIntensity;
+  iR += glowBoost*(band(uv+vec2(0.0, gOff), yR, t*1.35) + band(uv-vec2(0.0, gOff), yR, t*1.35));
+  iG += glowBoost*(band(uv+vec2(0.0, gOff), yG, t*1.35) + band(uv-vec2(0.0, gOff), yG, t*1.35));
+  iB += glowBoost*(band(uv+vec2(0.0, gOff), yB, t*1.35) + band(uv-vec2(0.0, gOff), yB, t*1.35));
+
+  // 统一 RGB 带，专注振幅表现
+  vec3 waves = vec3(iR, iG, iB);
   float lumin = dot(waves, vec3(0.3333));
   vec3 warmWhite = vec3(1.0, 0.97, 0.92) * lumin;
   waves = mix(waves, warmWhite, clamp(uDesaturate, 0.0, 1.0));
 
-  // 亮度整体控制（音频轻权重）
-  float audioBoost = 1.0 + uSensitivity * (uLevel*0.22 + uFlux*0.12 + uPulse*0.18);
-  col = mix(col, col + waves*uBrightness*audioBoost, 1.0);
+  // 亮度整体控制：只增强光晕效果，波形本身保持稳定
+  col = mix(col, col + waves * uBrightness, 1.0);
 
   // 柔和映射
   col = pow(col, vec3(0.95));
@@ -166,17 +180,37 @@ export function applyWaveUniforms(
     shader.setUniform('uTime', p.millis() / 1000.0);
     shader.setUniform('uResolution', [p.width, p.height]);
 
+    const clamp01 = (v: number) => Math.max(0, Math.min(1, v || 0));
+    
+    // 🎵 鼓点敏感度增强：根据报告建议实现动态参数
+    const baseAmplitude = controls?.amplitude ?? 0.25;
+    const baseFrequency = controls?.frequency ?? 0.9;
+    
+    // 1. 振幅映射：base + rms * sens * 0.35，使用 percussiveRatio 作为突发增强
+    const rmsBoost = clamp01(audio.level) * sensitivity * 0.35;
+    const percussiveBoost = clamp01(audio.pulse) * 0.4; // 打击乐增强
+    const dynamicAmplitude = Math.max(0.0, Math.min(0.47, baseAmplitude + rmsBoost + percussiveBoost)); // 从 0.7 降到 0.47 (约2/3)
+    
+    // 2. 频率控制：用 spectralCentroid 控制相位分离和频率
+    const centroidNorm = clamp01(audio.centroid);
+    const dynamicPhaseDelta = 0.4 + (1.1 - 0.4) * centroidNorm; // 0.4 到 1.1
+    const dynamicFrequency = 0.65 + (1.05 - 0.65) * centroidNorm; // 0.65 到 1.05
+    
+    // 3. 光晕强度：基于 spectralFlux 和 pulse，增大打击音时的高亮区域
+    const fluxBoost = clamp01(audio.flux) * 0.8;
+    const pulseBoost = clamp01(audio.pulse) * 0.6;
+    const dynamicGlowStrength = Math.max(0.0, Math.min(2.0, (controls?.glowStrength ?? 0.6) + fluxBoost + pulseBoost));
+
     const c = {
-      amplitude: Math.max(0.0, Math.min(0.7, controls?.amplitude ?? 0.25)),
-      // 强制 ≤ 1 周期/屏宽
-      frequency: Math.max(0.1, Math.min(1.0, controls?.frequency ?? 0.9)),
+      amplitude: dynamicAmplitude,
+      frequency: dynamicFrequency,
       speed: controls?.speed ?? 0.08,
       phaseBase: controls?.phaseBase ?? 0.0,
-      phaseDelta: Math.max(0.0, Math.min(3.14, controls?.phaseDelta ?? 0.6)),
+      phaseDelta: Math.max(0.0, Math.min(3.14, dynamicPhaseDelta)),
       phaseJitter: Math.max(0.0, Math.min(0.8, controls?.phaseJitter ?? 0.02)),
       phaseSpeed: Math.max(0.0, Math.min(4.0, controls?.phaseSpeed ?? 0.7)),
       thickness: Math.max(0.001, Math.min(0.25, controls?.thickness ?? 0.02)),
-      glowStrength: Math.max(0.0, Math.min(2.0, controls?.glowStrength ?? 0.6)),
+      glowStrength: dynamicGlowStrength,
       rgbSeparation: Math.max(0.0, Math.min(2.0, controls?.rgbSeparation ?? 1.0)),
       brightness: Math.max(0.2, Math.min(3.0, controls?.brightness ?? 1.2)),
     } as Required<WaveControls>;
@@ -194,8 +228,7 @@ export function applyWaveUniforms(
     shader.setUniform('uBrightness', c.brightness);
     shader.setUniform('uDesaturate', 0.35);
 
-    // 音频
-    const clamp01 = (v: number) => Math.max(0, Math.min(1, v || 0));
+    // 音频参数
     shader.setUniform('uLevel', clamp01(audio.level));
     shader.setUniform('uFlux', clamp01(audio.flux));
     shader.setUniform('uCentroid', clamp01(audio.centroid));
@@ -224,5 +257,3 @@ export function drawWave(p: any, shader: any){
     console.error('[Wave] drawWave error:', err);
   }
 }
-
-

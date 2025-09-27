@@ -1,18 +1,39 @@
-> @sonoscope/app@1.0.0 dev /Users/zuobowen/Documents/GitHub/SonoScope/app
-> next dev
 
- ⚠ Port 3000 is in use, trying 3001 instead.
-  ▲ Next.js 14.2.32
-  - Local:        http://localhost:3001
-  - Environments: .env.local
 
- ✓ Starting...
- ✓ Ready in 1719ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 1929ms (456 modules)
- ⚠ Unsupported metadata viewport is configured in metadata export in /model/yamnet.task. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- ⚠ Unsupported metadata themeColor is configured in metadata export in /model/yamnet.task. Please move it to viewport export instead.
-Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
- GET /model/yamnet.task 404 in 2195ms
- ✓ Compiled in 232ms (237 modules)
+1 of 2 errors
+Next.js (14.2.32) is outdated (learn more)
+
+Unhandled Runtime Error
+TypeError: Failed to execute 'useProgram' on 'WebGL2RenderingContext': parameter 1 is not of type 'WebGLProgram'.
+
+Source
+visuals/spiral.ts (273:5) @ rect
+
+  271 |   p.noStroke();
+  272 |   p.rectMode(p.CENTER);
+> 273 |   p.rect(0, 0, p.width, p.height);
+      |     ^
+  274 | }
+  275 |
+Call Stack
+Show collapsed frames
+
+
+
+2 of 2 errors
+Next.js (14.2.32) is outdated (learn more)
+
+Unhandled Runtime Error
+TypeError: Failed to execute 'useProgram' on 'WebGL2RenderingContext': parameter 1 is not of type 'WebGLProgram'.
+
+Source
+visuals/spiral.ts (273:5) @ rect
+
+  271 |   p.noStroke();
+  272 |   p.rectMode(p.CENTER);
+> 273 |   p.rect(0, 0, p.width, p.height);
+      |     ^
+  274 | }
+  275 |
+Call Stack
+Show collapsed frames

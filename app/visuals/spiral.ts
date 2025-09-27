@@ -55,25 +55,38 @@ float swirls(vec3 p){
   for(float i=.0;i<5.;i++){
     float bend = mix(.58,.86,clamp(uFlatness + uFlux*.35,.0,1.));
     float fold = .01 + .02*uMFCC.w;
-    p=smin(p,-p,-fold)/dot(p,p)-bend;
+    float dotProduct = max(dot(p,p), 0.001);
+    p=smin(p,-p,-fold)/dotProduct-bend;
     p.yz=cmul(p.yz + vec2(uFlux*.04,uMFCC.x*.05),p.yz);
     p=p.zxy; d+=exp(-19.*abs(dot(p,c)));
   }
-  return d;
+  return clamp(d, 0.0, 1.0);
 }
 
 void anim(inout vec3 p){
   float k = .01; // pointer disabled
-  float centroid = mix(.2,.85,uCentroid);
-  float fluxSpin = mix(.4,1.3,uFlux);
+  float centroid = mix(.2,.75,uCentroid);
+  float fluxSpin = mix(.22,0.65,uFlux);
   vec3 mf = uMFCC.xyz;
-  p += vec3(
-    sin(p.y*5.+T*2.5+mf.x*6.)*.035*mf.x,
-    cos(p.z*4.-T*1.8+mf.y*5.)*.028*mf.y,
-    sin(p.x*6.+T*3.+mf.z*4.)*.03*(.5+mf.z)
+
+  // Conservative frequency-based animation with clamping
+  float levelAmp = clamp(uLevel * 0.8 + 1.0, 0.5, 2.0);  // Reduced and clamped
+  float fluxAmp = clamp(uFlux * 0.5 + 1.0, 0.5, 2.0);    // Reduced and clamped
+
+  // 限制动画幅度，防止过大偏移
+  vec3 animationOffset = vec3(
+    sin(p.y*5.+T*2.2+mf.x*5.5)*.008*(0.48+0.32*mf.x)*levelAmp,  // Reduced from 0.012
+    cos(p.z*4.-T*1.6+mf.y*4.5)*.007*(0.46+0.3*mf.y)*fluxAmp,   // Reduced from 0.01
+    sin(p.x*6.+T*2.8+mf.z*3.8)*.005*(0.45+0.3*mf.z)*(0.5+uPulse*0.5)  // Reduced from 0.008
   );
-  p.yz*=rot(uMove.y*6.3/MN+k*.123+T*(.22+.45*centroid));
-  p.xz*=rot(uMove.x*6.3/MN-.1/k*1.2+k*.2+fluxSpin*.08);
+
+  // 限制偏移幅度，防止数值溢出
+  animationOffset = clamp(animationOffset, vec3(-0.05), vec3(0.05));
+  p += animationOffset;
+
+  // Moderate rotation based on audio features
+  p.yz*=rot(uMove.y*6.3/MN+k*.123+T*(.12+.25*centroid));  // Restored
+  p.xz*=rot(uMove.x*6.3/MN-.1/k*1.2+k*.2+fluxSpin*.03);    // Restored
 }
 
 vec3 march(vec3 p, vec3 rd){
@@ -81,11 +94,20 @@ vec3 march(vec3 p, vec3 rd){
   vec3 col=vec3(0.);
   float c=.0,t=.0;
   for(float i=.0;i<60.;i++){
-    t+=exp(-t*.65)*exp(-c*1.05);
+    t+=exp(-t*.7)*exp(-c*.95);
     c=swirls(p+rd*t);
-    float hueShift = uCentroid*3.2 - uMFCC.y*1.4 + uMFCC.z*1.1 + uPulse*2.4;
-    float gain = .008*(1. + uFlux*.9 + uFlatness*.45);
-    col+=c*hue(dot(p,p)+c+hueShift)*gain;
+    // 🎵 修复亮度和颜色变化
+    float hueShift = uCentroid*2.0 - uMFCC.y*0.8 + uMFCC.z*0.6 + uPulse*1.2;
+    float gain = .008*(1. + uFlux*.5 + uFlatness*.3 + uLevel*.4); // 增加基础 gain 和音频响应
+    
+    // 颜色计算
+    vec3 finalHue = hue(dot(p,p)+c+hueShift);
+    
+    // 增强核心亮点：移除过度限制，让中心更亮
+    vec3 addition = c * finalHue * gain;
+    col += clamp(addition, vec3(0.0), vec3(0.08)); // 增加最大贡献，让核心更亮
+    // 保护累积颜色不超过安全范围
+    col = clamp(col, vec3(0.0), vec3(0.8)); // 预留空间给后续处理
   }
   return col;
 }
@@ -105,27 +127,69 @@ void main(){
     float dif=clamp(dot(l,n),.0,1.), fres=pow(clamp(1.+dot(rd,n),.0,1.),3.),
           spec=pow(clamp(dot(reflect(rd,n),l),.0,1.),4.);
     dif=sqrt(dif);
-    col=mix(col,vec3(1.-dif)*sqrt(col),fres);
-    col=mix(col,vec3(dif),fres*(.8+.3*uFlatness));
-    float specBoost=mix(.12,.42,clamp(uFlux+uPulse*.6,.0,1.));
-    vec3 specHue=hue(spec+uCentroid*4.+uMFCC.x*2.2);
-    col+=specBoost*spec*(specHue+.5*vec3(.6+.7*uFlatness));
-    col=mix(col,vec3(1.),fres*fres*(.18+.18*uFlatness));
-    float tone= mix(.04,.18,clamp(uZCR+.3*uFlatness,.0,1.));
-    col=mix(col,col+vec3(tone),uPulse*.5);
-    col=S(-.05,.8,col); col=max(col,.02);
+    // 保守的混合和光照计算
+    col=mix(col,vec3(1.-dif)*sqrt(col),clamp(fres*0.45, 0.0, 0.8));
+    col=mix(col,vec3(dif),clamp(fres*(.5+.16*uFlatness), 0.0, 0.8));
+    float specBoost=mix(.015,.04,clamp(uFlux*.3+uPulse*.08,.0,1.));
+    vec3 specHue=hue(spec+uCentroid*2.0+uMFCC.x*1.0);
+    // 限制镜面反射的强度
+    vec3 specularContribution = specBoost*spec*(specHue+.18*vec3(.6+.3*uFlatness));
+    specularContribution = clamp(specularContribution, vec3(0.0), vec3(0.2));
+    col += specularContribution;
+    col=mix(col,vec3(1.),clamp(fres*fres*0.05*(1.+0.15*uFlatness), 0.0, 0.3));
+    float tone= mix(.025,.08,clamp(uZCR*.4+.1*uFlatness,.0,1.));
+    col += vec3(tone) * 0.15;
+    col = mix(col, col + vec3(0.06 + tone * 0.3), 0.3);
+    // 限制颜色范围
+    col = clamp(col, 0.0, 0.8);
+    col=S(-.05,.65,col);
+    col=max(col,.02);
   } else {
     col=mix(vec3(.1,.2,.3),vec3(.008),pow(S(.0,.65,dot(uv,uv)),.3));
-    col+=sqrt(at*vec3(.9,.7,1.))*.25*(.5+uFlux*.8);
-    col+=vec3(.05*uCentroid,.04*uFlux,.06*uFlatness);
+    // 限制背景音频响应
+    vec3 audioBoost = vec3(.04*uCentroid,.03*uFlux,.05*uFlatness);
+    audioBoost = clamp(audioBoost, vec3(0.0), vec3(0.1));  // 限制音频影响
+    col+=clamp(sqrt(at*vec3(.9,.7,1.))*.2*(.5+uFlux*.6), 0.0, 0.15);
+    col += audioBoost;
+    col = clamp(col, 0.0, 0.5);  // 限制背景亮度
   }
   float t=min((uTime-.5)*.3,1.);
   col=mix(vec3(0.),col,t);
-  // Simple audio reactivity on brightness
-  float response = uLevel + uFlux*.35 + uPulse*.6;
-  col *= (1.0 + uSensitivity * response * 0.6);
-  col=S(-.15,1.1,.9*col);
-  gl_FragColor=vec4(col,1.);
+  // Conservative audio reactivity - prevent overflow
+  float response = clamp(uLevel * 1.2 + uFlux * 0.8 + uPulse * 1.0, 0.0, 2.0);
+
+  // Reduced brightness lift - more conservative approach
+  float brightnessLift = response * 0.08;  // Reduced from 0.15 to 0.08
+
+  // Conservative color enhancement
+  vec3 colorEnhanced = col * (1.0 + brightnessLift * 0.5);
+
+  // Safer mixing with clamped factors
+  float mixFactor = clamp(brightnessLift * 1.5, 0.0, 0.4); // Reduced from 0.6
+  col = mix(col, colorEnhanced, mixFactor);
+
+  // Minimal additional brightness
+  col += vec3(brightnessLift * 0.15);  // Reduced from 0.3
+
+  // Intermediate clamp to prevent overflow
+  col = clamp(col, 0.0, 0.9);  // Leave headroom
+
+  // Conservative sensitivity multiplier
+  col *= (1.0 + uSensitivity * 0.05);  // Reduced from 0.1
+  col = clamp(col, 0.0, 0.95);
+
+  // Conservative pulse effect
+  float pulseEffect = uPulse * 0.05 * sin(T * 3.0 + uCentroid * 1.5);
+  col += vec3(pulseEffect);
+  col = clamp(col, 0.0, 0.95);  // Final clamp before smoothstep
+
+  // Final smoothstep with safe parameters
+  col = clamp(col, 0.0, 1.0);  // Ensure col is in safe range
+  col = S(-.15, 1.1, .9 * col);
+
+  // Final safety clamp
+  col = clamp(col, 0.0, 1.0);
+  gl_FragColor = vec4(col, 1.);
 }
 `;
 
@@ -143,7 +207,12 @@ export function applySpiralUniforms(
   p: any,
   shader: any,
   audio: SpiralAudioUniforms,
-  sensitivity: number
+  sensitivity: number,
+  controls?: {
+    theme?: 'default' | 'warm' | 'cool' | 'neon' | 'pastel';
+    dominantInstrument?: string;
+    percussiveRatio?: number;
+  }
 ) {
   shader.setUniform('uTime', p.millis() / 1000.0);
   shader.setUniform('uResolution', [p.width, p.height]);
@@ -171,6 +240,8 @@ export function applySpiralUniforms(
     'uSensitivity',
     Math.max(0.5, Math.min(3.0, sensitivity || 1.5))
   );
+
+  // 🎨 简化：移除复杂的调色板系统，使用基础 hue 函数
 }
 
 export function drawSpiral(p: any, shader: any) {

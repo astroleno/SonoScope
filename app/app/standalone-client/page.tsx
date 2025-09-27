@@ -19,9 +19,9 @@ function calculateVoiceProbability(f: any): number {
   return Math.max(0, Math.min(1, 0.35 + 0.4 * flatFactor + 0.25 * centroidNorm));
 }
 
-function calculatePercussiveRatio(f: any): number {
-  const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : 0;
-  const flux = typeof f?.spectralFlux === 'number' ? f.spectralFlux : 0;
+  function calculatePercussiveRatio(f: any): number {
+    const flat = typeof f?.spectralFlatness === 'number' ? f.spectralFlatness : 0;
+    const flux = 0; // spectralFlux 已移除，使用默认值
   
   const fluxNorm = Math.max(0, Math.min(1, flux * 1.4));
   const flatNorm = Math.max(0, Math.min(1, flat));
@@ -62,6 +62,23 @@ async function loadYAMNetModel(): Promise<any | null> {
   try {
     console.log('尝试加载 YAMNet (TFLite)...');
     const tfliteNs = await withTimeout(import('@tensorflow/tfjs-tflite'));
+    // 关键：为 tfjs-tflite 指定 wasm 资源目录，避免 404/_malloc 报错
+    try {
+      const setWasmPaths = (tfliteNs as any)?.setWasmPaths;
+      const CDN = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite/dist/';
+      if (typeof setWasmPaths === 'function') {
+        setWasmPaths(CDN);
+        console.log('tfjs-tflite wasm 路径已设置为 CDN (module)');
+      } else if ((globalThis as any)?.tfjsTflite?.setWasmPaths) {
+        (globalThis as any).tfjsTflite.setWasmPaths(CDN);
+        console.log('tfjs-tflite wasm 路径已设置为 CDN (global)');
+      } else {
+        console.warn('tfjs-tflite 未暴露 setWasmPaths，将回退到本地 /tflite/');
+        (tfliteNs as any)?.setWasmPaths?.('/tflite/');
+      }
+    } catch (e) {
+      console.warn('设置 tfjs-tflite wasm 路径失败（可忽略）:', e);
+    }
     const tfliteModel = await withTimeout((tfliteNs as any).loadTFLiteModel('/model/yamnet_tflite/yamnet.tflite'));
     console.log('YAMNet (TFLite) 加载成功');
     return tfliteModel; // 作为 any 返回，后续以 predict 调用
@@ -916,8 +933,7 @@ const PRESET_OPTIONS = [
   { id: 'wave', label: 'Wave', abbrMobile: 'WA' },
   { id: 'accretion', label: 'Accretion', abbrMobile: 'AC' },
   { id: 'spiral', label: 'Spiral', abbrMobile: 'SP' },
-  { id: 'mosaic', label: 'Mosaic', abbrMobile: 'MO' },
-  { id: 'spectrum', label: 'Spectrum', abbrMobile: 'SP' }
+  { id: 'mosaic', label: 'Mosaic', abbrMobile: 'MO' }
 ];
 
 export default function StandaloneClient() {
@@ -929,7 +945,8 @@ export default function StandaloneClient() {
   const [features, setFeatures] = useState(null);
   const [sensitivity, setSensitivity] = useState(1.5);
   const [yamnetResults, setYamnetResults] = useState(null); // YAMNet classification results
-  const [danmuEnabled, setDanmuEnabled] = useState(true); // Danmu toggle state
+  const [danmuEnabled, setDanmuEnabled] = useState(false); // Danmu toggle state
+  const [microphoneEnabled, setMicrophoneEnabled] = useState(false); // Microphone toggle state
   const [spectrumPriority, setSpectrumPriority] = useState(() => {
     try {
       const env = (process as any)?.env || (window as any)?.process?.env || {};
@@ -940,7 +957,6 @@ export default function StandaloneClient() {
   
   // LLM弹幕管线集成
   const danmuPipeline = useDanmuPipeline({
-    enabled: danmuEnabled,
     autoStart: false, // 手动控制启动
     useSimple: false, // 使用增强版管线（完整LLM功能）
     // 调整为每次生成5条基础弹幕（鼓励/陪伴型额外在管线内追加1-2条）
@@ -953,6 +969,11 @@ export default function StandaloneClient() {
     stabilityWindowMs: 2000, // 稳定性窗口2秒
     stabilityConfidence: 0.4, // 稳定性置信度
   });
+  
+  // 使用 useRef 来确保异步回调能够访问到最新的弹幕管线状态
+  const danmuPipelineRef = useRef(danmuPipeline);
+  danmuPipelineRef.current = danmuPipeline;
+  
   // 调试面板显示：避免 SSR/CSR 初始不一致，挂载后再决定
   const [debugVisible, setDebugVisible] = useState<boolean>(false);
   const [debugInfo, setDebugInfo] = useState<{ ctxState: string; sampleRate: number; hasStream: boolean; hasAnalyser: boolean; rms: number; maxAbs: number; zeroCount: number; lastSamples: number[]; isSecure: boolean; hasMedia: boolean; micPermission: string; lastError?: string }>({
@@ -965,10 +986,14 @@ export default function StandaloneClient() {
   const longPressTimerRef = useRef<number | null>(null);
   const longPressStartRef = useRef<number>(0);
   const [embedInfo, setEmbedInfo] = useState<{ inIframe: boolean; policyMicrophone?: string; policyCamera?: string }>({ inIframe: false });
+  // 一次性启动标记，避免重复触发
+  const micStartedRef = useRef<boolean>(false);
   
   // 音频处理引用
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -1013,12 +1038,13 @@ export default function StandaloneClient() {
       const enable = typeof next === 'boolean' ? next : !danmuEnabled;
       setDanmuEnabled(enable);
 
-      if (danmuPipeline.isReady) {
+      const currentPipeline = danmuPipelineRef.current;
+      if (currentPipeline.isReady) {
         if (enable) {
-          danmuPipeline.start();
+          currentPipeline.start();
           console.log('🎵 LLM弹幕管线已启动');
         } else {
-          danmuPipeline.stop();
+          currentPipeline.stop();
           console.log('🎵 LLM弹幕管线已停止');
           // 清理屏幕上已有弹幕元素
           const container = document.getElementById('danmu-container');
@@ -1029,26 +1055,69 @@ export default function StandaloneClient() {
           }
         }
       } else {
-        console.log('🎵 LLM弹幕管线未就绪，跳过切换');
+        console.log('🎵 LLM弹幕管线未就绪，等待初始化完成...');
+        // 等待弹幕管线初始化完成
+        let attempts = 0;
+        const maxAttempts = 50; // 最多等待5秒
+        const checkReady = () => {
+          attempts++;
+          // 使用 ref 获取最新状态
+          const currentPipeline = danmuPipelineRef.current;
+          console.log(`🎵 检查弹幕管线状态 (${attempts}/${maxAttempts}):`, {
+            isReady: currentPipeline.isReady,
+            isActive: currentPipeline.isActive,
+            danmuCount: currentPipeline.danmuCount
+          });
+          
+          if (currentPipeline.isReady || currentPipeline.isActive) {
+            if (enable && !currentPipeline.isActive) {
+              currentPipeline.start();
+              console.log('🎵 LLM弹幕管线已启动（延迟启动）');
+            } else if (currentPipeline.isActive) {
+              console.log('🎵 LLM弹幕管线已经启动，无需重复启动');
+            }
+            // 找到状态，退出检查
+            return;
+          } else if (attempts < maxAttempts) {
+            // 继续等待
+            setTimeout(checkReady, 100);
+          } else {
+            console.warn('🎵 弹幕管线初始化超时，无法启动');
+          }
+        };
+        setTimeout(checkReady, 100);
       }
     } catch (err) {
       console.warn('切换LLM弹幕失败:', err);
     }
   }, [danmuEnabled, danmuPipeline]);
 
+  // 当弹幕管线初始化完成且弹幕开关开启时，自动启动
+  useEffect(() => {
+    const currentPipeline = danmuPipelineRef.current;
+    if (currentPipeline.isReady && danmuEnabled && !currentPipeline.isActive) {
+      console.log('🎵 弹幕管线初始化完成，自动启动...');
+      currentPipeline.start();
+    } else if (currentPipeline.isActive) {
+      console.log('🎵 弹幕管线已经启动，无需重复启动');
+    }
+  }, [danmuPipeline.isReady, danmuEnabled, danmuPipeline.isActive]);
+
   // 检测用户偏好
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) {
+    const mediaQuery = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    if (mediaQuery && mediaQuery.matches) {
       setAnimationMode('reduced');
     }
     
-    const handleChange = (e: MediaQueryListEvent) => {
-      setAnimationMode(e.matches ? 'reduced' : 'auto');
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    if (mediaQuery) {
+      const handleChange = (e: MediaQueryListEvent) => {
+        setAnimationMode(e.matches ? 'reduced' : 'auto');
+      };
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
   }, []);
 
   // 音频分析循环 - 使用Meyda进行真实特征提取
@@ -1147,10 +1216,14 @@ export default function StandaloneClient() {
 
       // 创建音频上下文
       // 在 iOS/Safari 上，AudioContext 需要在用户手势后 resume
-      const AudioContextCtor = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const AudioContextCtor = typeof window !== 'undefined' ? ((window as any).AudioContext || (window as any).webkitAudioContext) : null;
+      if (!AudioContextCtor) {
+        throw new Error('AudioContext not supported');
+      }
       const audioContext = new AudioContextCtor({ latencyHint: 'interactive' });
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream!);
+      sourceRef.current = source;
 
       // 配置分析器 - 使用与主页面相同的配置
       analyser.fftSize = 2048; // 与主页面一致
@@ -1166,6 +1239,7 @@ export default function StandaloneClient() {
         silentGain.gain.value = 0;
         analyser.connect(silentGain);
         silentGain.connect(audioContext.destination);
+        gainRef.current = silentGain;
       } catch (chainErr) {
         console.warn('连接静音增益节点失败（可忽略）:', chainErr);
       }
@@ -1216,26 +1290,33 @@ export default function StandaloneClient() {
       // 初始化LLM弹幕管线
       try {
         console.log('初始化LLM弹幕管线...');
-        if (danmuEnabled && danmuPipeline.isReady) {
-          danmuPipeline.start();
-          console.log('LLM弹幕管线已启动');
-          } else {
+        if (danmuEnabled) {
+          // 如果弹幕启用，直接启动，让管线内部处理初始化
+          danmuPipelineRef.current.start();
+          console.log('LLM弹幕管线启动命令已发送');
+        } else {
           console.log('LLM弹幕管线已准备（等待启动）');
         }
       } catch (e) {
         console.warn('LLM弹幕管线初始化失败:', e);
       }
 
-      // 初始化 YAMNet 模型
+      // 初始化 YAMNet 模型（仅在显式开启内联加载时）
       try {
-        if (!yamnetModelRef.current) {
-          console.log('加载 YAMNet 模型...');
-          yamnetModelRef.current = await loadYAMNetModel();
-          if (yamnetModelRef.current) {
-            console.log('YAMNet 模型加载成功');
-            // 初始化音频缓冲区
-            yamnetBufferRef.current = new Float32Array(15600); // YAMNet 需要的缓冲区大小
+        const env = (process as any)?.env || (window as any)?.process?.env || {};
+        const inlineYamnet = String(env.NEXT_PUBLIC_INLINE_YAMNET ?? 'false') === 'true';
+        if (inlineYamnet) {
+          if (!yamnetModelRef.current) {
+            console.log('加载 YAMNet 模型...');
+            yamnetModelRef.current = await loadYAMNetModel();
+            if (yamnetModelRef.current) {
+              console.log('YAMNet 模型加载成功');
+              // 初始化音频缓冲区
+              yamnetBufferRef.current = new Float32Array(15600); // YAMNet 需要的缓冲区大小
+            }
           }
+        } else {
+          console.log('跳过内联 YAMNet 加载（由 Worker 负责分类，或未启用）。');
         }
       } catch (e) {
         console.warn('YAMNet 模型加载失败:', e);
@@ -1254,8 +1335,24 @@ export default function StandaloneClient() {
           } catch (_) { return true; }
         })();
 
-        if (spectrumEnabled && Meyda && (Meyda as any).isBrowser) {
-          console.log('初始化 Meyda 特征提取...');
+        console.log('🎵 检查 Meyda 初始化条件:', {
+          spectrumEnabled,
+          hasMeyda: !!Meyda,
+          isBrowser: (Meyda as any)?.isBrowser,
+          meydaVersion: (Meyda as any)?.version
+        });
+
+        console.log('🎵 检查 Meyda 初始化条件:', {
+          spectrumEnabled,
+          hasMeyda: !!Meyda,
+          isBrowser: (Meyda as any)?.isBrowser,
+          meydaVersion: (Meyda as any)?.version
+        });
+
+        if (spectrumEnabled && Meyda && typeof window !== 'undefined') {
+          console.log('🎵 初始化 Meyda 特征提取...');
+          console.log('🎵 Meyda 版本:', (Meyda as any).version);
+          console.log('🎵 支持的特征:', Object.keys(Meyda.featureExtractors));
           meydaAnalyzerRef.current = Meyda.createMeydaAnalyzer({
             audioContext,
             source,
@@ -1266,11 +1363,8 @@ export default function StandaloneClient() {
               'zcr',
               'mfcc',
               'spectralFlatness',
-              'spectralFlux',
               'chroma',
-              'spectralBandwidth',
               'spectralRolloff',
-              'spectralContrast',
               'spectralSpread',
               'spectralSkewness',
               'spectralKurtosis',
@@ -1279,7 +1373,14 @@ export default function StandaloneClient() {
               'perceptualSharpness',
             ],
             callback: (f: any) => {
+              console.log('🎵 Meyda 回调被调用:', f);
               try {
+                // 健壮性检查：确保 Meyda 返回了有效数据
+                if (!f || typeof f !== 'object') {
+                  console.warn('🎵 Meyda 回调: 无效的特征数据', f);
+                  return;
+                }
+                
                 // 处理 Meyda 特征数据
                 const processedFeatures = {
                   rms: typeof f.rms === 'number' ? f.rms : 0,
@@ -1287,11 +1388,12 @@ export default function StandaloneClient() {
                   zcr: typeof f.zcr === 'number' ? f.zcr : 0,
                   mfcc: Array.isArray(f.mfcc) ? f.mfcc : [],
                   spectralFlatness: typeof f.spectralFlatness === 'number' ? f.spectralFlatness : 0,
-                  spectralFlux: typeof f.spectralFlux === 'number' ? f.spectralFlux : 0,
                   chroma: Array.isArray(f.chroma) ? f.chroma : [],
-                  spectralBandwidth: typeof f.spectralBandwidth === 'number' ? f.spectralBandwidth : 0,
+                  // Mock spectralContrast 实现
+                  spectralContrast: Array.isArray(f.chroma) ? f.chroma.slice(0, 12).map((c: number) => Math.max(0, Math.min(1, c))) : new Array(12).fill(0),
+                  // Mock spectralBandwidth 实现
+                  spectralBandwidth: typeof f.spectralSpread === 'number' ? Math.max(0, Math.min(1, f.spectralSpread / 1000)) : 0,
                   spectralRolloff: typeof f.spectralRolloff === 'number' ? f.spectralRolloff : 0,
-                  spectralContrast: Array.isArray(f.spectralContrast) ? f.spectralContrast : [],
                   spectralSpread: typeof f.spectralSpread === 'number' ? f.spectralSpread : 0,
                   spectralSkewness: typeof f.spectralSkewness === 'number' ? f.spectralSkewness : 0,
                   spectralKurtosis: typeof f.spectralKurtosis === 'number' ? f.spectralKurtosis : 0,
@@ -1449,7 +1551,7 @@ export default function StandaloneClient() {
 
                 // 轻量 BPM 估计：使用 spectralFlux 峰值的间隔（滑窗中位数）
                 try {
-                  const flux = typeof f.spectralFlux === 'number' ? Math.max(0, f.spectralFlux) : 0;
+                  const flux = 0; // spectralFlux 已移除，使用默认值
                   const audioCtx = audioContextRef.current;
                   if (audioCtx) {
                     const nowSec = audioCtx.currentTime;
@@ -1542,7 +1644,7 @@ export default function StandaloneClient() {
                   if (audioCtx) {
                     const nowSec = audioCtx.currentTime;
                     const os = onsetStateRef.current;
-                    const flux = (processedFeatures as any).spectralFlux ?? 0;
+                    const flux = 0; // spectralFlux 已移除，使用默认值
                     const rmsNow = (processedFeatures as any).rms ?? 0;
                     const minGap = 0.12; // 120ms 最短间隔
                     const fluxGate = 0.12; // 经验门限
@@ -1563,9 +1665,16 @@ export default function StandaloneClient() {
                 
                 setFeatures(processedFeatures);
                 
-                // 将音频特征传递给LLM弹幕管线
-                if (danmuPipeline.isActive && processedFeatures) {
+                // 将音频特征传递给LLM弹幕管线 - 使用 ref 获取最新状态
+                if (danmuPipelineRef.current.isActive && processedFeatures) {
                   try {
+                    // 健壮性检查：确保 RMS 值有效
+                    const rmsValue = processedFeatures.rms;
+                    if (typeof rmsValue !== 'number' || isNaN(rmsValue) || !isFinite(rmsValue)) {
+                      console.warn('🎵 弹幕管线: RMS 值无效，跳过弹幕生成', rmsValue);
+                      return;
+                    }
+                    
                     // 构建完整的特征对象供LLM分析
                     const fullFeatures = {
                       ...processedFeatures,
@@ -1575,16 +1684,16 @@ export default function StandaloneClient() {
                       sensitivity: sensitivity
                     };
                     
-                    // 传递给LLM弹幕管线
-                    danmuPipeline.handleAudioFeatures(processedFeatures.rms, fullFeatures);
+                    // 传递给LLM弹幕管线 - 使用 ref 获取最新状态
+                    danmuPipelineRef.current.handleAudioFeatures(rmsValue, fullFeatures);
                       
                       // 调试日志
           if (Math.random() < 0.1) {
                       console.log('🎵 LLM弹幕管线处理特征:', {
                         rms: processedFeatures.rms,
-                        style: danmuPipeline.currentStyle,
-                        danmuCount: danmuPipeline.danmuCount,
-                        dominantInstrument: danmuPipeline.dominantInstrument
+                        style: danmuPipelineRef.current.currentStyle,
+                        danmuCount: danmuPipelineRef.current.danmuCount,
+                        dominantInstrument: danmuPipelineRef.current.dominantInstrument
                       });
                     }
                   } catch (e) {
@@ -1645,6 +1754,12 @@ export default function StandaloneClient() {
           });
           meydaAnalyzerRef.current.start();
           console.log('Meyda 特征提取已启动');
+        } else {
+          console.log('🎵 跳过 Meyda 特征提取:', {
+            reason: !spectrumEnabled ? 'spectrumEnabled=false' : 
+                   !Meyda ? 'Meyda未加载' : 
+                   (!(Meyda as any).isBrowser && typeof window === 'undefined') ? '非浏览器环境' : 'Meyda.isBrowser检查失败'
+          });
         }
       } catch (e) {
         console.warn('Meyda 初始化失败:', e);
@@ -1710,7 +1825,7 @@ export default function StandaloneClient() {
 
     // 清理LLM弹幕管线
     try {
-      if (danmuPipeline.isActive) {
+      if (danmuPipeline.isActive || danmuPipeline.isReady) {
         danmuPipeline.stop();
         console.log('LLM弹幕管线已停止');
       }
@@ -1720,14 +1835,51 @@ export default function StandaloneClient() {
 
     // 断开音频连接
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      try {
+        // 先断开所有音频节点
+        if (audioContextRef.current.state !== 'closed') {
+          audioContextRef.current.close().then(() => {
+            console.log('AudioContext 已关闭');
+          }).catch(err => {
+            console.warn('关闭 AudioContext 时出错:', err);
+          });
+        }
+      } catch (e) {
+        console.warn('断开音频连接时出错:', e);
+      }
       audioContextRef.current = null;
     }
 
     // 停止媒体流
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        console.log('停止音轨:', track.kind, track.label, track.readyState);
+        track.stop();
+        console.log('音轨已停止:', track.kind, track.label);
+      });
       streamRef.current = null;
+      console.log('媒体流已停止');
+    }
+
+    // 清理所有音频节点
+    if (sourceRef.current) {
+      try {
+        sourceRef.current.disconnect();
+        sourceRef.current = null;
+        console.log('音频源节点已断开');
+      } catch (e) {
+        console.warn('断开音频源节点时出错:', e);
+      }
+    }
+
+    if (gainRef.current) {
+      try {
+        gainRef.current.disconnect();
+        gainRef.current = null;
+        console.log('增益节点已断开');
+      } catch (e) {
+        console.warn('断开增益节点时出错:', e);
+      }
     }
 
     analyserRef.current = null;
@@ -1737,8 +1889,43 @@ export default function StandaloneClient() {
     setFeatures(null);
     setYamnetResults(null);
 
-    console.log('音频处理已停止');
+    // 强制重置所有频谱相关状态
+    bandColumnsRef.current = null;
+    spectrumHistoryRef.current = [];
+    spectrumStateRef.current = { levelSlow: 0, lowSlow: 0, midSlow: 0, highSlow: 0 };
+    fpsStateRef.current = { lastTs: (typeof performance !== 'undefined' ? performance.now() : Date.now()), frames: 0, fps: 60 };
+    tempoPhaseRef.current = { phase: 0, lastTime: 0 };
+    pitchStateRef.current = { lastHz: 0, smoothHz: 0, confidence: 0, frame: 0 };
+    onsetStateRef.current = { armed: true, lastOnsetSec: 0 };
+    bpmStateRef.current = { lastOnsetSec: 0, intervals: [], bpm: 0, confidence: 0 };
+
+    console.log('🛑 音频处理已完全停止');
+    console.log('📊 状态重置 - isRunning:', false, 'audioLevel:', 0, 'features:', null);
   }, []);
+
+  // 切换麦克风开关
+  const toggleMicrophone = useCallback((next?: boolean) => {
+    try {
+      const enable = typeof next === 'boolean' ? next : !microphoneEnabled;
+      setMicrophoneEnabled(enable);
+
+      if (enable) {
+        // 如果启用麦克风且当前没有运行，则启动音频处理
+        if (!isRunning) {
+          startAudioProcessing();
+        }
+        console.log('🎤 麦克风已开启');
+      } else {
+        // 如果禁用麦克风且当前正在运行，则停止音频处理
+        if (isRunning) {
+          stopAudioProcessing();
+        }
+        console.log('🎤 麦克风已关闭');
+      }
+    } catch (err) {
+      console.warn('切换麦克风失败:', err);
+    }
+  }, [microphoneEnabled, isRunning, startAudioProcessing, stopAudioProcessing]);
 
   // 处理预设选择
   const handlePresetChange = useCallback((presetId: string) => {
@@ -1748,17 +1935,27 @@ export default function StandaloneClient() {
       console.log('频谱优先模式:', !spectrumPriority ? '开启' : '关闭');
       return;
     }
-    
-    setCurrentPreset(presetId);
-    
-    // 如果还没开始，自动开始音频处理
-    if (!isRunning) {
-      startAudioProcessing();
-    }
-    
-    console.log('预设已切换至:', presetId);
-  }, [isRunning, startAudioProcessing, spectrumPriority]);
 
+    // 检查是否点击的是当前已选中的预设
+    if (presetId === currentPreset && isRunning) {
+      // 点击同一预设且正在运行 -> 关闭麦克风
+      console.log('🔄 停止音频处理 - 点击同一预设:', presetId);
+      stopAudioProcessing();
+      setMicrophoneEnabled(false);
+      console.log('✅ 麦克风已关闭');
+    } else {
+      // 点击不同预设或当前未运行 -> 切换预设并开启麦克风
+      console.log('🔄 切换预设 - 从', currentPreset, '到', presetId);
+      setCurrentPreset(presetId);
+      setMicrophoneEnabled(true);
+      if (!isRunning) {
+        startAudioProcessing();
+      }
+      console.log('✅ 预设已切换至:', presetId, '麦克风已开启');
+    }
+  }, [isRunning, startAudioProcessing, stopAudioProcessing, currentPreset, spectrumPriority]);
+
+  
   // 清理函数
   useEffect(() => {
     return () => {
@@ -1789,8 +1986,10 @@ export default function StandaloneClient() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, [handlePresetChange, toggleDanmu, spectrumPriority]);
 
   // 移动端/浏览器解锁：在首次触摸/点击时尝试 resume AudioContext；解析 ?debug=1
@@ -1840,6 +2039,17 @@ export default function StandaloneClient() {
         if (ctx && ctx.state !== 'running') {
           await ctx.resume();
           console.log('在用户手势下恢复 AudioContext:', ctx.state);
+        }
+        // 首次用户手势：若未运行则启动音频处理
+        if (!micStartedRef.current && !isRunning) {
+          micStartedRef.current = true;
+          try {
+            await startAudioProcessing();
+            console.log('首次用户手势触发麦克风启动');
+          } catch (e) {
+            console.warn('首次手势启动麦克风失败:', e);
+            micStartedRef.current = false; // 失败则允许再次尝试
+          }
         }
       } catch (e) {
         console.warn('用户手势恢复 AudioContext 失败:', e);
@@ -1939,6 +2149,17 @@ export default function StandaloneClient() {
               className="px-2 py-1 bg-rose-600 hover:bg-rose-500 rounded"
             >停止</button>
             <button
+              onClick={() => {
+                // 启用Mosaic测试模式
+                if (currentPreset === 'mosaic') {
+                  console.log('🎵 启用Mosaic测试模式');
+                  // 这里需要访问mosaicVisual实例，暂时用日志代替
+                  console.log('请在控制台手动调用: mosaicVisual.enableTestMode()');
+                }
+              }}
+              className="px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded"
+            >测试频谱</button>
+            <button
               onClick={async () => {
                 try {
                   if (!audioContextRef.current) return;
@@ -1956,13 +2177,13 @@ export default function StandaloneClient() {
 
       {/* 预设选择器 - 放在顶部但不贴边 */}
       <div className="relative z-10 pt-16 portrait:pt-8 pb-8">
-        <div className="flex gap-4 sm:gap-8 flex-wrap portrait:flex-nowrap justify-center items-center w-full px-2">
+        <div className="flex gap-3 sm:gap-5 lg:gap-7 flex-nowrap justify-center items-center w-full px-2">
           {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu', abbrMobile: 'DA' }].map((option, index) => {
             const graphemes = segmentGraphemes(option.label);
             const centerIndex = (graphemes.length - 1) / 2;
-            const isSelected = option.id === 'danmu' ? danmuEnabled : 
-                              option.id === 'spectrum' ? spectrumPriority : 
-                              (currentPreset === option.id);
+            const isSelected = option.id === 'danmu' ? danmuEnabled :
+                              option.id === 'spectrum' ? spectrumPriority :
+                              (currentPreset === option.id && isRunning);
 
             return (
             <button
@@ -1980,10 +2201,10 @@ export default function StandaloneClient() {
                 }}
                     className={`
                       group relative block overflow-visible sm:overflow-hidden whitespace-nowrap
-                      text-3xl sm:text-6xl md:text-8xl
+                      text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl
                       text-center sm:text-left
                       font-black uppercase
-                      mx-auto portrait:px-3
+                      mx-auto portrait:px-2
                   ${option.id === 'danmu'
                     ? (isSelected
                         ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] !blur-none !filter-none'
@@ -2003,7 +2224,7 @@ export default function StandaloneClient() {
               style={{
                 lineHeight: 1,
               }}
-                  aria-pressed={option.id === 'danmu' ? danmuEnabled : currentPreset === option.id}
+                  aria-pressed={option.id === 'danmu' ? danmuEnabled : option.id === 'spectrum' ? spectrumPriority : (currentPreset === option.id && isRunning)}
                   aria-label={option.label}
                 >
               {/* 移动端：显示两字母缩写（隐藏复杂逐字动画） */}

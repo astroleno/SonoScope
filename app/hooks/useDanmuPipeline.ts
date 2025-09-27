@@ -44,7 +44,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
   // 初始化弹幕引擎和管线
   useEffect(() => {
-    if (!enabled || initializedRef.current) return;
+    if (initializedRef.current) return;
 
     const initPipeline = async () => {
       try {
@@ -65,6 +65,10 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
         initializedRef.current = true;
         console.log('弹幕管线初始化完成');
+        console.log('🎵 弹幕管线状态:', {
+          isReady: pipelineRef.current?.isReady,
+          status: pipelineRef.current?.status
+        });
       } catch (error) {
         console.error('弹幕管线初始化失败:', error);
       }
@@ -94,8 +98,27 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (danmuEngineRef.current && pipelineRef.current) {
       danmuEngineRef.current.start();
       pipelineRef.current.start();
-      setState(prev => ({ ...prev, isActive: true }));
       console.log('🎵 弹幕管线启动成功');
+      
+      // 延迟更新状态，确保状态同步
+      setTimeout(() => {
+        const status = pipelineRef.current?.status;
+        console.log('🎵 延迟状态检查:', status);
+        if (status) {
+          setState(prev => ({
+            ...prev,
+            isActive: status.isActive || true, // 确保isActive为true
+            currentStyle: status.currentStyle,
+            pendingRequests: status.pendingRequests,
+            danmuCount: status.danmuCount,
+          }));
+          console.log('🎵 状态已更新为:', { isActive: status.isActive || true });
+        } else {
+          // 如果没有status，至少设置isActive为true
+          setState(prev => ({ ...prev, isActive: true }));
+          console.log('🎵 状态已更新为: {isActive: true}');
+        }
+      }, 100);
     } else {
       console.log('🎵 弹幕管线启动失败 - 组件未就绪');
     }
@@ -108,6 +131,8 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (danmuEngineRef.current) {
       danmuEngineRef.current.stop();
     }
+    // 重置初始化状态，允许重新启动
+    initializedRef.current = false;
     setState(prev => ({ ...prev, isActive: false }));
   };
 
@@ -130,26 +155,62 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
   // 更新状态
   useEffect(() => {
-    if (!pipelineRef.current) return;
-
     const updateState = () => {
+      if (!pipelineRef.current) {
+        console.log('🎵 状态更新检查: 弹幕管线未初始化');
+        return;
+      }
+      
       const status = pipelineRef.current?.status;
+      console.log('🎵 状态更新检查:', {
+        hasPipeline: !!pipelineRef.current,
+        status: status,
+        isActive: status?.isActive
+      });
+      
       const dominantInstrument =
         status && 'dominantInstrument' in status
           ? (status as { dominantInstrument: string | null }).dominantInstrument
           : null;
-      setState(prev => ({
-        ...prev,
-        currentStyle: status?.currentStyle || null,
-        pendingRequests: status?.pendingRequests || 0,
-        danmuCount: status?.danmuCount || 0,
-        dominantInstrument: dominantInstrument ?? prev.dominantInstrument,
-      }));
+      setState(prev => {
+        const newState = {
+          ...prev,
+          isActive: status?.isActive || false,
+          currentStyle: status?.currentStyle || null,
+          pendingRequests: status?.pendingRequests || 0,
+          danmuCount: status?.danmuCount || 0,
+          dominantInstrument: dominantInstrument ?? prev.dominantInstrument,
+        };
+        
+        console.log('🎵 状态更新前:', prev);
+        console.log('🎵 状态更新后:', newState);
+        
+        // 检查状态是否真的发生了变化
+        const hasChanged = 
+          prev.isActive !== newState.isActive ||
+          prev.currentStyle !== newState.currentStyle ||
+          prev.pendingRequests !== newState.pendingRequests ||
+          prev.danmuCount !== newState.danmuCount ||
+          prev.dominantInstrument !== newState.dominantInstrument;
+        
+        if (hasChanged) {
+          console.log('🎵 状态发生变化，触发更新');
+          return newState;
+        } else {
+          console.log('🎵 状态未发生变化，保持原状态');
+          // 强制触发一次更新，确保组件能够重新渲染
+          return { ...prev };
+        }
+      });
     };
 
-    const interval = setInterval(updateState, 1000);
+    // 立即更新一次状态
+    updateState();
+    
+    // 然后定期更新
+    const interval = setInterval(updateState, 500);
     return () => clearInterval(interval);
-  }, [state.isActive]);
+  }, []); // 不依赖任何值，确保状态更新机制能正确工作
 
   // 自动启动
   useEffect(() => {
@@ -158,7 +219,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     }
   }, [autoStart, enabled, state.isActive]);
 
-  return {
+  const returnValue = {
     ...state,
     start,
     stop,
@@ -166,4 +227,16 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     handleAudioFeatures,
     isReady: initializedRef.current,
   };
+  
+  // 调试：记录Hook的返回值（降低频率，每5秒记录一次）
+  if (
+    typeof window !== 'undefined' && (
+    !(window as any).__lastHookReturnLog ||
+    Date.now() - (window as any).__lastHookReturnLog > 5000
+  )) {
+    (window as any).__lastHookReturnLog = Date.now();
+    console.log('🎵 Hook返回值:', returnValue);
+  }
+  
+  return returnValue;
 }

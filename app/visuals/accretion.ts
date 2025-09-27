@@ -34,6 +34,7 @@ uniform float uGainScale;    // scales kGain impact (0.5..2.0)
 uniform float uFlickerStrength; // zcr flicker strength (0..0.4)
 uniform float uFlickerFreq;  // zcr flicker frequency (rad/s ~ 8..32)
 uniform float uOverallBoost; // final RGB multiplier (0.7..1.6)
+uniform float uPulseLift;    // percussion lift (0..1.5)
 varying vec2 vTexCoord;
 float tanh_approx(float x) {
   x = clamp(x, -3.0, 3.0);
@@ -55,9 +56,9 @@ void main() {
   vec4 finalColor = vec4(0.0);
   vec3 rayDirection = normalize(vec3(uv, 1.0));
   // Small audio-driven knobs (lightly scaled by sensitivity)
-  float sens = clamp(uSensitivity, 0.9, 1.15);
+  float sens = clamp(uSensitivity, 0.9, 1.6);
   float kPhase = (0.6 * uCentroid + 0.4 * uMfcc.x) * mix(1.0, sens, 0.3); // phase offset
-  float kGain  = (0.4 * uLevel + 0.2 * uZcr) * mix(1.0, sens, 0.4);       // color gain
+  float kGain  = (0.55 * uLevel + 0.25 * uZcr) * mix(1.0, sens, 0.55);     // color gain (more responsive)
   float kNoise = (0.3 * uMfcc.y) * mix(1.0, sens, 0.2);                   // noise modulation
   for (int step = 0; step < MAX_STEPS; step++) {
     vec3 position = rayDepth * rayDirection + INITIAL_OFFSET;
@@ -81,8 +82,18 @@ void main() {
     finalColor += (1.0 + cos(colorPhase + colorPattern)) / stepDistance;
   }
   vec4 processedColor = finalColor * finalColor / 400.0;
-  // subtle zcr-driven flicker, tunable via uniforms
-  processedColor.rgb *= uOverallBoost * (1.0 + kGain * uGainScale) * (1.0 + uFlickerStrength * uZcr * sin(iTime * uFlickerFreq));
+  // 🎵 添加 soft-knee 压缩，降低 RMS 突增时的瞬时冲击
+  float levelLift = pow(clamp(uLevel * sens * 1.35, 0.0, 1.5), 0.8);
+  float centroidLift = pow(clamp(uCentroid, 0.0, 1.0), 1.2);
+  
+  // 🎵 降低基础亮度：减少 kGain 影响和基础亮度
+  float brightnessPulse = 0.3 + uGainScale * (0.3 * kGain + 0.4 * levelLift + 0.1 * centroidLift); // 从 1.0 降到 0.3 基础
+  brightnessPulse = clamp(brightnessPulse, 0.2, 1.5); // 进一步降低范围
+  
+  // 对 pulseBoost 加对数压缩，防止过度放大
+  float pulseBoost = 1.0 + 1.4 * log(1.0 + clamp(uPulseLift, 0.0, 1.5)); // 使用 log(1+x) 替代 log1p
+  processedColor.rgb *= uOverallBoost * brightnessPulse * pulseBoost * (1.0 + uFlickerStrength * uZcr * sin(iTime * uFlickerFreq));
+  processedColor.rgb += processedColor.rgb * (0.22 * levelLift + 0.18 * clamp(uPulseLift, 0.0, 1.0));
   processedColor.r = tanh_approx(processedColor.r);
   processedColor.g = tanh_approx(processedColor.g);
   processedColor.b = tanh_approx(processedColor.b);
@@ -107,6 +118,8 @@ export function applyAccretionAudioUniforms(
     zcr?: number;
     mfcc?: number[];
     spectralFlux?: number;
+    voiceProb?: number;
+    percussiveRatio?: number;
   } | null,
   sensitivity: number,
   controls?: AccretionControls
@@ -131,6 +144,9 @@ export function applyAccretionAudioUniforms(
   shader.setUniform('uZcr', zcr);
   shader.setUniform('uMfcc', mf);
   const sens = Math.max(0.5, Math.min(3.0, sensitivity || 1));
+  const fluxRaw = Math.max(0, Math.min(1, features?.spectralFlux ?? 0));
+  const pulseLift = Math.min(1.2, (fluxRaw * 1.1 + zcr * 0.35 + rms * 0.25) * sens);
+  shader.setUniform('uPulseLift', pulseLift);
   // Optional genre presets
   const presets = {
     electronic: { gainScale: 1.3, flickerStrength: 0.15, flickerFreq: 24.0, overallBoost: 1.1 },
@@ -150,9 +166,23 @@ export function applyAccretionAudioUniforms(
     4.0,
     Math.min(48.0, controls?.flickerFreq ?? preset?.flickerFreq ?? 16.0)
   );
+  // 🎵 修复过亮问题：进一步降低默认 overallBoost
+  const baseOverallBoost = controls?.overallBoost ?? preset?.overallBoost ?? 0.5; // 从 0.85 进一步降到 0.5
+  
+  // 自适应补偿：根据人声和打击乐比例调整亮度
+  const voiceProb = features?.voiceProb ?? 0;
+  const percussiveRatio = features?.percussiveRatio ?? 0;
+  
+  // 人声占比高 → 允许更亮（补偿至 1.0）
+  const voiceCompensation = voiceProb > 0.6 ? 0.15 : 0;
+  // 打击占比高 → 使用较低阈值防止持续闪白
+  const percussiveDampening = percussiveRatio > 0.7 ? -0.1 : 0;
+  
   const overallBoost = Math.max(
-    0.7,
-    Math.min(1.6, controls?.overallBoost ?? preset?.overallBoost ?? 1.0)
+    0.3, // 进一步降低最小值
+    Math.min(1.0, // 进一步降低最大值
+      baseOverallBoost + voiceCompensation + percussiveDampening
+    )
   );
   shader.setUniform('uSensitivity', sens);
   shader.setUniform('uGainScale', gainScale);

@@ -49,7 +49,7 @@ export class DanmuPipelineEnhanced {
   private currentStyle: string | null = null;
   private danmuCount = 0;
   private pendingComments: string[] = [];
-  private commentTimer: number | null = null;
+  private commentTimer: NodeJS.Timeout | null = null;
   private lastDrive = 0;
   private lastCommentTimestamp = 0;
   private readonly commentIntervalRange = { min: 3000, max: 10000 };
@@ -107,6 +107,8 @@ export class DanmuPipelineEnhanced {
 
   // 处理音频特征，决定是否触发弹幕生成
   handleAudioFeatures(rms: number, features?: Record<string, unknown>): void {
+    console.log('🎵 弹幕管线: 接收音频特征', { rms: rms.toFixed(4), hasFeatures: !!features });
+    
     if (!this.isActive) {
       console.log('弹幕管线: 未激活，强制激活进行测试');
       this.isActive = true;
@@ -114,9 +116,10 @@ export class DanmuPipelineEnhanced {
     if (rms < this.config.rmsThreshold) {
       // 减少日志频率，避免刷屏
       if (
+        typeof window !== 'undefined' && (
         !(window as any).__lastRmsLog ||
         Date.now() - (window as any).__lastRmsLog > 5000
-      ) {
+      )) {
         (window as any).__lastRmsLog = Date.now();
         console.log(
           `弹幕管线: RMS过低 ${rms.toFixed(4)} < ${this.config.rmsThreshold}`
@@ -173,16 +176,18 @@ export class DanmuPipelineEnhanced {
     // 检查稳定性（减少调用频率，避免过度计算）
     const currentTime = Date.now();
     if (
+      typeof window !== 'undefined' && (
       !(window as any).__lastStabilityCheck ||
       currentTime - (window as any).__lastStabilityCheck > 1000 // 每1秒检查一次稳定性
-    ) {
+    )) {
       (window as any).__lastStabilityCheck = currentTime;
       const stability = this.featureAggregator.checkStability();
       this.lastStability = stability;
       if (
+        typeof window !== 'undefined' && (
         !(window as any).__lastStabilityLog ||
         currentTime - (window as any).__lastStabilityLog > 3000
-      ) {
+      )) {
         (window as any).__lastStabilityLog = currentTime;
         console.log(
           `弹幕管线: 稳定性检测结果 - 整体稳定:${stability.overall_stable}, 置信度:${stability.confidence.toFixed(2)}`
@@ -201,11 +206,12 @@ export class DanmuPipelineEnhanced {
       (!stabilitySnapshot.overall_stable || !meetsConfidence)
     ) {
       if (
+        typeof window !== 'undefined' && (
         !(window as any).__lastStabilityGateLog ||
         Date.now() - (window as any).__lastStabilityGateLog > 2000
-      ) {
+      )) {
         (window as any).__lastStabilityGateLog = Date.now();
-        console.log('弹幕管线: 稳定度不足，跳过触发', stabilitySnapshot);
+        console.log('🎵 弹幕管线: 稳定度不足，跳过触发', stabilitySnapshot);
       }
       return;
     }
@@ -228,11 +234,12 @@ export class DanmuPipelineEnhanced {
 
     if (this.pipelinePhase !== 'ready') {
       if (
+        typeof window !== 'undefined' && (
         !(window as any).__lastPhaseGateLog ||
         currentTime - (window as any).__lastPhaseGateLog > 2500
-      ) {
+      )) {
         (window as any).__lastPhaseGateLog = currentTime;
-        console.log('弹幕管线: 动态进入稳定前收集阶段', {
+        console.log('🎵 弹幕管线: 动态进入稳定前收集阶段', {
           phase: this.pipelinePhase,
           activity: this.activityScore.toFixed(3),
         });
@@ -254,16 +261,24 @@ export class DanmuPipelineEnhanced {
 
     // 检查是否应该触发
     if (now - this.lastTriggerTime < interval) {
-      console.log(
-        `弹幕管线: 间隔未到 ${now - this.lastTriggerTime}ms < ${interval}ms`
-      );
+      if (
+        typeof window !== 'undefined' && (
+        !(window as any).__lastIntervalLog ||
+        Date.now() - (window as any).__lastIntervalLog > 3000
+      )) {
+        (window as any).__lastIntervalLog = Date.now();
+        console.log(
+          `🎵 弹幕管线: 间隔未到 ${now - this.lastTriggerTime}ms < ${interval}ms`
+        );
+      }
       return;
     }
     if (this.pendingRequests >= concurrency) {
       if (
+        typeof window !== 'undefined' && (
         !(window as any).__lastConcurrencyLog ||
         Date.now() - (window as any).__lastConcurrencyLog > 3000
-      ) {
+      )) {
         (window as any).__lastConcurrencyLog = Date.now();
         console.log(
           `弹幕管线: 并发限制 ${this.pendingRequests} >= ${concurrency}`
@@ -273,11 +288,17 @@ export class DanmuPipelineEnhanced {
     }
 
     if (
+      typeof window !== 'undefined' && (
       !(window as any).__lastTriggerLog ||
       Date.now() - (window as any).__lastTriggerLog > 2000
-    ) {
+    )) {
       (window as any).__lastTriggerLog = Date.now();
-      console.log('弹幕管线: 触发弹幕生成');
+      console.log('🎵 弹幕管线: 触发弹幕生成', {
+        rms: rms.toFixed(4),
+        drive: drive.toFixed(3),
+        interval: interval,
+        concurrency: concurrency
+      });
     }
     this.triggerDanmuGeneration();
     this.lastTriggerTime = now;
@@ -413,7 +434,7 @@ export class DanmuPipelineEnhanced {
     if (this.commentTimer !== null) return;
 
     const delay = this.pickCommentInterval();
-    this.commentTimer = window.setTimeout(() => {
+    this.commentTimer = (typeof window !== 'undefined' ? window : global).setTimeout(() => {
       this.commentTimer = null;
       this.flushPendingComments();
     }, delay);

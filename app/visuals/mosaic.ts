@@ -5,6 +5,10 @@ export type MosaicCell = {
   alive: boolean;
   age: number;
   shape: 'circle' | 'triangle' | 'rect';
+  // 残影系统
+  ghostAge?: number; // 残影年龄
+  ghostSize?: number; // 残影大小
+  ghostColor?: any; // 残影颜色
 };
 
 export type MosaicGrid = MosaicCell[][];
@@ -147,6 +151,9 @@ export type MosaicAudioUniforms = {
   zcr: number;
   mfcc: [number, number, number, number];
   pulse: number;
+  bandLow?: number;
+  bandMid?: number;
+  bandHigh?: number;
 };
 
 export type MosaicControls = {
@@ -157,6 +164,16 @@ export type MosaicControls = {
   colorScheme: number;
   colorFlowSpeed: number;
   alpha: number;
+  ghostDuration?: number; // 残影持续时间
+  // 频谱增强参数
+  frequencyBands?: number; // 频段数量
+  pitchSensitivity?: number; // 音高敏感度
+  intensitySensitivity?: number; // 强度敏感度
+  spectrumMode?: boolean; // 是否启用频谱模式
+  // 极光效果参数
+  auroraMode?: boolean; // 是否启用极光模式
+  auroraIntensity?: number; // 极光强度
+  auroraSpeed?: number; // 极光变化速度
 };
 
 type MosaicExtras = {
@@ -170,6 +187,10 @@ export class MosaicVisual {
   private colors: string[] = [];
   private bgColor: string = '';
   private frameCount: number = 0;
+  // 频谱增强
+  private frequencyBands: number = 8;
+  private bandWidth: number = 0;
+  private bandCooling?: number[]; // 频段冷却机制
   
   constructor(
     private p: any,
@@ -177,6 +198,7 @@ export class MosaicVisual {
     private audio: MosaicAudioUniforms,
     private extras?: MosaicExtras
   ) {
+    this.frequencyBands = this.controls.frequencyBands || 8;
     this.initializeGrid();
   }
 
@@ -185,8 +207,13 @@ export class MosaicVisual {
     this.colors = colorScheme.colors;
     this.bgColor = colorScheme.bgColor;
     
-    this.cols = Math.floor(this.p.width / this.controls.cellSize);
-    this.rows = Math.floor(this.p.height / this.controls.cellSize);
+    // 使用 ceil 保证铺满屏幕，避免右/下出现空带
+    this.cols = Math.max(1, Math.ceil(this.p.width / this.controls.cellSize));
+    this.rows = Math.max(1, Math.ceil(this.p.height / this.controls.cellSize));
+    
+    // 🎵 修复频段分区问题：使用更小的频段数量，避免分区过于明显
+    this.frequencyBands = 4; // 减少频段数量
+    this.bandWidth = this.cols / this.frequencyBands;
     
     // Initialize grid with random cells
     this.grid = Array.from({ length: this.cols }, () =>
@@ -196,6 +223,23 @@ export class MosaicVisual {
         shape: this.p.random(['circle', 'triangle', 'rect']),
       }))
     );
+  }
+
+  public syncState(
+    controls: MosaicControls,
+    audio: MosaicAudioUniforms,
+    extras?: MosaicExtras
+  ) {
+    const colorSchemeChanged = controls.colorScheme !== this.controls.colorScheme;
+    const cellSizeChanged = controls.cellSize !== this.controls.cellSize;
+    this.controls = controls;
+    this.audio = audio;
+    this.extras = extras;
+    if (colorSchemeChanged) {
+      this.updateColorScheme(controls.colorScheme);
+    } else if (cellSizeChanged) {
+      this.initializeGrid();
+    }
   }
 
   // Public method to update color scheme
@@ -220,68 +264,195 @@ export class MosaicVisual {
     return count;
   }
 
-  private updateGrowth() {
-    const next: MosaicGrid = [];
+  // 频谱增强：获取频段活跃度（强制使用频谱数据）
+  private getBandActivity(bandIndex: number): number {
+    // 🎵 强制启用频谱模式，即使 controls.spectrumMode 为 false
+    const forceSpectrumMode = true;
     
-    // Audio-modulated growth rate
-    // Include flatness to modulate pattern complexity and spawning tendency
-    const audioGrowthRate = this.controls.growthRate * (
-      1 + this.audio.flux * 0.5 + this.audio.zcr * 0.3 + this.audio.flatness * 0.2
-    );
-    
-    const colsArr = Array.isArray(this.extras?.bandColumns) ? this.extras!.bandColumns! : [];
-    const colCount = colsArr.length;
-
-    for (let i = 0; i < this.cols; i++) {
-      next[i] = [];
-      for (let j = 0; j < this.rows; j++) {
-        const cell = this.grid[i][j];
-        const neighbors = this.countAliveNeighbors(i, j);
-        
-        const newCell = { ...cell };
-        
-        // 列响度（左→右=低→高），缺省则取 1
-        const loudCol = colCount ? this.p.constrain(colsArr[Math.floor(i / Math.max(1, Math.floor(this.cols / Math.max(1, colCount))))] || 0, 0, 1) : 1;
-
-        // Growth rule: spawn if 2+ neighbors and random chance（受列响度调制）
-        if (!cell.alive && neighbors >= 2 && this.p.random() < audioGrowthRate * (0.6 + 0.8 * loudCol)) {
-          newCell.alive = true;
-          newCell.age = 0;
-          newCell.shape = this.chooseShapeFromMFCC();
-        }
-        
-        next[i][j] = newCell;
-      }
-    }
-    
-    // Audio-driven new cell spawning based on pitch (spectral centroid)
-    // Map spectral centroid (0-1) to horizontal position (0 to cols-1)
-    if (this.audio.level > 0.01) { // Only spawn when there's audio
-      const pitchPosition = Math.floor(this.audio.centroid * (this.cols - 1));
-      const spawnRow = Math.floor(this.p.random(this.rows));
+    // 🎵 使用真实的 bandColumns 数据，如果没有则使用音频特征
+    const columns = this.extras?.bandColumns;
+    if (columns && columns.length > bandIndex) {
+      const energy = columns[bandIndex] || 0;
+      const normalized = Math.pow(Math.max(0, Math.min(1, energy)), 0.6);
       
-      // Check if the pitch-based position is available for spawning
-      if (pitchPosition >= 0 && pitchPosition < this.cols && 
-          !next[pitchPosition][spawnRow].alive && 
-          this.p.random() < this.audio.level * 0.1) {
-        next[pitchPosition][spawnRow] = {
-          alive: true,
-          age: 0,
-          shape: this.chooseShapeFromMFCC(),
-        };
-      }
+      // 频段冷却机制：防止持续爆表
+      if (!this.bandCooling) this.bandCooling = new Array(this.frequencyBands).fill(0);
+      const coolingFactor = 0.95; // 0.5s 移动平均
+      this.bandCooling[bandIndex] = this.bandCooling[bandIndex] * coolingFactor + normalized * (1 - coolingFactor);
+      
+      // 最大值限制，让能量真正集中在显著频段
+      const maxEnergy = Math.max(this.bandCooling[bandIndex], normalized);
+      return Math.max(0.1, Math.min(1.0, maxEnergy));
     }
     
-    this.grid = next;
+    // 🎵 如果没有 bandColumns，使用音频特征创建频谱关联
+    const audioSpectrum = this.createAudioSpectrum(bandIndex);
+    return audioSpectrum;
+    
+    // 极光模式：更连续的活动度
+    if (this.controls.auroraMode) {
+      const baseActivity = this.p.noise(bandIndex * 0.05 + this.frameCount * 0.008) * 0.3 + 0.4;
+      const timeVariation = this.p.sin(bandIndex * 0.3 + this.frameCount * 0.015) * 0.2 + 0.8;
+      return this.p.constrain(baseActivity * timeVariation, 0.3, 1.0);
+    }
+    
+    // 回退到噪声基线（当没有真实频谱数据时）
+    const baseActivity = this.p.noise(bandIndex * 0.1 + this.frameCount * 0.01) * 0.4 + 0.3;
+    const timeVariation = this.p.sin(bandIndex * 0.5 + this.frameCount * 0.02) * 0.3 + 0.7;
+    const bandVariation = this.p.sin(bandIndex * 0.8 + this.frameCount * 0.015) * 0.2 + 0.8;
+    
+    // 频段特定的基础活动度
+    let bandBaseActivity = 0.2;
+    if (bandIndex < 2) {
+      bandBaseActivity = 0.4; // 低频更活跃
+    } else if (bandIndex < 5) {
+      bandBaseActivity = 0.3; // 中频中等
+    } else {
+      bandBaseActivity = 0.25; // 高频较少
+    }
+    
+    const finalActivity = (baseActivity * timeVariation * bandVariation + bandBaseActivity) / 2;
+    return this.p.constrain(finalActivity, 0, 1);
   }
 
+  // 🎵 创建音频频谱：使用音频特征模拟频谱数据
+  private createAudioSpectrum(bandIndex: number): number {
+    const totalBands = this.frequencyBands;
+    const bandRatio = bandIndex / (totalBands - 1); // 0 到 1
+    
+    // 根据频段位置使用不同的音频特征
+    let spectrumValue = 0;
+    
+    if (bandIndex < totalBands * 0.3) {
+      // 低频：使用 bandLow 和 level
+      spectrumValue = this.audio.bandLow * 0.8 + this.audio.level * 0.2;
+    } else if (bandIndex < totalBands * 0.7) {
+      // 中频：使用 bandMid 和 centroid
+      spectrumValue = this.audio.bandMid * 0.6 + this.audio.centroid * 0.4;
+    } else {
+      // 高频：使用 bandHigh 和 flux
+      spectrumValue = this.audio.bandHigh * 0.7 + this.audio.flux * 0.3;
+    }
+    
+    // 添加频段特定的变化
+    const bandVariation = this.p.sin(bandIndex * 0.5 + this.frameCount * 0.02) * 0.3 + 0.7;
+    const timeVariation = this.p.sin(this.frameCount * 0.01 + bandIndex * 0.1) * 0.2 + 0.8;
+    
+    const finalValue = spectrumValue * bandVariation * timeVariation;
+    return this.p.constrain(finalValue, 0.1, 1.0);
+  }
+
+  // 形状选择：流动频谱影响
+  private chooseShapeFromPitch(x: number): 'circle' | 'triangle' | 'rect' {
+    if (!this.controls.spectrumMode) {
+      return this.chooseShapeFromMFCC();
+    }
+    
+    // 流动的频谱影响 - 不是固定分区
+    const px = x / this.cols;
+    const t = this.frameCount * 0.01;
+    
+    // 频谱流动波
+    const spectrumWave = this.p.sin(px * 3 + t * 0.5) * 0.3;
+    const audioInfluence = this.audio.centroid * 0.4 + this.audio.level * 0.2;
+    
+    // 组合频谱和音频影响
+    const totalInfluence = spectrumWave + audioInfluence;
+    
+    // 根据流动影响选择形状，但保持随机性
+    const randomValue = this.p.random();
+    const influenceFactor = (totalInfluence + 1) / 2; // 归一化到 0-1
+    
+    if (randomValue < 0.33 + influenceFactor * 0.1) {
+      return 'circle';
+    } else if (randomValue < 0.66 + influenceFactor * 0.1) {
+      return 'triangle';
+    } else {
+      return 'rect';
+    }
+  }
+
+  // 频谱增强：流动频谱影响大小
+  private getBandAdjustedSize(baseSize: number, x: number): number {
+    if (!this.controls.spectrumMode) return baseSize;
+    
+    const px = x / this.cols;
+    const t = this.frameCount * 0.01;
+    
+    // 流动的频谱影响大小
+    const spectrumWave = this.p.sin(px * 2.5 + t * 0.3) * 0.2;
+    const audioInfluence = this.audio.level * 0.3 + this.audio.flux * 0.2;
+    
+    // 组合影响
+    const totalInfluence = spectrumWave + audioInfluence;
+    
+    // 大小变化 - 流动而不是分区
+    const sizeVariation = 0.8 + totalInfluence * 0.4 + this.p.noise(x * 0.1 + t) * 0.2;
+    
+    return baseSize * this.p.constrain(sizeVariation, 0.6, 1.4);
+  }
+
+  // 频谱增强：频段竞争机制
+  private getBandCompetition(bandIndex: number): number {
+    if (!this.controls.spectrumMode) return 1.0;
+    
+    let competitionFactor = 1.0;
+    
+    // 检查相邻频段的活跃度
+    for (let i = 0; i < this.frequencyBands; i++) {
+      if (i !== bandIndex) {
+        const distance = Math.abs(i - bandIndex);
+        const otherActivity = this.getBandActivity(i);
+        
+        // 相邻频段会抑制当前频段
+        if (distance === 1) {
+          competitionFactor *= (1.0 - otherActivity * 0.3);
+        } else if (distance === 2) {
+          competitionFactor *= (1.0 - otherActivity * 0.1);
+        }
+      }
+    }
+    
+    return this.p.constrain(competitionFactor, 0.1, 1.0);
+  }
+
+  // 频谱增强：频段排斥机制
+  private getBandExclusion(bandIndex: number): number {
+    if (!this.controls.spectrumMode) return 1.0;
+    
+    let exclusionFactor = 1.0;
+    
+    // 检查其他频段的活跃度，活跃的频段会排斥其他频段
+    for (let i = 0; i < this.frequencyBands; i++) {
+      if (i !== bandIndex) {
+        const distance = Math.abs(i - bandIndex);
+        const otherActivity = this.getBandActivity(i);
+        
+        // 活跃频段会抑制其他频段
+        if (otherActivity > 0.5) {
+          const exclusionStrength = otherActivity * (1.0 - distance / this.frequencyBands);
+          exclusionFactor *= (1.0 - exclusionStrength * 0.4);
+        }
+      }
+    }
+    
+    return this.p.constrain(exclusionFactor, 0.2, 1.0);
+  }
+
+  
   private getFlowingColor(i: number, j: number, age: number): any {
     const px = i / this.cols;
     const py = j / this.rows;
     
-    // Enhanced pitch influence on color flow (rebalanced lower weight)
-    const pitchInfluence = this.audio.centroid * 0.6; // reduced from 0.8
-    const t = this.frameCount * this.controls.colorFlowSpeed * (1 + pitchInfluence);
+    // 极光模式：使用蓝绿色系
+    if (this.controls.auroraMode) {
+      return this.getAuroraColor(i, j, age);
+    }
+    
+    const levelInfluence = this.p.constrain(this.audio.level, 0, 1);
+    const pitchInfluence = this.audio.centroid * 0.35;
+    const flowSpeed = this.controls.colorFlowSpeed * (0.25 + 0.55 * levelInfluence);
+    const t = this.frameCount * flowSpeed * (1 + pitchInfluence);
     
     // Add pitch-based phase shift to create horizontal color waves
     const pitchPhase = px * this.audio.centroid * 3.0; // Horizontal wave based on pitch
@@ -305,7 +476,75 @@ export class MosaicVisual {
     
     // Pitch also affects alpha - higher pitch = more vibrant
     const pitchAlpha = 1 + this.audio.centroid * 0.2;
-    c.setAlpha(this.controls.alpha * pitchAlpha * 255);
+    const alpha = this.p.constrain(this.controls.alpha * pitchAlpha * 0.8, 0, 1);
+    c.setAlpha(alpha * 255);
+    return c;
+  }
+
+  // 极光颜色生成 - 流动频谱结合
+  private getAuroraColor(i: number, j: number, age: number): any {
+    const px = i / this.cols;
+    const py = j / this.rows;
+    
+    const auroraIntensity = this.controls.auroraIntensity || 1.0;
+    const auroraSpeed = this.controls.auroraSpeed || 0.02;
+    
+    // 时间变化
+    const t = this.frameCount * auroraSpeed;
+    
+    // 流动的频谱影响 - 不是固定分区
+    const spectrumFlow = this.p.sin(px * 1.5 + t * 0.4) * 0.3;
+    const spectrumShift = this.p.sin(py * 0.8 + t * 0.2) * 0.2;
+    
+    // 音频影响频谱流动
+    const audioFlow = this.audio.centroid * 0.4 + this.audio.level * 0.3;
+    const totalSpectrumFlow = spectrumFlow + spectrumShift + audioFlow;
+    
+    // 极光基础颜色 - 根据流动频谱变化
+    const baseHue = (0.5 + totalSpectrumFlow * 0.3) % 1; // 蓝到绿的变化
+    const baseSat = 0.7 + this.audio.flux * 0.3;
+    const baseBright = 0.6 + this.audio.level * 0.4;
+    
+    // 极光波动 - 多层波浪效果
+    const wave1 = this.p.sin(px * 2 + py * 1.5 + t) * 0.3;
+    const wave2 = this.p.sin(px * 1.2 + py * 2.5 + t * 0.8) * 0.2;
+    const wave3 = this.p.sin(px * 3.5 + py * 0.8 + t * 1.2) * 0.15;
+    const wave4 = this.p.sin(px * 0.5 + py * 4 + t * 0.5) * 0.1;
+    
+    // 音频驱动的极光流动
+    const audioWave = this.p.sin(px * 2.5 + py * 1.8 + t * (1 + this.audio.flux)) * this.audio.level * 0.4;
+    
+    // 组合所有波动
+    const totalWave = wave1 + wave2 + wave3 + wave4 + audioWave;
+    
+    // 最终颜色 - 频谱流动 + 极光波动
+    const hue = (baseHue + totalWave * 0.2) % 1;
+    const sat = this.p.constrain(baseSat + totalWave * 0.2, 0.5, 1.0);
+    const bright = this.p.constrain(baseBright + totalWave * 0.3, 0.3, 1.0);
+    
+    // 年龄影响透明度
+    const ageFactor = this.p.constrain(age / this.controls.maxAge, 0, 1);
+    const alpha = this.p.constrain(
+      this.controls.alpha * (0.6 + ageFactor * 0.4) * auroraIntensity,
+      0.4, 1.0
+    );
+    
+    this.p.colorMode(this.p.HSB, 1);
+    const c = this.p.color(hue, sat, bright, alpha);
+    this.p.colorMode(this.p.RGB, 255);
+    
+    return c;
+  }
+
+
+  
+  private makeRainbowColor(columnIndex: number, energy: number) {
+    const hue = (columnIndex / Math.max(1, this.cols - 1) + this.frameCount * this.controls.colorFlowSpeed * 0.4) % 1;
+    const sat = this.p.constrain(0.55 + 0.25 * energy, 0, 1);
+    const bright = this.p.constrain(0.32 + 0.42 * energy, 0, 1);
+    this.p.colorMode(this.p.HSB, 1);
+    const c = this.p.color(hue, sat, bright, 1);
+    this.p.colorMode(this.p.RGB, 255);
     return c;
   }
 
@@ -390,56 +629,225 @@ export class MosaicVisual {
   }
 
   public draw() {
-    // Background with trail effect (like original)
-    this.p.background(this.p.color(this.bgColor + '0F'));
-    
-    // Audio-modulated spawn rate for new cells
-    const audioSpawnRate = this.controls.spawnRate * (1 + this.audio.level * 0.5 + this.audio.pulse * 0.3);
-    const colsArr = Array.isArray(this.extras?.bandColumns) ? this.extras!.bandColumns! : [];
-    const colCount = colsArr.length;
-    
+    // 轻微的背景残影，让过渡更自然
+    this.p.push();
+    this.p.noStroke();
+    this.p.rectMode(this.p.CORNER);
+    const fade = this.p.color(this.bgColor + "08"); // 很淡的背景残影
+    this.p.fill(fade);
+    this.p.rect(0, 0, this.p.width, this.p.height);
+    this.p.pop();
+
     for (let i = 0; i < this.cols; i++) {
       for (let j = 0; j < this.rows; j++) {
         const cell = this.grid[i][j];
+        const x = i * this.controls.cellSize + this.controls.cellSize / 2;
+        const y = j * this.controls.cellSize + this.controls.cellSize / 2;
+
         if (cell.alive) {
           cell.age++;
+
+          // 🎵 动态调整元胞大小最大值：根据音频特征调整 maxAge
+          const dynamicMaxAge = this.controls.maxAge * (0.5 + this.audio.level * 1.0 + this.audio.flux * 0.8);
+          let size = this.p.map(cell.age, 0, dynamicMaxAge, 1, this.controls.cellSize);
           
-          const x = i * this.controls.cellSize + this.controls.cellSize / 2;
-          const y = j * this.controls.cellSize + this.controls.cellSize / 2;
+          // 频谱增强：根据频段调整大小
+          size = this.getBandAdjustedSize(size, i);
           
-          // Audio-modulated size with pitch influence
-          const audioSizeMultiplier = 1 + this.audio.level * 0.3 + this.audio.flux * 0.2;
-          const pitchSizeMultiplier = 1 + this.audio.centroid * 0.4; // Higher pitch = larger cells
-          const loudCol = colCount ? this.p.constrain(colsArr[Math.floor(i / Math.max(1, Math.floor(this.cols / Math.max(1, colCount))))] || 0, 0, 1) : 1;
-          const baseSize = this.p.map(cell.age, 0, this.controls.maxAge, 1, this.controls.cellSize) * audioSizeMultiplier * pitchSizeMultiplier * (0.8 + 0.6 * loudCol);
-          // 限制最大尺寸，不超过单元格大小的 92%，避免溢出
-          const maxSize = this.controls.cellSize * 0.92;
-          const size = Math.min(baseSize, maxSize);
+          // 加强音频响应：音频直接影响元胞大小
+          if (this.controls.spectrumMode) {
+            const bandIndex = Math.floor(i / this.bandWidth);
+            const bandActivity = this.getBandActivity(bandIndex);
+            
+          // 🎵 音频强度直接影响元胞大小（使用真实频谱数据）
+          const audioSizeMultiplier = 0.5 + bandActivity * 0.8; // 增加变化范围
+          size *= audioSizeMultiplier;
           
-          // Get flowing color
-          const c = this.getFlowingColor(i, j, cell.age);
-          const alphaScale = 0.8 + 0.6 * (colCount ? loudCol : 1);
-          c.setAlpha(this.controls.alpha * 255 * this.p.constrain(alphaScale, 0.3, 1.6));
-          this.p.fill(c);
+          // 使用 bandColumns 数据进一步调整大小
+          const columns = this.extras?.bandColumns;
+          if (columns && columns.length > bandIndex) {
+            const bandEnergy = columns[bandIndex] || 0;
+            const normalizedEnergy = Math.pow(Math.max(0, Math.min(1, bandEnergy)), 0.6);
+            const energySizeMultiplier = 0.7 + normalizedEnergy * 0.6; // 增加变化范围
+            size *= energySizeMultiplier;
+          }
+          
+          // 🎵 限制大小不超过格子大小
+          size = this.p.constrain(size, 0.5, this.controls.cellSize * 0.8); // 限制最大大小为格子的 80%
+            
+            // 音频变化率影响元胞脉动
+            const pulse = this.p.sin(this.frameCount * 0.1 + i * 0.1) * this.audio.flux * 0.2 + 1.0;
+            size *= pulse;
+          }
+
+          // 使用原始的颜色流动，没有频谱分区
+          const baseColor = this.getFlowingColor(i, j, cell.age);
+          baseColor.setAlpha(180);
+
+          // 音频增强的alpha
+          const audioAlpha = this.p.constrain(
+            this.controls.alpha * (0.7 + this.audio.level * 0.3),
+            0.3, 1.0
+          );
+          baseColor.setAlpha(Math.min(255, audioAlpha * 255));
+
+          this.p.fill(baseColor);
           this.p.noStroke();
-          
+
           this.p.push();
           this.p.translate(x, y);
           this.drawShape(cell.shape, size);
           this.p.pop();
-          
-          // Age out cells
+
+          // 原始的age out逻辑，但创建残影
           if (cell.age > this.controls.maxAge) {
+            // 创建残影
+            cell.ghostAge = 0;
+            cell.ghostSize = size;
+            cell.ghostColor = this.p.color(baseColor);
             cell.alive = false;
           }
         }
+        
+        // 🎵 绘制残影：极短留存时间
+        if (cell.ghostAge !== undefined && cell.ghostAge < 3) { // 极短时间：3 帧
+          cell.ghostAge++;
+          
+          // 残影快速变淡
+          const ghostAlpha = this.p.map(cell.ghostAge, 0, 3, 0.1, 0); // 极低透明度
+          if (ghostAlpha > 0 && cell.ghostColor) {
+            // 🎵 修复颜色错误：检查颜色对象是否存在
+            const ghostColor = cell.ghostColor;
+            ghostColor.setAlpha(ghostAlpha * 255);
+            
+            this.p.fill(ghostColor);
+            this.p.noStroke();
+            
+            this.p.push();
+            this.p.translate(x, y);
+            this.drawShape(cell.shape, cell.ghostSize || 0);
+            this.p.pop();
+          }
+        } else if (cell.ghostAge !== undefined) {
+          // 🎵 残影超时，立即清理
+          cell.ghostAge = undefined;
+          cell.ghostSize = undefined;
+          cell.ghostColor = undefined;
+        }
       }
     }
-    
-    this.updateGrowth();
+
+    // 简单的生长间隔，基于整体音频活动
+    const growthChance = this.p.constrain(
+      this.controls.growthRate * (1.0 + this.audio.level * 1.5),
+      0.01, 0.15
+    );
+
+    if (this.frameCount % 2 === 0 || this.p.random() < growthChance) {
+      this.updateGrowth();
+    }
     this.frameCount++;
   }
 
+  // 频谱增强的生长逻辑
+  private updateGrowth() {
+    const next: MosaicGrid = [];
+
+    for (let i = 0; i < this.cols; i++) {
+      next[i] = [];
+      for (let j = 0; j < this.rows; j++) {
+        const cell = this.grid[i][j];
+        const neighbors = this.countAliveNeighbors(i, j);
+
+        const newCell = { ...cell };
+
+        if (!cell.alive) {
+          // 频谱增强：根据频段活跃度调整生成概率
+          const bandIndex = Math.floor(i / this.bandWidth);
+          const bandActivity = this.getBandActivity(bandIndex);
+          
+          // 🎵 真正的随机性：使用噪声和完全随机，避免规律性模式
+          const noiseOffset = this.p.noise(i * 0.1, j * 0.1, this.frameCount * 0.01) * 0.2; // 噪声偏移
+          const pureRandom = this.p.random() * 0.15; // 完全随机
+          let spawnChance = 0.1 + noiseOffset + pureRandom;
+          
+          if (this.controls.spectrumMode) {
+            // 🎵 频谱模式：使用真实频谱数据影响生成概率，添加异步性
+            spawnChance = 0.02 + bandActivity * 0.2 + noiseOffset + pureRandom;
+            
+            // 直接音频响应：音频强度直接影响生成
+            const directAudioResponse = this.audio.level * 0.3 + this.audio.flux * 0.2;
+            spawnChance += directAudioResponse;
+            
+            // 频段特定的音频特征响应
+            if (bandIndex < 2) {
+              // 低频：响应低音频特征
+              spawnChance += this.audio.bandLow * 0.4;
+            } else if (bandIndex < 5) {
+              // 中频：响应中音频特征
+              spawnChance += this.audio.bandMid * 0.4;
+            } else {
+              // 高频：响应高音频特征
+              spawnChance += this.audio.bandHigh * 0.4;
+            }
+            
+            // 使用 bandColumns 数据增强生成概率
+            const columns = this.extras?.bandColumns;
+            if (columns && columns.length > bandIndex) {
+              const bandEnergy = columns[bandIndex] || 0;
+              const normalizedEnergy = Math.pow(Math.max(0, Math.min(1, bandEnergy)), 0.6);
+              spawnChance += normalizedEnergy * 0.3; // 频谱能量直接影响生成
+            }
+            
+            // 增加频段竞争：相邻频段会抑制当前频段
+            const competitionFactor = this.getBandCompetition(bandIndex);
+            spawnChance *= competitionFactor;
+            
+            // 增加时间变化：频段有"呼吸"节奏
+            const breathing = this.p.sin(bandIndex * 0.8 + this.frameCount * 0.03) * 0.3 + 0.7;
+            spawnChance *= breathing;
+          }
+          
+          // 邻居影响
+          if (neighbors >= 2) {
+            spawnChance *= 2.0;
+          }
+          
+          if (this.p.random() < spawnChance) {
+            newCell.alive = true;
+            newCell.age = 0;
+            // 频谱增强：根据音高选择形状
+            newCell.shape = this.chooseShapeFromPitch(i);
+            // 新元胞出现时清除残影
+            newCell.ghostAge = undefined;
+            newCell.ghostSize = undefined;
+            newCell.ghostColor = undefined;
+          }
+        } else if (cell.alive) {
+          // 🎵 真正的随机死亡：使用噪声和完全随机，避免规律性
+          const randomDeath = this.p.random() * 0.08; // 随机死亡概率
+          const ageDeath = cell.age > (this.controls.maxAge || 120) ? 0.4 : 0; // 年龄死亡
+          const neighborDeath = neighbors < 1 ? 0.3 : 0; // 孤立死亡
+          const noiseDeath = this.p.noise(i * 0.15, j * 0.15, this.frameCount * 0.02) * 0.1; // 噪声死亡
+          
+          const totalDeathChance = randomDeath + ageDeath + neighborDeath + noiseDeath;
+          
+          if (this.p.random() < totalDeathChance) {
+            newCell.alive = false;
+            newCell.ghostAge = 0; // 开始残影
+          } else {
+            newCell.alive = true;
+          }
+        }
+
+        next[i][j] = newCell;
+      }
+    }
+
+    this.grid = next;
+  }
+
+  
   public resize() {
     this.initializeGrid();
   }
@@ -456,12 +864,20 @@ export function applyMosaicUniforms(
   audio: MosaicAudioUniforms,
   sensitivity: number,
   cellSize: number = 20,
-  maxAge: number = 80,
+  maxAge: number = 200,
   growthRate: number = 0.05,
   spawnRate: number = 0.02,
   colorScheme: number = 0,
   colorFlowSpeed: number = 0.01,
   alpha: number = 0.7,
+  ghostDuration: number = 30,
+  frequencyBands: number = 8,
+  pitchSensitivity: number = 1.0,
+  intensitySensitivity: number = 1.0,
+  spectrumMode: boolean = true,
+  auroraMode: boolean = true,
+  auroraIntensity: number = 1.0,
+  auroraSpeed: number = 0.02,
   bandColumns?: number[]
 ) {
   // Update the visual's controls and audio data
@@ -472,20 +888,16 @@ export function applyMosaicUniforms(
     spawnRate,
     colorScheme,
     colorFlowSpeed,
-    alpha
+    alpha,
+    ghostDuration,
+    frequencyBands,
+    pitchSensitivity,
+    intensitySensitivity,
+    spectrumMode,
+    auroraMode,
+    auroraIntensity,
+    auroraSpeed
   };
   
-  // Check if color scheme changed and reinitialize if needed
-  if (mosaicVisual['controls'].colorScheme !== colorScheme) {
-    console.log('🎨 颜色方案变化:', mosaicVisual['controls'].colorScheme, '->', colorScheme);
-    mosaicVisual['controls'] = newControls;
-    mosaicVisual['audio'] = audio;
-    mosaicVisual['extras'] = { bandColumns } as any;
-    // Update color scheme using the public method
-    mosaicVisual.updateColorScheme(colorScheme);
-  } else {
-    mosaicVisual['controls'] = newControls;
-    mosaicVisual['audio'] = audio;
-    mosaicVisual['extras'] = { bandColumns } as any;
-  }
+  mosaicVisual.syncState(newControls, audio, { bandColumns });
 }
