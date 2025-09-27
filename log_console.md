@@ -7,14 +7,14 @@ Unhandled Runtime Error
 TypeError: Failed to execute 'useProgram' on 'WebGL2RenderingContext': parameter 1 is not of type 'WebGLProgram'.
 
 Source
-visuals/spiral.ts (253:5) @ rect
+visuals/spiral.ts (315:5) @ rect
 
-  251 |   p.noStroke();
-  252 |   p.rectMode(p.CENTER);
-> 253 |   p.rect(0, 0, p.width, p.height);
+  313 |   p.noStroke();
+  314 |   p.rectMode(p.CENTER);
+> 315 |   p.rect(0, 0, p.width, p.height);
       |     ^
-  254 | }
-  255 |
+  316 | }
+  317 |
 Call Stack
 Show collapsed frames
 
@@ -27,13 +27,13 @@ Unhandled Runtime Error
 TypeError: Failed to execute 'useProgram' on 'WebGL2RenderingContext': parameter 1 is not of type 'WebGLProgram'.
 
 Source
-visuals/spiral.ts (253:5) @ rect
+visuals/spiral.ts (315:5) @ rect
 
-  251 |   p.noStroke();
-  252 |   p.rectMode(p.CENTER);
-> 253 |   p.rect(0, 0, p.width, p.height);
+  313 |   p.noStroke();
+  314 |   p.rectMode(p.CENTER);
+> 315 |   p.rect(0, 0, p.width, p.height);
       |     ^
-  254 | }
-  255 |
+  316 | }
+  317 |
 Call Stack
 Show collapsed frames

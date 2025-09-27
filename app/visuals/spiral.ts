@@ -43,7 +43,65 @@ uniform float uPulse;
 
 vec2 cmul(vec2 a, vec2 b){return vec2(a.x*b.x-a.y*b.y, a.x*b.y+b.x*a.y);} 
 mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
-vec3 hue(float a){return .5+.5*sin(a*3.3+vec3(1.,2.,3.));}
+// 🎨 极光冷淡色调：蓝绿青紫完整色相，最亮处位移到下一个色相
+vec3 hue(float a){
+  // 实现真正的色相变化：蓝 -> 绿 -> 青 -> 紫
+  float hue = a * 1.2; // 降低色相变化速度，更平滑
+  
+  // 蓝绿青紫色相循环
+  float phase = mod(hue, 4.0); // 0-4 循环
+  
+  vec3 color;
+  if (phase < 1.0) {
+    // 蓝 -> 绿 (0-1)
+    float t = phase;
+    color = mix(vec3(0.1, 0.3, 0.9), vec3(0.1, 0.8, 0.4), t);
+  } else if (phase < 2.0) {
+    // 绿 -> 青 (1-2)
+    float t = phase - 1.0;
+    color = mix(vec3(0.1, 0.8, 0.4), vec3(0.1, 0.9, 0.8), t);
+  } else if (phase < 3.0) {
+    // 青 -> 紫 (2-3)
+    float t = phase - 2.0;
+    color = mix(vec3(0.1, 0.9, 0.8), vec3(0.6, 0.2, 0.9), t);
+  } else {
+    // 紫 -> 蓝 (3-4)
+    float t = phase - 3.0;
+    color = mix(vec3(0.6, 0.2, 0.9), vec3(0.1, 0.3, 0.9), t);
+  }
+  
+  return color;
+}
+
+// 🎨 最中心位置白色：简化版本，避免复杂计算
+vec3 hueWithCenterWhite(float a, float brightness, vec3 p){
+  // 基础色相
+  vec3 baseColor = hue(a);
+  
+  // 色相位移
+  float hueShift = brightness * 0.5;
+  float shiftedHue = a + hueShift;
+  vec3 shiftedColor = hue(shiftedHue);
+  vec3 mixedColor = mix(baseColor, shiftedColor, brightness);
+  
+  // 🎨 简化的中心区域判断：只基于距离
+  float distanceFromCenter = length(p);
+  float centerFactor = 1.0 - distanceFromCenter;
+  
+  // 基础亮度分布：从中心到四周减弱 3 成（7成亮度）
+  float baseBrightness = 0.7 + centerFactor * 0.3; // 0.7-1.0 范围
+  
+  // 高音量时：中心变成 HSL L=1（白色）
+  float audioBoost = brightness * 0.5; // 音频响应
+  float finalBrightness = baseBrightness + audioBoost;
+  
+  if (finalBrightness > 0.8) { // 高亮度阈值
+    float whiteMix = (finalBrightness - 0.8) / 0.2; // 0.8-1.0 映射到 0-1
+    mixedColor = mix(mixedColor, vec3(1.0), whiteMix);
+  }
+  
+  return mixedColor;
+}
 
 vec3 smin(vec3 a, vec3 b, float k){
   vec3 h=clamp(.5+.5*(b-a)/k,.0,1.);
@@ -93,24 +151,25 @@ vec3 march(vec3 p, vec3 rd){
     t+=exp(-t*.7)*exp(-c*.95);
     c=swirls(p+rd*t);
     
-    // 🎵 改进色相控制：时间基础变化 + 音频响应
-    float timeHueShift = T * 0.3; // 基础时间色相变化
-    float audioHueShift = uCentroid * 1.5 + uPulse * 0.8 + uFlux * 0.6; // 音频色相响应
+    // 🎵 改进色相控制：平滑变化，正确的色相方向
+    float timeHueShift = T * 0.15; // 适中的变化速度
+    float audioHueShift = uCentroid * 0.3 + uPulse * 0.2 + uFlux * 0.15; // 降低音频响应强度
     float totalHueShift = timeHueShift + audioHueShift;
     
-    // 🎵 优化亮度控制：增强亮度变化范围
-    float baseGain = 0.005; // 基础亮度
-    float audioBrightness = uLevel * 0.8 + uFlux * 0.6 + uPulse * 0.4; // 音频亮度响应
-    float gain = baseGain * (1.0 + audioBrightness * 2.0); // 增强亮度变化
+    // 🎵 优化亮度控制：降低整体亮度，平滑过渡
+    float baseGain = 0.008; // 降低基础亮度
+    float audioBrightness = uLevel * 0.3 + uFlux * 0.25 + uPulse * 0.2; // 降低音频响应强度
+    float gain = baseGain * (1.0 + audioBrightness * 1.5); // 降低亮度变化倍数
     
-    // 颜色计算
-    vec3 finalHue = hue(dot(p,p)+c+totalHueShift);
+    // 🎨 颜色计算：暂时使用基础色相，避免复杂计算
+    vec3 baseHue = hue(dot(p,p)+c+totalHueShift);
+    vec3 finalHue = baseHue;
     
-    // 增强核心亮点：让中心更亮，响应音频
+    // 🎵 增强中间亮色：让中心更明显
     vec3 addition = c * finalHue * gain;
-    col += clamp(addition, vec3(0.0), vec3(0.12)); // 增加最大贡献，让核心更亮
+    col += clamp(addition, vec3(0.0), vec3(0.15)); // 进一步增加最大贡献
     // 保护累积颜色不超过安全范围
-    col = clamp(col, vec3(0.0), vec3(0.8)); // 预留空间给后续处理
+    col = clamp(col, vec3(0.0), vec3(0.8)); // 进一步提高上限
   }
   return col;
 }
@@ -158,33 +217,33 @@ void main(){
   }
   float t=min((uTime-.5)*.3,1.);
   col=mix(vec3(0.),col,t);
-  // Conservative audio reactivity - prevent overflow
-  float response = clamp(uLevel * 1.2 + uFlux * 0.8 + uPulse * 1.0, 0.0, 2.0);
+  // 🎵 极光冷淡色调：降低整体亮度，平滑过渡
+  float response = clamp(uLevel * 0.6 + uFlux * 0.4 + uPulse * 0.5, 0.0, 1.5);
 
-  // Reduced brightness lift - more conservative approach
-  float brightnessLift = response * 0.08;  // Reduced from 0.15 to 0.08
+  // 降低亮度提升，避免过亮
+  float brightnessLift = response * 0.04;  // 降低亮度响应
 
-  // Conservative color enhancement
-  vec3 colorEnhanced = col * (1.0 + brightnessLift * 0.5);
+  // 降低颜色效果
+  vec3 colorEnhanced = col * (1.0 + brightnessLift * 0.4);
 
-  // Safer mixing with clamped factors
-  float mixFactor = clamp(brightnessLift * 1.5, 0.0, 0.4); // Reduced from 0.6
+  // 降低混合效果
+  float mixFactor = clamp(brightnessLift * 1.2, 0.0, 0.25); // 降低混合强度
   col = mix(col, colorEnhanced, mixFactor);
 
-  // Minimal additional brightness
-  col += vec3(brightnessLift * 0.15);  // Reduced from 0.3
+  // 降低额外亮度
+  col += vec3(brightnessLift * 0.06);  // 降低额外亮度
 
-  // Intermediate clamp to prevent overflow
-  col = clamp(col, 0.0, 0.9);  // Leave headroom
+  // 降低上限，避免过亮
+  col = clamp(col, 0.0, 0.7);  // 降低上限
 
-  // Conservative sensitivity multiplier
-  col *= (1.0 + uSensitivity * 0.05);  // Reduced from 0.1
-  col = clamp(col, 0.0, 0.95);
+  // 降低敏感度倍数
+  col *= (1.0 + uSensitivity * 0.03);  // 降低敏感度
+  col = clamp(col, 0.0, 0.75);
 
-  // Conservative pulse effect
-  float pulseEffect = uPulse * 0.05 * sin(T * 3.0 + uCentroid * 1.5);
+  // 降低脉冲效果
+  float pulseEffect = uPulse * 0.03 * sin(T * 2.0 + uCentroid * 1.0);
   col += vec3(pulseEffect);
-  col = clamp(col, 0.0, 0.95);  // Final clamp before smoothstep
+  col = clamp(col, 0.0, 0.75);  // 最终限制
 
   // Final smoothstep with safe parameters
   col = clamp(col, 0.0, 1.0);  // Ensure col is in safe range
