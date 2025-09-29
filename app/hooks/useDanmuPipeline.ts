@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { EventBus } from '../lib/event-bus';
+import { ConsoleTamer } from '../lib/console-tamer';
 import { DanmuEngine } from '../lib/danmu-engine';
 import {
   DanmuPipelineEnhanced,
@@ -64,8 +65,8 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         pipelineRef.current = pipeline;
 
         initializedRef.current = true;
-        console.log('弹幕管线初始化完成');
-        console.log('🎵 弹幕管线状态:', {
+        ConsoleTamer.info('danmu.init', '弹幕管线初始化完成');
+        ConsoleTamer.debug('danmu.init', '🎵 弹幕管线状态:', {
           isReady: pipelineRef.current?.isReady,
           status: pipelineRef.current?.status
         });
@@ -90,7 +91,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
 
   // 启动/停止管线
   const start = () => {
-    console.log('🎵 useDanmuPipeline start 被调用:', {
+    ConsoleTamer.debug('danmu.start', '🎵 useDanmuPipeline start 被调用:', {
       hasDanmuEngine: !!danmuEngineRef.current,
       hasPipeline: !!pipelineRef.current,
       initialized: initializedRef.current
@@ -98,12 +99,12 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (danmuEngineRef.current && pipelineRef.current) {
       danmuEngineRef.current.start();
       pipelineRef.current.start();
-      console.log('🎵 弹幕管线启动成功');
+      ConsoleTamer.info('danmu.start', '🎵 弹幕管线启动成功');
       
       // 延迟更新状态，确保状态同步
       setTimeout(() => {
         const status = pipelineRef.current?.status;
-        console.log('🎵 延迟状态检查:', status);
+        ConsoleTamer.debug('danmu.start', '🎵 延迟状态检查:', status);
         if (status) {
           setState(prev => ({
             ...prev,
@@ -112,15 +113,15 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
             pendingRequests: status.pendingRequests,
             danmuCount: status.danmuCount,
           }));
-          console.log('🎵 状态已更新为:', { isActive: status.isActive || true });
+          ConsoleTamer.debug('danmu.start', '🎵 状态已更新为:', { isActive: status.isActive || true });
         } else {
           // 如果没有status，至少设置isActive为true
           setState(prev => ({ ...prev, isActive: true }));
-          console.log('🎵 状态已更新为: {isActive: true}');
+          ConsoleTamer.debug('danmu.start', '🎵 状态已更新为: {isActive: true}');
         }
       }, 100);
     } else {
-      console.log('🎵 弹幕管线启动失败 - 组件未就绪');
+      ConsoleTamer.warn('danmu.start', '🎵 弹幕管线启动失败 - 组件未就绪');
     }
   };
 
@@ -157,12 +158,12 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
   useEffect(() => {
     const updateState = () => {
       if (!pipelineRef.current) {
-        console.log('🎵 状态更新检查: 弹幕管线未初始化');
+        ConsoleTamer.debug('danmu.state', '🎵 状态更新检查: 弹幕管线未初始化');
         return;
       }
       
       const status = pipelineRef.current?.status;
-      console.log('🎵 状态更新检查:', {
+      ConsoleTamer.debug('danmu.state', '🎵 状态更新检查:', {
         hasPipeline: !!pipelineRef.current,
         status: status,
         isActive: status?.isActive
@@ -182,9 +183,6 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
           dominantInstrument: dominantInstrument ?? prev.dominantInstrument,
         };
         
-        console.log('🎵 状态更新前:', prev);
-        console.log('🎵 状态更新后:', newState);
-        
         // 检查状态是否真的发生了变化
         const hasChanged = 
           prev.isActive !== newState.isActive ||
@@ -194,10 +192,10 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
           prev.dominantInstrument !== newState.dominantInstrument;
         
         if (hasChanged) {
-          console.log('🎵 状态发生变化，触发更新');
+          ConsoleTamer.debug('danmu.state', '🎵 状态发生变化，触发更新');
           return newState;
         } else {
-          console.log('🎵 状态未发生变化，保持原状态');
+          ConsoleTamer.debug('danmu.state', '🎵 状态未发生变化，保持原状态');
           // 强制触发一次更新，确保组件能够重新渲染
           return { ...prev };
         }

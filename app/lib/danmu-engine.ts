@@ -54,6 +54,13 @@ export class DanmuEngine {
       // 设置容器样式
       this.setupContainer();
 
+      // 初始化时强制清空容器与内部状态，避免刷新/热更新后残留
+      try {
+        this.clearAllDanmu();
+        this.container.innerHTML = '';
+        this.nextLane = 0;
+      } catch {}
+
       this.isInitialized = true;
       console.log('弹幕引擎初始化成功');
     } catch (error) {
@@ -74,6 +81,15 @@ export class DanmuEngine {
       console.log('🎵 弹幕引擎: 已经激活，跳过启动');
       return;
     }
+
+    // 启动前进行一次彻底清空，防止上一次会话的节点与状态残留
+    try {
+      this.clearAllDanmu();
+      if (this.container) {
+        this.container.innerHTML = '';
+      }
+      this.nextLane = 0;
+    } catch {}
 
     this.isActive = true;
     this.startAnimationLoop();

@@ -6,6 +6,7 @@ import Meyda from 'meyda'; // Import Meyda for real audio feature extraction
 // 动态按需加载 TFJS，避免进入首包
 let tfNs: any = null;
 import { DanmuEngine } from '../../lib/danmu-engine'; // Import DanmuEngine
+import { ConsoleTamer } from '../../lib/console-tamer';
 import { useDanmuPipeline } from '../../hooks/useDanmuPipeline'; // Import LLM Danmu Pipeline
 
 // 派生特征计算函数
@@ -1152,9 +1153,9 @@ export default function StandaloneClient() {
 
     // 调试信息：检查是否所有值都是0
     if (zeroCount === bufferLength) {
-      console.warn('⚠️ 音频数据全为零 - 可能音频流未正确连接');
+      ConsoleTamer.warn('audio.zero', '⚠️ 音频数据全为零 - 可能音频流未正确连接');
       const sampleValues = Array.from(timeDomainData.slice(0, 10));
-      console.log('前10个音频样本值:', sampleValues);
+      ConsoleTamer.debug('audio.samples', '前10个音频样本值:', sampleValues);
     }
 
     setAudioLevel(normalizedLevel);
@@ -1177,10 +1178,8 @@ export default function StandaloneClient() {
       console.warn('更新调试信息失败:', e);
     }
     
-    // 调试日志 - 每100帧输出一次
-    if (Math.random() < 0.01) {
-      console.log('音频级别:', normalizedLevel.toFixed(3), 'RMS:', rms.toFixed(3), 'MaxAbs:', maxAbs.toFixed(3), 'ZeroCount:', zeroCount, 'BufferLength:', bufferLength);
-    }
+    // 帧心跳（限流到每秒一次）
+    ConsoleTamer.debug('audio.tick', '音频级别/RMS/MaxAbs/ZeroCount/BufferLength', normalizedLevel.toFixed(3), rms.toFixed(3), maxAbs.toFixed(3), zeroCount, bufferLength);
     
     // 继续循环
     animationFrameRef.current = requestAnimationFrame(analyzeAudio);
@@ -1373,7 +1372,8 @@ export default function StandaloneClient() {
               'perceptualSharpness',
             ],
             callback: (f: any) => {
-              console.log('🎵 Meyda 回调被调用:', f);
+              // 高频回调，避免输出原始对象
+              ConsoleTamer.debug('meyda.cb', '🎵 Meyda 回调被调用');
               try {
                 // 健壮性检查：确保 Meyda 返回了有效数据
                 if (!f || typeof f !== 'object') {
@@ -1724,7 +1724,7 @@ export default function StandaloneClient() {
                       
                       // 调试日志
                       if (Math.random() < 0.1) {
-                        console.log('YAMNet 分类结果:', {
+                        ConsoleTamer.debug('yamnet.classify', 'YAMNet 分类结果(采样):', {
                           topClass: yamnetResults.topClasses[0]?.label,
                           confidence: yamnetResults.topClasses[0]?.confidence?.toFixed(3),
                           instruments: yamnetResults.instruments.slice(0, 3),
@@ -1737,16 +1737,14 @@ export default function StandaloneClient() {
                   }
                 }
                 
-                // 调试日志 - 每100帧输出一次
-                if (Math.random() < 0.01) {
-                  console.log('Meyda 特征:', {
+                // 高频采样改为限流
+                ConsoleTamer.debug('meyda.features', 'Meyda 特征(限流):', {
                     rms: processedFeatures.rms.toFixed(3),
                     spectralCentroid: processedFeatures.spectralCentroid.toFixed(3),
                     zcr: processedFeatures.zcr.toFixed(3),
                     mfccLength: processedFeatures.mfcc.length,
                     chromaLength: processedFeatures.chroma.length
                   });
-                }
               } catch (e) {
                 console.warn('Meyda 特征处理错误:', e);
               }

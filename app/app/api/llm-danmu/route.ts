@@ -39,6 +39,43 @@ function readConfig() {
 
 export async function POST(req: Request) {
   try {
+    // 轻量重试封装：对网络错误/超时，及 429/502 进行指数退避重试
+    const fetchWithRetry = async (
+      input: RequestInfo | URL,
+      init: RequestInit & { retry?: number; baseTimeoutMs?: number } = {}
+    ) => {
+      const maxRetry = typeof init.retry === 'number' ? init.retry : 2; // 额外重试 2 次（共 3 次）
+      const baseTimeoutMs = typeof init.baseTimeoutMs === 'number' ? init.baseTimeoutMs : 12000;
+      let lastError: any = null;
+      for (let attempt = 0; attempt <= maxRetry; attempt++) {
+        const timeoutMs = Math.min(20000, Math.round(baseTimeoutMs * Math.pow(1.6, attempt)));
+        try {
+          const resp = await fetch(input, {
+            ...init,
+            // 使用每次尝试单独的超时信号，避免挂死
+            signal: AbortSignal.timeout(timeoutMs),
+          } as RequestInit);
+          // 针对易波动的上游状态码进行重试
+          if (resp.status === 429 || resp.status === 502 || resp.status === 503 || resp.status === 504) {
+            if (attempt < maxRetry) {
+              await new Promise(r => setTimeout(r, 400 * Math.pow(2, attempt)));
+              continue;
+            }
+          }
+          return resp;
+        } catch (e: any) {
+          lastError = e;
+          if (attempt < maxRetry) {
+            await new Promise(r => setTimeout(r, 400 * Math.pow(2, attempt)));
+            continue;
+          }
+          throw e;
+        }
+      }
+      // 理论上不会走到这里
+      throw lastError || new Error('fetch failed');
+    };
+
     const { apiKey, url } = readConfig();
     if (!apiKey || !url) {
       return NextResponse.json({ success: false, error: 'Missing GLM config' }, { status: 500 });
@@ -149,7 +186,7 @@ export async function POST(req: Request) {
       `可参考锚点：${anchorHints}\n`+
       `线索：${JSON.stringify(features).slice(0, 800)}`;
 
-    const resp = await fetch(url, {
+    const resp = await fetchWithRetry(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -169,7 +206,9 @@ export async function POST(req: Request) {
         presence_penalty: typeof optPresencePenalty === 'number' ? optPresencePenalty : undefined,
         thinking: { type: 'disabled' },  // 禁用思考模式
       }),
-      signal: AbortSignal.timeout(20000),  // 增加到20秒，避免模型响应超时
+      // 重试参数：基础超时 12s，指数退避，最多 2 次重试
+      retry: 2,
+      baseTimeoutMs: 12000,
     });
 
     if (!resp.ok) {
@@ -352,7 +391,7 @@ export async function POST(req: Request) {
         // 追加用户提示，要求避开已产生文本
         const avoidList = processed.map(i => i.text).slice(-20);
         const userPrompt2 = userPrompt + `\n避免与以下文本重合：${avoidList.join(' / ')}`;
-        const resp2 = await fetch(url, {
+        const resp2 = await fetchWithRetry(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -371,7 +410,8 @@ export async function POST(req: Request) {
             presence_penalty: typeof optPresencePenalty === 'number' ? optPresencePenalty : undefined,
             thinking: { type: 'disabled' },
           }),
-          signal: AbortSignal.timeout(20000),
+          retry: 2,
+          baseTimeoutMs: 12000,
         });
         if (resp2.ok) {
           const data2 = await resp2.json();

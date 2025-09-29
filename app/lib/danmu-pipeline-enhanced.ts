@@ -94,6 +94,14 @@ export class DanmuPipelineEnhanced {
   start(): void {
     this.isActive = true;
     this.featureAggregator.reset();
+    // 启动前先清理历史缓存，避免刷新/重启后残留影响去重与节奏
+    try {
+      this.pendingComments = [];
+      this.recentShownTexts = [];
+      this.danmuCount = 0;
+      this.lastCommentTimestamp = 0;
+      this.clearCommentTimer();
+    } catch {}
     this.flushPendingComments(true);
     console.log('增强版弹幕管线启动，isActive:', this.isActive);
   }
@@ -102,6 +110,12 @@ export class DanmuPipelineEnhanced {
     this.isActive = false;
     this.pendingRequests = 0;
     this.clearCommentTimer();
+    // 停止时也清理一次，避免残留到下一次 sessions
+    try {
+      this.pendingComments = [];
+      this.recentShownTexts = [];
+      this.danmuCount = 0;
+    } catch {}
     console.log('增强版弹幕管线停止');
   }
 

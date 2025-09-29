@@ -174,6 +174,13 @@ export type MosaicControls = {
   auroraMode?: boolean; // 是否启用极光模式
   auroraIntensity?: number; // 极光强度
   auroraSpeed?: number; // 极光变化速度
+  // 频谱条叠加参数（可选）
+  showSpectrumBars?: boolean; // 是否显示频谱条
+  spectrumBarOpacity?: number; // 频谱条整体不透明度 0..1
+  spectrumBarWidthScale?: number; // 单列条形宽度相对缩放（0.5..1.5）
+  spectrumBarGap?: number; // 条形间隙像素（>=0）
+  spectrumPeakHold?: boolean; // 是否显示峰值保持指示
+  spectrumPeakDecay?: number; // 峰值下降速度（0.001..0.05）
 };
 
 type MosaicExtras = {
@@ -191,6 +198,10 @@ export class MosaicVisual {
   private frequencyBands: number = 8;
   private bandWidth: number = 0;
   private bandCooling?: number[]; // 频段冷却机制
+  // 频谱条内部状态（平滑与峰值保持）
+  private spectrumColumnsSmoothed?: number[];
+  private spectrumPeaks?: number[];
+  private spectrumLastLen: number = 0;
   
   constructor(
     private p: any,
@@ -235,6 +246,13 @@ export class MosaicVisual {
     this.controls = controls;
     this.audio = audio;
     this.extras = extras;
+    // 当 bandColumns 尺寸变化时重置平滑与峰值缓存
+    const len = extras?.bandColumns?.length || 0;
+    if (len > 0 && len !== this.spectrumLastLen) {
+      this.spectrumColumnsSmoothed = new Array(len).fill(0);
+      this.spectrumPeaks = new Array(len).fill(0);
+      this.spectrumLastLen = len;
+    }
     if (colorSchemeChanged) {
       this.updateColorScheme(controls.colorScheme);
     } else if (cellSizeChanged) {
@@ -638,6 +656,13 @@ export class MosaicVisual {
     this.p.rect(0, 0, this.p.width, this.p.height);
     this.p.pop();
 
+    // 优先绘制频谱条，让整体更像“频谱”
+    try {
+      this.drawSpectrumBars();
+    } catch (e) {
+      console.warn('⚠️ 绘制频谱条失败:', e);
+    }
+
     for (let i = 0; i < this.cols; i++) {
       for (let j = 0; j < this.rows; j++) {
         const cell = this.grid[i][j];
@@ -682,12 +707,14 @@ export class MosaicVisual {
 
           // 使用原始的颜色流动，没有频谱分区
           const baseColor = this.getFlowingColor(i, j, cell.age);
-          baseColor.setAlpha(180);
+          // 降低细胞层不透明度，让频谱条更主导
+          const cellAlphaBase = 140; // 约 55%
+          baseColor.setAlpha(cellAlphaBase);
 
           // 音频增强的alpha
           const audioAlpha = this.p.constrain(
-            this.controls.alpha * (0.7 + this.audio.level * 0.3),
-            0.3, 1.0
+            this.controls.alpha * 0.85 * (0.65 + this.audio.level * 0.25),
+            0.2, 0.9
           );
           baseColor.setAlpha(Math.min(255, audioAlpha * 255));
 
@@ -747,6 +774,89 @@ export class MosaicVisual {
       this.updateGrowth();
     }
     this.frameCount++;
+  }
+
+  // 绘制频谱条：从底部向上绘制列状条形，并带峰值保持指示
+  private drawSpectrumBars() {
+    const columns = this.extras?.bandColumns;
+    const hasColumns = Array.isArray(columns) && (columns as number[]).length > 0;
+    const enabled = this.controls.showSpectrumBars ?? this.controls.spectrumMode ?? true;
+    if (!enabled || !hasColumns) return;
+
+    try {
+      const arr = columns as number[];
+      const n = arr.length;
+      // 初始化平滑与峰值缓存
+      if (!this.spectrumColumnsSmoothed || this.spectrumColumnsSmoothed.length !== n) {
+        this.spectrumColumnsSmoothed = new Array(n).fill(0);
+      }
+      if (!this.spectrumPeaks || this.spectrumPeaks.length !== n) {
+        this.spectrumPeaks = new Array(n).fill(0);
+      }
+
+      // 平滑参数：上升快（attack），下降慢（release），减少闪烁
+      const attack = 0.45; // 0..1 越大上升越快
+      const release = 0.12; // 0..1 越小下降越慢
+      const op = Math.max(0, Math.min(1, this.controls.spectrumBarOpacity ?? 0.9));
+      const widthScale = Math.max(0.4, Math.min(1.6, this.controls.spectrumBarWidthScale ?? 0.85));
+      const gap = Math.max(0, Math.min(12, this.controls.spectrumBarGap ?? 1));
+      const peakHold = this.controls.spectrumPeakHold ?? true;
+      const peakDecay = Math.max(0.002, Math.min(0.08, this.controls.spectrumPeakDecay ?? 0.02));
+
+      // 计算每列条形的屏幕宽度
+      const totalWidth = this.p.width;
+      const barFullW = totalWidth / n; // 每列分配宽度
+      const barW = Math.max(1, barFullW * widthScale - gap);
+      const leftOffset = (barFullW - barW) / 2;
+
+      // 垂直范围
+      const bottomY = this.p.height;
+      const topY = 0;
+      const maxH = bottomY - topY;
+
+      // 按列更新平滑与峰值
+      for (let i = 0; i < n; i++) {
+        const x0 = i * barFullW + leftOffset;
+        // 非线性映射（软压缩），兼容 0..1 之外的输入
+        const raw = Math.max(0, Math.min(1, arr[i] ?? 0));
+        const energy = Math.pow(raw, 0.6); // 增强弱信号
+
+        // 平滑：上升用 attack，下落用 release
+        const prev = this.spectrumColumnsSmoothed[i];
+        const coef = energy > prev ? attack : release;
+        const smooth = prev + coef * (energy - prev);
+        this.spectrumColumnsSmoothed[i] = smooth;
+
+        // 峰值保持：缓慢衰减到平滑值之上
+        const peakPrev = this.spectrumPeaks[i];
+        const peakNext = Math.max(smooth, peakPrev - peakDecay);
+        this.spectrumPeaks[i] = peakNext;
+
+        // 颜色：使用彩虹或当前主题颜色过渡
+        const barColor = this.makeRainbowColor(i, smooth);
+        barColor.setAlpha(Math.min(255, op * 255));
+
+        // 绘制条形（从底向上）
+        const h = Math.max(1, smooth * maxH);
+        this.p.noStroke();
+        this.p.fill(barColor);
+        this.p.rectMode(this.p.CORNER);
+        this.p.rect(x0, bottomY - h, barW, h);
+
+        // 峰值指示（小横条）
+        if (peakHold) {
+          const peakH = Math.max(1, peakNext * maxH);
+          const peakY = bottomY - peakH;
+          // 峰值使用更亮的同色并减小透明度
+          const peakC = this.makeRainbowColor(i, Math.min(1, peakNext + 0.15));
+          peakC.setAlpha(Math.min(255, op * 0.9 * 255));
+          this.p.fill(peakC);
+          this.p.rect(x0, Math.max(topY, peakY - 2), barW, 3);
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ 频谱条更新失败:', err);
+    }
   }
 
   // 频谱增强的生长逻辑
