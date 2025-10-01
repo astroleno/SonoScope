@@ -934,7 +934,8 @@ const PRESET_OPTIONS = [
   { id: 'wave', label: 'Wave', abbrMobile: 'WA' },
   { id: 'accretion', label: 'Accretion', abbrMobile: 'AC' },
   { id: 'spiral', label: 'Spiral', abbrMobile: 'SP' },
-  { id: 'mosaic', label: 'Mosaic', abbrMobile: 'MO' }
+  { id: 'mosaic', label: 'Mosaic', abbrMobile: 'MO' },
+  { id: 'mochi', label: 'Mochi', abbrMobile: 'MI' }
 ];
 
 export default function StandaloneClient() {
@@ -2083,7 +2084,7 @@ export default function StandaloneClient() {
         <Visualizer
           audioLevel={audioLevel}
           running={isRunning}
-          preset={currentPreset as 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave'}
+          preset={currentPreset as 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave' | 'mochi'}
             features={features}
           sensitivity={sensitivity}
           spectrumPriority={spectrumPriority}
@@ -2174,8 +2175,8 @@ export default function StandaloneClient() {
       )}
 
       {/* 预设选择器 - 放在顶部但不贴边 */}
-      <div className="relative z-10 pt-16 portrait:pt-8 pb-8">
-        <div className="flex gap-3 sm:gap-5 lg:gap-7 flex-nowrap justify-center items-center w-full px-2">
+      <div className="relative z-10 pt-12 sm:pt-14 portrait:pt-8 pb-6">
+        <div className="flex gap-3 sm:gap-4 lg:gap-4 flex-nowrap justify-center items-center w-full px-4 sm:px-6 overflow-x-auto">
           {[...PRESET_OPTIONS, { id: 'danmu', label: 'Danmu', abbrMobile: 'DA' }].map((option, index) => {
             const graphemes = segmentGraphemes(option.label);
             const centerIndex = (graphemes.length - 1) / 2;
@@ -2199,9 +2200,9 @@ export default function StandaloneClient() {
                 }}
                     className={`
                       group relative block overflow-visible sm:overflow-hidden whitespace-nowrap
-                      text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl
-                      text-center sm:text-left
-                      font-black uppercase
+                      text-xl sm:text-[1.75rem] lg:text-[2.5rem]
+                      text-center
+                      font-black uppercase leading-none
                       mx-auto portrait:px-2
                   ${option.id === 'danmu'
                     ? (isSelected
@@ -2219,9 +2220,7 @@ export default function StandaloneClient() {
                       // will-change-transform
                       // transform-gpu
                     `}
-              style={{
-                lineHeight: 1,
-              }}
+              style={{ lineHeight: 1 }}
                   aria-pressed={option.id === 'danmu' ? danmuEnabled : option.id === 'spectrum' ? spectrumPriority : (currentPreset === option.id && isRunning)}
                   aria-label={option.label}
                 >

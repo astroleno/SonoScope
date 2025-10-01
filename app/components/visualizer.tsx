@@ -42,7 +42,7 @@ interface AudioWeights {
 interface VisualizerProps {
   audioLevel: number; // 0 ~ 1
   running: boolean;
-  preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave';
+  preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave' | 'mochi';
   features?: Features | null;
   sensitivity?: number;
   // 频谱优先模式开关
@@ -83,7 +83,7 @@ export default function Visualizer({
   const p5InstanceRef = useRef<any | null>(null);
   const levelRef = useRef<number>(0);
   const runningRef = useRef<boolean>(false);
-  const presetRef = useRef<'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave'>(preset);
+  const presetRef = useRef<'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave' | 'mochi'>(preset);
   const featuresRef = useRef<Features | null>(features);
   const sensitivityRef = useRef<number>(sensitivity);
   const accretionControlsRef = useRef<
@@ -140,12 +140,14 @@ export default function Visualizer({
         const loadSpiral = () => import('../visuals/spiral');
         const loadMosaic = () => import('../visuals/mosaic');
         const loadWave = () => import('../visuals/wave');
+        const loadMochi = () => import('../visuals/mochi');
 
         let pulseMod: any = presetNow === 'pulse' ? await loadPulse() : null;
         let accretionMod: any = presetNow === 'accretion' ? await loadAccretion() : null;
         let spiralMod: any = presetNow === 'spiral' ? await loadSpiral() : null;
         let mosaicMod: any = presetNow === 'mosaic' ? await loadMosaic() : null;
         let waveMod: any = presetNow === 'wave' ? await loadWave() : null;
+        let mochiMod: any = presetNow === 'mochi' ? await loadMochi() : null;
 
         // 预取其余模块（非阻塞）
         const ric = (cb: () => void) => {
@@ -160,6 +162,7 @@ export default function Visualizer({
         ric(async () => { if (!spiralMod) spiralMod = await loadSpiral().catch(() => null); });
         ric(async () => { if (!mosaicMod) mosaicMod = await loadMosaic().catch(() => null); });
         ric(async () => { if (!waveMod) waveMod = await loadWave().catch(() => null); });
+        ric(async () => { if (!mochiMod) mochiMod = await loadMochi().catch(() => null); });
 
         const sketch = (p: any) => {
           // 简易移动端检测：用于性能模式（降帧/减粒子）
@@ -168,6 +171,7 @@ export default function Visualizer({
           let shaderProgram: any | null = null;
           let spiralProgram: any | null = null;
           let waveProgram: any | null = null;
+          let mochiProgram: any | null = null;
           let mosaicVisual: any | null = null;
           const particles: Particle[] = [];
           // 移动端采用更少的粒子，降低首屏成本
@@ -220,7 +224,7 @@ export default function Visualizer({
           p.setup = () => {
             const mode = presetRef.current;
             const renderer =
-              mode === 'accretion' || mode === 'spiral' || mode === 'wave' ? p.WEBGL : p.P2D;
+              mode === 'accretion' || mode === 'spiral' || mode === 'wave' || mode === 'mochi' ? p.WEBGL : p.P2D;
             const canvas = p.createCanvas(
               p.windowWidth,
               p.windowHeight,
@@ -291,6 +295,16 @@ export default function Visualizer({
                 }
               } catch (e) {
                 console.error('Wave shader 编译失败:', e);
+              }
+            } else if (mode === 'mochi') {
+              try {
+                const V = mochiMod?.MOCHI_VERTEX;
+                const F = mochiMod?.MOCHI_FRAGMENT;
+                if (V && F) {
+                  mochiProgram = p.createShader(V, F);
+                }
+              } catch (e) {
+                console.error('Mochi shader 编译失败:', e);
               }
             } else {
               initParticles();
@@ -715,6 +729,51 @@ export default function Visualizer({
                 }
               );
               waveMod.drawWave(p, waveProgram);
+            } else if (mode === 'mochi' && mochiProgram && mochiMod) {
+              // 频谱优先：uPulse 取 fluxPulse 的瞬时或平滑形态
+              const levelInstant = Math.max(0, Math.min(1, rawLvl));
+              const fluxInstant = Math.max(0, Math.min(1, fluxRaw));
+              const centroidInstant = Math.max(0, Math.min(1, centroidNorm));
+              const flatInstant = Math.max(0, Math.min(1, flatNorm));
+              const zcrInstant = Math.max(0, Math.min(1, zcrNorm));
+              const mfccInstant: [number, number, number, number] = [
+                mapM(m0), mapM(m1), mapM(m2), mapM(m3)
+              ];
+              const pulseInstant = Math.max(0, Math.min(1, Math.max(audioModel.fluxPulse, fluxInstant)));
+
+              const mochiAudio = {
+                level: levelInstant,
+                flux: fluxInstant,
+                centroid: centroidInstant,
+                flatness: flatInstant,
+                zcr: zcrInstant,
+                mfcc: mfccInstant,
+                pulse: pulseInstant,
+              } as any;
+
+              const mochiSensitivity = sensitivityRef.current ?? 1.3;
+              mochiMod.applyMochiUniforms(
+                p,
+                mochiProgram,
+                mochiAudio,
+                mochiSensitivity,
+                {
+                  noiseScale: 1.0,
+                  mixStrength: 0.85,
+                  colorWarmth: 0.1,
+                  maxSteps: 92,
+                  maxDist: 7.0,
+                  surfEpsilon: 0.0025,
+                  volumeStrength: 1.35,
+                  absorption: 1.0,
+                  stepScale: 0.85,
+                  anisotropy: 0.6,
+                  lightStrength: 1.4,
+                  grainStrength: 0.18,
+                  grainScale: 4.0,
+                }
+              );
+              mochiMod.drawMochi(p, mochiProgram);
             } else {
               p.background(0, 0, 0);
               const drawPulseFn = pulseMod?.drawPulse;
