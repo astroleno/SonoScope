@@ -1,0 +1,47 @@
+{
+  "testedAt": "2026-10-14T15:24:18.682Z",
+  "endpointHost": "api.deepseek.com",
+  "model": "deepseek-flash",
+  "concurrency": 1,
+  "samples": [
+    {
+      "frequencyHz": 220,
+      "firstCommentMs": 863,
+      "totalMs": 1616,
+      "count": 7,
+      "status": "complete",
+      "usage": {
+        "inputTokens": 433,
+        "outputTokens": 160
+      },
+      "error": null
+    },
+    {
+      "frequencyHz": 440,
+      "firstCommentMs": 878,
+      "totalMs": 1423,
+      "count": 6,
+      "status": "complete",
+      "usage": {
+        "inputTokens": 433,
+        "outputTokens": 101
+      },
+      "error": null
+    },
+    {
+      "frequencyHz": 1000,
+      "firstCommentMs": 789,
+      "totalMs": 1363,
+      "count": 6,
+      "status": "complete",
+      "usage": {
+        "inputTokens": 433,
+        "outputTokens": 115
+      },
+      "error": null
+    }
+  ],
+  "calls": 3,
+  "chargedOrReservedTokens": 1675,
+  "note": "Small synthetic-feature pilot, not a statistically valid p95 or production quota decision. Timing ends at parsed comment, not browser display."
+}

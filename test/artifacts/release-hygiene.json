@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-15T08:05:55.227572+00:00",
+  "buildId": "4p8tuynwsdSywOG7Q0DtJ",
+  "buildPlatform": "darwin",
+  "buildArch": "arm64",
+  "releaseIssues": [],
+  "releaseFilesScanned": 2192,
+  "localEnvMode": "600",
+  "productionAiDisabled": true,
+  "providerKeysScanned": [
+    "DeepSeek",
+    "SiliconFlow"
+  ],
+  "providerKeyInPublicOutput": false,
+  "providerKeyInReleaseFiles": [],
+  "nativeBinaries": [
+    "node_modules/.pnpm/@img+sharp-darwin-arm64@0.35.5/node_modules/@img/sharp-darwin-arm64/lib/sharp-darwin-arm64-0.35.5.node"
+  ],
+  "releaseManifest": {
+    "version": 1,
+    "platform": "darwin",
+    "arch": "arm64",
+    "nodeVersion": "22.22.0",
+    "builtAt": "2026-10-15T07:52:34.134Z"
+  },
+  "targetLinuxVerified": false,
+  "platformMismatchTestPassed": true,
+  "privateTestArtifactsFound": false
+}

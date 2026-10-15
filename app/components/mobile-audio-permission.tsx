@@ -31,9 +31,10 @@ export default function MobileAudioPermission({
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string>('');
 
-  const mobileAdapter = new MobileAudioAdapter();
+  const [mobileAdapter] = useState(() => new MobileAudioAdapter());
 
   useEffect(() => {
+    let cancelled = false;
     // 初始化移动设备信息
     const info = mobileAdapter.getMobileInfo();
     setMobileInfo(info);
@@ -41,21 +42,12 @@ export default function MobileAudioPermission({
 
     // 如果是移动设备，预先获取音频设备列表
     if (info.isMobile) {
-      loadAudioDevices();
+      void mobileAdapter.getAudioDevices().then(devices => {
+        if (!cancelled) { setAudioDevices(devices); if (devices.length) setSelectedDevice(devices[0].deviceId); }
+      }).catch(() => undefined);
     }
-  }, []);
-
-  const loadAudioDevices = async () => {
-    try {
-      const devices = await mobileAdapter.getAudioDevices();
-      setAudioDevices(devices);
-      if (devices.length > 0) {
-        setSelectedDevice(devices[0].deviceId);
-      }
-    } catch (error) {
-      console.warn('无法加载音频设备:', error);
-    }
-  };
+    return () => { cancelled = true; };
+  }, [mobileAdapter]);
 
   const requestPermission = async () => {
     setStatus('requesting');

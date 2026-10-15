@@ -1,0 +1,18 @@
+{
+  "testedAt": "2026-10-15T07:11:53.996150+00:00",
+  "registry": "https://registry.npmjs.org",
+  "scope": "production",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 144,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 144
+  }
+}

@@ -1,0 +1,2430 @@
+{
+  "testedAt": "2026-10-15T03:35:12.430Z",
+  "node": "22.22.0",
+  "source": "1810-second synthetic 440 Hz MP3; local feedback; browser worklet timeout fallback; macOS AC low-power mode enabled",
+  "startedAt": "2026-10-15T03:35:12.430Z",
+  "samples": [
+    {
+      "model": {
+        "version": "yamnet-float32-1",
+        "capturedAt": 1792035311589,
+        "categories": [
+          {
+            "label": "Telephone",
+            "score": 0.95703125
+          },
+          {
+            "label": "Dial tone",
+            "score": 0.94140625
+          },
+          {
+            "label": "Alarm",
+            "score": 0.73828125
+          },
+          {
+            "label": "Busy signal",
+            "score": 0.66796875
+          },
+          {
+            "label": "Sine wave",
+            "score": 0.5859375
+          },
+          {
+            "label": "Silence",
+            "score": 0.1484375
+          },
+          {
+            "label": "Sound effect",
+            "score": 0.05859375
+          },
+          {
+            "label": "Telephone bell ringing",
+            "score": 0.04296875
+          },
+          {
+            "label": "Music",
+            "score": 0.04296875
+          },
+          {
+            "label": "Boing",
+            "score": 0.04296875
+          },
+          {
+            "label": "Plop",
+            "score": 0.03125
+          },
+          {
+            "label": "Chirp tone",
+            "score": 0.01953125
+          },
+          {
+            "label": "Sidetone",
+            "score": 0.015625
+          },
+          {
+            "label": "Speech",
+            "score": 0.015625
+          },
+          {
+            "label": "Whack, thwack",
+            "score": 0.015625
+          },
+          {
+            "label": "Noise",
+            "score": 0.01171875
+          }
+        ],
+        "voiceProbability": 0.015625,
+        "instrument": null
+      },
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1,
+        "visualSamples": 59,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "comments": [
+        {
+          "id": "12399a6f-b559-4635-86b3-e4404e9f045f",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 3741.384999997914,
+          "box": {
+            "x": 1198.0703125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.6328125,
+            "bottom": 251.7421875,
+            "left": 1198.0703125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "requests": [],
+      "events": [
+        {
+          "type": "model-ready",
+          "at": 3854.1449999958277,
+          "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9"
+        },
+        {
+          "type": "model-result",
+          "at": 4914.7799999937415,
+          "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+          "label": "Telephone",
+          "score": 0.95703125
+        }
+      ],
+      "classificationCount": 1,
+      "captureModes": {
+        "worklet": 0,
+        "compatibility": 1
+      },
+      "firstFrameAt": 3737.5749999955297,
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 1,
+        "canvases": 1
+      },
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 5674.695000000298
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 446,
+        "jsEventListeners": 1506
+      },
+      "heap": {
+        "usedSize": 127417336,
+        "totalSize": 217104384,
+        "embedderHeapUsedSize": 11614760,
+        "backingStorageSize": 87094174
+      }
+    },
+    {
+      "at": "2026-10-15T03:36:36.531Z",
+      "playbackSeconds": 86.096218,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 85,
+        "visualSamples": 2533,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5411764705882353,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 85,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 89762.8200000003
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2001
+      },
+      "heap": {
+        "usedSize": 114947652,
+        "totalSize": 117522432,
+        "embedderHeapUsedSize": 12971248,
+        "backingStorageSize": 55797811
+      }
+    },
+    {
+      "at": "2026-10-15T03:37:21.467Z",
+      "playbackSeconds": 131.024399,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 130,
+        "visualSamples": 3861,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5461538461538461,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 130,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 134691.7599999979
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2451
+      },
+      "heap": {
+        "usedSize": 119355140,
+        "totalSize": 121978880,
+        "embedderHeapUsedSize": 16419288,
+        "backingStorageSize": 55747666
+      }
+    },
+    {
+      "at": "2026-10-15T03:38:06.494Z",
+      "playbackSeconds": 176.064979,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 175,
+        "visualSamples": 5188,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5428571428571428,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 174,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 179731.25499999523
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1851
+      },
+      "heap": {
+        "usedSize": 113397124,
+        "totalSize": 122765312,
+        "embedderHeapUsedSize": 11786632,
+        "backingStorageSize": 55648323
+      }
+    },
+    {
+      "at": "2026-10-15T03:38:51.519Z",
+      "playbackSeconds": 221.088798,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 220,
+        "visualSamples": 6517,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.55,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 219,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 224756.5700000003
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2301
+      },
+      "heap": {
+        "usedSize": 118234488,
+        "totalSize": 123289600,
+        "embedderHeapUsedSize": 15151152,
+        "backingStorageSize": 55827568
+      }
+    },
+    {
+      "at": "2026-10-15T03:39:36.537Z",
+      "playbackSeconds": 266.10068,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 265,
+        "visualSamples": 7845,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5509433962264151,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 264,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 269769.8699999973
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1701
+      },
+      "heap": {
+        "usedSize": 104678976,
+        "totalSize": 124190720,
+        "embedderHeapUsedSize": 10559776,
+        "backingStorageSize": 55773584
+      }
+    },
+    {
+      "at": "2026-10-15T03:40:21.485Z",
+      "playbackSeconds": 311.05161,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 310,
+        "visualSamples": 9174,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5548387096774193,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 309,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 314720.3149999976
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2151
+      },
+      "heap": {
+        "usedSize": 108955300,
+        "totalSize": 123666432,
+        "embedderHeapUsedSize": 13862352,
+        "backingStorageSize": 55543262
+      }
+    },
+    {
+      "at": "2026-10-15T03:41:06.484Z",
+      "playbackSeconds": 356.031565,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 355,
+        "visualSamples": 10503,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5577464788732395,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 353,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 359701.68499999493
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1631
+      },
+      "heap": {
+        "usedSize": 103616948,
+        "totalSize": 120520704,
+        "embedderHeapUsedSize": 10125312,
+        "backingStorageSize": 55871739
+      }
+    },
+    {
+      "at": "2026-10-15T03:41:11.511Z",
+      "playbackSeconds": 361.074211,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 360,
+        "visualSamples": 10651,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5555555555555556,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 358,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 364742.8849999979
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1681
+      },
+      "heap": {
+        "usedSize": 103947392,
+        "totalSize": 120258560,
+        "embedderHeapUsedSize": 10370472,
+        "backingStorageSize": 55668878
+      }
+    },
+    {
+      "at": "2026-10-15T03:41:56.518Z",
+      "playbackSeconds": 406.082663,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 405,
+        "visualSamples": 11975,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5555555555555556,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 403,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.95703125
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 409750.3149999976
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1691
+      },
+      "heap": {
+        "usedSize": 104142212,
+        "totalSize": 106627072,
+        "embedderHeapUsedSize": 10560632,
+        "backingStorageSize": 55635582
+      }
+    },
+    {
+      "at": "2026-10-15T03:42:41.485Z",
+      "playbackSeconds": 451.049297,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 450,
+        "visualSamples": 13304,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5555555555555556,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 448,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 454716.93499999493
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2141
+      },
+      "heap": {
+        "usedSize": 108931636,
+        "totalSize": 111607808,
+        "embedderHeapUsedSize": 13862760,
+        "backingStorageSize": 55782149
+      }
+    },
+    {
+      "at": "2026-10-15T03:43:26.466Z",
+      "playbackSeconds": 496.033379,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 495,
+        "visualSamples": 14629,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5575757575757576,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 493,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 499699.9099999964
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1642
+      },
+      "heap": {
+        "usedSize": 103552684,
+        "totalSize": 114491392,
+        "embedderHeapUsedSize": 10129496,
+        "backingStorageSize": 55536205
+      }
+    },
+    {
+      "at": "2026-10-15T03:44:11.493Z",
+      "playbackSeconds": 541.045261,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 540,
+        "visualSamples": 15952,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5481481481481482,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 537,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 544712.6449999958
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2092
+      },
+      "heap": {
+        "usedSize": 108286560,
+        "totalSize": 113704960,
+        "embedderHeapUsedSize": 13487328,
+        "backingStorageSize": 55699125
+      }
+    },
+    {
+      "at": "2026-10-15T03:44:56.466Z",
+      "playbackSeconds": 586.028118,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 585,
+        "visualSamples": 17258,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.5145299145299145,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 582,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 589695.2599999979
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1572
+      },
+      "heap": {
+        "usedSize": 103095744,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 9689928,
+        "backingStorageSize": 55628745
+      }
+    },
+    {
+      "at": "2026-10-15T03:45:41.518Z",
+      "playbackSeconds": 631.071927,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 630,
+        "visualSamples": 18559,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.48095238095238096,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 627,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 634740.3350000009
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2022
+      },
+      "heap": {
+        "usedSize": 107805176,
+        "totalSize": 113704960,
+        "embedderHeapUsedSize": 12919416,
+        "backingStorageSize": 55812150
+      }
+    },
+    {
+      "at": "2026-10-15T03:46:26.468Z",
+      "playbackSeconds": 676.028829,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 675,
+        "visualSamples": 19865,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.45481481481481484,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 672,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 679696.2799999937
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1482
+      },
+      "heap": {
+        "usedSize": 102238360,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 9006208,
+        "backingStorageSize": 55749436
+      }
+    },
+    {
+      "at": "2026-10-15T03:47:11.537Z",
+      "playbackSeconds": 721.092789,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 720,
+        "visualSamples": 21183,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.44722222222222224,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 716,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 724762.9600000009
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1932
+      },
+      "heap": {
+        "usedSize": 106681768,
+        "totalSize": 113442816,
+        "embedderHeapUsedSize": 12247504,
+        "backingStorageSize": 55703499
+      }
+    },
+    {
+      "at": "2026-10-15T03:47:56.465Z",
+      "playbackSeconds": 766.020499,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 765,
+        "visualSamples": 22477,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.45098039215686275,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 761,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.984375
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 769689.8049999997
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1782
+      },
+      "heap": {
+        "usedSize": 105419644,
+        "totalSize": 107675648,
+        "embedderHeapUsedSize": 11174528,
+        "backingStorageSize": 55801332
+      }
+    },
+    {
+      "at": "2026-10-15T03:48:41.501Z",
+      "playbackSeconds": 811.055601,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 810,
+        "visualSamples": 23806,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.45925925925925926,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 806,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 814723.599999994
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2232
+      },
+      "heap": {
+        "usedSize": 110038168,
+        "totalSize": 112132096,
+        "embedderHeapUsedSize": 14524112,
+        "backingStorageSize": 55792263
+      }
+    },
+    {
+      "at": "2026-10-15T03:49:26.495Z",
+      "playbackSeconds": 856.051201,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 855,
+        "visualSamples": 25132,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.464327485380117,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 851,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.984375
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 859718.9949999973
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1712
+      },
+      "heap": {
+        "usedSize": 104574192,
+        "totalSize": 114229248,
+        "embedderHeapUsedSize": 10667656,
+        "backingStorageSize": 55713926
+      }
+    },
+    {
+      "at": "2026-10-15T03:50:11.478Z",
+      "playbackSeconds": 901.024218,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 900,
+        "visualSamples": 26453,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.4677777777777778,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 895,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 904691.8449999988
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2162
+      },
+      "heap": {
+        "usedSize": 109083928,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 13941216,
+        "backingStorageSize": 55627018
+      }
+    },
+    {
+      "at": "2026-10-15T03:50:56.532Z",
+      "playbackSeconds": 946.085442,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 945,
+        "visualSamples": 27781,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.473015873015873,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 940,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 949752.875
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1632
+      },
+      "heap": {
+        "usedSize": 103632180,
+        "totalSize": 114229248,
+        "embedderHeapUsedSize": 10141024,
+        "backingStorageSize": 55585052
+      }
+    },
+    {
+      "at": "2026-10-15T03:51:41.556Z",
+      "playbackSeconds": 991.107885,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 990,
+        "visualSamples": 29110,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.47878787878787876,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 985,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 994775.3699999973
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2082
+      },
+      "heap": {
+        "usedSize": 108360204,
+        "totalSize": 114491392,
+        "embedderHeapUsedSize": 13511672,
+        "backingStorageSize": 55735734
+      }
+    },
+    {
+      "at": "2026-10-15T03:52:26.536Z",
+      "playbackSeconds": 1036.090681,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1035,
+        "visualSamples": 30429,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.47729468599033814,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1029,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.984375
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1039756.7349999994
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1552
+      },
+      "heap": {
+        "usedSize": 102735712,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 9364968,
+        "backingStorageSize": 55689661
+      }
+    },
+    {
+      "at": "2026-10-15T03:53:11.465Z",
+      "playbackSeconds": 1081.01669,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1080,
+        "visualSamples": 31734,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.46111111111111114,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1074,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1084683.4899999946
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2002
+      },
+      "heap": {
+        "usedSize": 107593340,
+        "totalSize": 115277824,
+        "embedderHeapUsedSize": 12751664,
+        "backingStorageSize": 55664239
+      }
+    },
+    {
+      "at": "2026-10-15T03:53:56.531Z",
+      "playbackSeconds": 1126.085729,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1125,
+        "visualSamples": 32934,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.4444444444444444,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1119,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1129751.759999998
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 110182444,
+        "totalSize": 163512320,
+        "embedderHeapUsedSize": 17809368,
+        "backingStorageSize": 51236021
+      }
+    },
+    {
+      "at": "2026-10-15T03:54:41.562Z",
+      "playbackSeconds": 1171.066485,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1170,
+        "visualSamples": 34198,
+        "visualP95Ms": 25,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.43162393162393164,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1163,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.95703125
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1174734.3900000006
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 103317464,
+        "totalSize": 164036608,
+        "embedderHeapUsedSize": 11280448,
+        "backingStorageSize": 51245502
+      }
+    },
+    {
+      "at": "2026-10-15T03:55:26.500Z",
+      "playbackSeconds": 1216.050846,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1215,
+        "visualSamples": 35398,
+        "visualP95Ms": 26,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.4189300411522634,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1208,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1219718.9049999937
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 115032624,
+        "totalSize": 166920192,
+        "embedderHeapUsedSize": 22395088,
+        "backingStorageSize": 51274252
+      }
+    },
+    {
+      "at": "2026-10-15T03:56:11.459Z",
+      "playbackSeconds": 1261.00898,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1260,
+        "visualSamples": 36628,
+        "visualP95Ms": 28,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.40793650793650793,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1252,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1264676.585000001
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 107485792,
+        "totalSize": 167706624,
+        "embedderHeapUsedSize": 42584512,
+        "backingStorageSize": 52010421
+      }
+    },
+    {
+      "at": "2026-10-15T03:56:56.501Z",
+      "playbackSeconds": 1306.05055,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1305,
+        "visualSamples": 37874,
+        "visualP95Ms": 28,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3954022988505747,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1297,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.984375
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1309717.914999999
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 123071124,
+        "totalSize": 167444480,
+        "embedderHeapUsedSize": 30084640,
+        "backingStorageSize": 51624948
+      }
+    },
+    {
+      "at": "2026-10-15T03:57:41.491Z",
+      "playbackSeconds": 1351.035646,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1350,
+        "visualSamples": 39170,
+        "visualP95Ms": 29,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.38666666666666666,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1342,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.984375
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1354702.4949999973
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 115424104,
+        "totalSize": 167444480,
+        "embedderHeapUsedSize": 50458872,
+        "backingStorageSize": 51862152
+      }
+    },
+    {
+      "at": "2026-10-15T03:58:26.591Z",
+      "playbackSeconds": 1396.115222,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1395,
+        "visualSamples": 40360,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.37777777777777777,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1386,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.91796875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1399782.2299999967
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 119919444,
+        "totalSize": 168755200,
+        "embedderHeapUsedSize": 27387288,
+        "backingStorageSize": 51381236
+      }
+    },
+    {
+      "at": "2026-10-15T03:59:11.485Z",
+      "playbackSeconds": 1441.031319,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1440,
+        "visualSamples": 41605,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3715277777777778,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1430,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1444699.7849999964
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1422
+      },
+      "heap": {
+        "usedSize": 107350588,
+        "totalSize": 169017344,
+        "embedderHeapUsedSize": 15094896,
+        "backingStorageSize": 51283814
+      }
+    },
+    {
+      "at": "2026-10-15T03:59:56.524Z",
+      "playbackSeconds": 1486.065488,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1485,
+        "visualSamples": 42907,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.36632996632996634,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1475,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1489732.934999995
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 376,
+        "jsEventListeners": 1872
+      },
+      "heap": {
+        "usedSize": 126399792,
+        "totalSize": 169803776,
+        "embedderHeapUsedSize": 12036168,
+        "backingStorageSize": 85386138
+      }
+    },
+    {
+      "at": "2026-10-15T04:00:41.480Z",
+      "playbackSeconds": 1531.025125,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1530,
+        "visualSamples": 44210,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3588235294117647,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1520,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1534691.0449999943
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1722
+      },
+      "heap": {
+        "usedSize": 105002252,
+        "totalSize": 108724224,
+        "embedderHeapUsedSize": 10657520,
+        "backingStorageSize": 55603630
+      }
+    },
+    {
+      "at": "2026-10-15T04:01:26.508Z",
+      "playbackSeconds": 1576.052264,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1575,
+        "visualSamples": 45516,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.34984126984126984,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1565,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1579718.164999999
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2172
+      },
+      "heap": {
+        "usedSize": 109754320,
+        "totalSize": 112918528,
+        "embedderHeapUsedSize": 14142328,
+        "backingStorageSize": 55590497
+      }
+    },
+    {
+      "at": "2026-10-15T04:02:11.566Z",
+      "playbackSeconds": 1621.107072,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1620,
+        "visualSamples": 46820,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3450617283950617,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1610,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1624774.174999997
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1682
+      },
+      "heap": {
+        "usedSize": 104828332,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 10545680,
+        "backingStorageSize": 55745990
+      }
+    },
+    {
+      "at": "2026-10-15T04:02:56.543Z",
+      "playbackSeconds": 1666.078735,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1665,
+        "visualSamples": 48128,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.33933933933933935,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1654,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.98046875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1669744.849999994
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2132
+      },
+      "heap": {
+        "usedSize": 109429048,
+        "totalSize": 114491392,
+        "embedderHeapUsedSize": 13915736,
+        "backingStorageSize": 55704187
+      }
+    },
+    {
+      "at": "2026-10-15T04:03:41.535Z",
+      "playbackSeconds": 1711.070884,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1710,
+        "visualSamples": 49428,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3333333333333333,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1699,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1714737.8549999967
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1622
+      },
+      "heap": {
+        "usedSize": 103836376,
+        "totalSize": 115015680,
+        "embedderHeapUsedSize": 10066984,
+        "backingStorageSize": 55593039
+      }
+    },
+    {
+      "at": "2026-10-15T04:04:26.500Z",
+      "playbackSeconds": 1756.037949,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1755,
+        "visualSamples": 50729,
+        "visualP95Ms": 30,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.3264957264957265,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1744,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1759704.8949999958
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 2072
+      },
+      "heap": {
+        "usedSize": 108930888,
+        "totalSize": 114753536,
+        "embedderHeapUsedSize": 13365672,
+        "backingStorageSize": 55743752
+      }
+    },
+    {
+      "at": "2026-10-15T04:05:11.562Z",
+      "playbackSeconds": 1801.10339,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1800,
+        "visualSamples": 52029,
+        "visualP95Ms": 29,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.32,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1789,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1804769.8399999961
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1562
+      },
+      "heap": {
+        "usedSize": 103369004,
+        "totalSize": 115802112,
+        "embedderHeapUsedSize": 9619912,
+        "backingStorageSize": 55701940
+      }
+    },
+    {
+      "at": "2026-10-15T04:05:14.562Z",
+      "playbackSeconds": 1804.097643,
+      "metrics": {
+        "audioSessionId": "fd345aa5-933f-40e7-8c20-0687b36bfdc9",
+        "observedSeconds": 1803,
+        "visualSamples": 52116,
+        "visualP95Ms": 29,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0.32002218524681086,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 52,
+        "aiFirstP95Ms": null
+      },
+      "resources": {
+        "createdContexts": 1,
+        "activeContexts": 1,
+        "createdWorkers": 2,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 0,
+        "canvases": 1
+      },
+      "classificationCount": 1791,
+      "modelStatus": "ready",
+      "topCategory": {
+        "label": "Telephone",
+        "score": 0.96875
+      },
+      "modelVersion": "yamnet-float32-1",
+      "requestCount": 0,
+      "commentCount": 1,
+      "environment": {
+        "viewport": [
+          1470,
+          723
+        ],
+        "visibility": "visible",
+        "focus": true,
+        "timeOrigin": 1792035306751.385,
+        "now": 1807765.8049999997
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 373,
+        "jsEventListeners": 1592
+      },
+      "heap": {
+        "usedSize": 103878172,
+        "totalSize": 115015680,
+        "embedderHeapUsedSize": 9862632,
+        "backingStorageSize": 55699311
+      }
+    }
+  ],
+  "presetChanges": [
+    {
+      "at": "2026-10-15T03:41:11.511Z",
+      "playbackSeconds": 361.074211,
+      "preset": 2
+    },
+    {
+      "at": "2026-10-15T03:47:11.537Z",
+      "playbackSeconds": 721.092789,
+      "preset": 3
+    },
+    {
+      "at": "2026-10-15T03:53:11.465Z",
+      "playbackSeconds": 1081.01669,
+      "preset": 4
+    },
+    {
+      "at": "2026-10-15T03:59:11.485Z",
+      "playbackSeconds": 1441.031319,
+      "preset": 5
+    }
+  ],
+  "endedAt": "2026-10-15T04:05:14.562Z",
+  "stopReason": "30m-reached",
+  "afterStop": {
+    "createdContexts": 1,
+    "activeContexts": 0,
+    "createdWorkers": 2,
+    "activeWorkers": 0,
+    "activeMedia": 0,
+    "commentNodes": 0,
+    "canvases": 1
+  },
+  "testedBuildId": "dbiPi6Qnsxgq_wKMlxEv3",
+  "scopeNote": "30-minute synthetic-tone observation on the release before the final zero-FPS-tail accounting and visible-slot priority fixes. These fixes require separate final-build checks; the desktop FPS gate remains failed.",
+  "summary": {
+    "durationSeconds": 1804.097643,
+    "observedSeconds": 1803,
+    "visualP95Ms": 29,
+    "fpsMedian": 29,
+    "desktopFpsPassRate": 0,
+    "classificationCount": 1791,
+    "localComments": 1,
+    "cloudRequests": 0,
+    "jsHeapMiB": {
+      "min": 97.5020980834961,
+      "max": 121.51464080810547
+    },
+    "allObservedResourceCountsBounded": true,
+    "allResourcesReleased": true,
+    "desktopPerformanceAccepted": false
+  }
+}

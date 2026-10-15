@@ -1,0 +1,41 @@
+{
+  "testedAt": "2026-10-14T15:14:18.029Z",
+  "endpointHost": "api.siliconflow.cn",
+  "model": "zai-org/GLM-4.5-Air",
+  "concurrency": 1,
+  "samples": [
+    {
+      "frequencyHz": 220,
+      "firstCommentMs": 8556,
+      "totalMs": 10355,
+      "count": 7,
+      "status": "complete",
+      "usage": {
+        "inputTokens": 449,
+        "outputTokens": 112
+      },
+      "error": null
+    },
+    {
+      "frequencyHz": 440,
+      "firstCommentMs": null,
+      "totalMs": 1,
+      "count": 0,
+      "status": "unavailable",
+      "usage": null,
+      "error": "test-unavailable"
+    },
+    {
+      "frequencyHz": 1000,
+      "firstCommentMs": null,
+      "totalMs": 8835,
+      "count": 0,
+      "status": "cancelled",
+      "usage": null,
+      "error": "deadline"
+    }
+  ],
+  "calls": 2,
+  "chargedOrReservedTokens": 2973,
+  "note": "Small synthetic-feature pilot, not a statistically valid p95 or production quota decision. Timing ends at parsed comment, not browser display."
+}

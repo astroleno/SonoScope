@@ -1,101 +1,18 @@
-import { DanmuCommand, DanmuEvent, AudioFeatures } from '../types';
-
-export interface DanmuAdapter {
-  trigger(payload?: any): void;
-  start(): void;
-  stop(): void;
-  onDanmu(callback: (event: DanmuEvent) => void): void;
-  dispose(): void;
-}
-
+import { DanmuController } from '@sonoscope/danmu-pipeline';
+import type { DanmuEvent, AudioFeatures } from '../types';
+export interface DanmuAdapter { trigger(payload?: { text?: string }): void; start(): void; stop(): void; onDanmu(callback: (event: DanmuEvent) => void): void; dispose(): void }
+/** Legacy manual adapter shares queue, cancellation and display accounting. */
 export class SimpleDanmuAdapter implements DanmuAdapter {
-  private danmuCallback: ((event: DanmuEvent) => void) | null = null;
-  private isActive = false;
-  private _isReady = true;
-  private _danmuCount = 0;
-  private _pendingRequests = 0;
-  private _currentStyle: string | null = null;
-
-  constructor() {
-    // Simple initialization
-  }
-
-  trigger(payload?: any): void {
-    if (!this.isActive) return;
-
-    // Simulate danmu generation
-    const event: DanmuEvent = {
-      id: `danmu_${Date.now()}_${Math.random()}`,
-      command: {
-        text: payload?.text || 'Test danmu message',
-        style: payload?.style || 'default',
-        color: payload?.color || '#ffffff',
-        size: payload?.size || 16,
-        speed: payload?.speed || 1,
-        position: payload?.position || 'right',
-        duration: payload?.duration || 5000,
-      },
-      timestamp: Date.now(),
-    };
-
-    this._danmuCount++;
-    this._pendingRequests = Math.max(0, this._pendingRequests - 1);
-
-    if (this.danmuCallback) {
-      this.danmuCallback(event);
-    }
-  }
-
-  start(): void {
-    this.isActive = true;
-    this._currentStyle = 'default';
-  }
-
-  stop(): void {
-    this.isActive = false;
-    this._currentStyle = null;
-  }
-
-  onDanmu(callback: (event: DanmuEvent) => void): void {
-    this.danmuCallback = callback;
-  }
-
-  // Method to handle audio features (called by Core)
-  handleAudioFeatures(level: number, features: AudioFeatures): void {
-    if (!this.isActive) return;
-
-    // Simple auto-trigger based on audio level
-    if (level > 0.1 && Math.random() < 0.1) {
-      this._pendingRequests++;
-      setTimeout(() => {
-        this.trigger({
-          text: `Audio level: ${(level * 100).toFixed(1)}%`,
-          style: 'auto',
-          color: level > 0.5 ? '#ff6b6b' : '#4ecdc4',
-        });
-      }, 1000);
-    }
-  }
-
-  // Get adapter status
-  get isReady(): boolean {
-    return this._isReady;
-  }
-
-  get danmuCount(): number {
-    return this._danmuCount;
-  }
-
-  get pendingRequests(): number {
-    return this._pendingRequests;
-  }
-
-  get currentStyle(): string | null {
-    return this._currentStyle;
-  }
-
-  dispose(): void {
-    this.stop();
-    this.danmuCallback = null;
-  }
+  private callback: ((event: DanmuEvent) => void) | null = null;
+  protected controller = new DanmuController({ clear() {}, show: c => { this.callback?.({ id: c.commentId, command: { text: c.text, style: c.source, duration: 6500 }, timestamp: c.createdAt }); return true; } });
+  trigger(payload?: { text?: string }) { this.controller.manual(payload?.text); }
+  start() { this.controller.start(crypto.randomUUID()); }
+  stop() { this.controller.stop(); }
+  onDanmu(fn: (event: DanmuEvent) => void) { this.callback = fn; }
+  handleAudioFeatures(_level: number, _features: AudioFeatures) { /* Shared Core runtime owns automatic feature processing. */ }
+  get isReady() { return true; }
+  get danmuCount() { return this.controller.current.displayed; }
+  get pendingRequests() { return this.controller.current.pendingRequests; }
+  get currentStyle() { return 'local'; }
+  dispose() { this.controller.dispose(); this.callback = null; }
 }

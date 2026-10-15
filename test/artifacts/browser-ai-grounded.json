@@ -1,0 +1,367 @@
+{
+  "testedAt": "2026-10-15T04:20:06.176Z",
+  "provider": "SiliconFlow",
+  "providerModel": "THUDM/GLM-4-9B-0414",
+  "model": {
+    "version": "yamnet-float32-1",
+    "capturedAt": 1792038004775,
+    "categories": [
+      {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      {
+        "label": "Silence",
+        "score": 0.1484375
+      },
+      {
+        "label": "Speech synthesizer",
+        "score": 0.08203125
+      },
+      {
+        "label": "Sound effect",
+        "score": 0.04296875
+      },
+      {
+        "label": "Music",
+        "score": 0.03125
+      },
+      {
+        "label": "Speech",
+        "score": 0.03125
+      },
+      {
+        "label": "Whack, thwack",
+        "score": 0.01171875
+      },
+      {
+        "label": "Plop",
+        "score": 0.01171875
+      },
+      {
+        "label": "Speech synthesizer",
+        "score": 0.01171875
+      },
+      {
+        "label": "Boing",
+        "score": 0.0078125
+      },
+      {
+        "label": "Narration, monologue",
+        "score": 0.00390625
+      },
+      {
+        "label": "Fart",
+        "score": 0.00390625
+      },
+      {
+        "label": "Animal",
+        "score": 0.00390625
+      },
+      {
+        "label": "Inside, large room or hall",
+        "score": 0.00390625
+      },
+      {
+        "label": "Screaming",
+        "score": 0.00390625
+      },
+      {
+        "label": "Outside, urban or manmade",
+        "score": 0.00390625
+      }
+    ],
+    "voiceProbability": 0.99609375,
+    "instrument": null
+  },
+  "metrics": {
+    "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+    "observedSeconds": 6,
+    "visualSamples": 172,
+    "visualP95Ms": 24,
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0.16666666666666666,
+    "fpsMedian": 29,
+    "localFirstP95Ms": 27,
+    "aiFirstP95Ms": 1669
+  },
+  "comments": [
+    {
+      "id": "c6795d00-6b1e-4e91-90fb-4ddb12960b36",
+      "source": "local",
+      "text": "声音进来了,开始听这一段",
+      "at": 6901.3899999931455,
+      "box": {
+        "x": 1198.1612548828125,
+        "y": 205.7421875,
+        "width": 255.5625,
+        "height": 46,
+        "top": 205.7421875,
+        "right": 1453.7237548828125,
+        "bottom": 251.7421875,
+        "left": 1198.1612548828125
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "b446572e-1337-40ef-a3db-544c6288178c",
+      "source": "local",
+      "text": "像是有人声进来了",
+      "at": 8432.919999994338,
+      "box": {
+        "x": 1258.9532470703125,
+        "y": 261.7421875,
+        "width": 190,
+        "height": 46,
+        "top": 261.7421875,
+        "right": 1448.9532470703125,
+        "bottom": 307.7421875,
+        "left": 1258.9532470703125
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "02dc8a49-a23c-41cd-acac-6dfddf74bd7a",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 9967.929999999702,
+      "box": {
+        "x": 1254.3441162109375,
+        "y": 317.7421875,
+        "width": 190,
+        "height": 46,
+        "top": 317.7421875,
+        "right": 1444.3441162109375,
+        "bottom": 363.7421875,
+        "left": 1254.3441162109375
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "8dadb6f3-831c-4e6b-b0ad-04e55c851c70",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 11584.979999996722,
+      "box": {
+        "x": 1300.432373046875,
+        "y": 373.7421875,
+        "width": 150,
+        "height": 46,
+        "top": 373.7421875,
+        "right": 1450.432373046875,
+        "bottom": 419.7421875,
+        "left": 1300.432373046875
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "361a33e3-023d-4998-9dcc-af4e39671610_1",
+      "source": "ai",
+      "text": "低沉的音调逐渐增强",
+      "at": 12552.69999999553,
+      "box": {
+        "x": 1240.5494384765625,
+        "y": 429.7421875,
+        "width": 210,
+        "height": 46,
+        "top": 429.7421875,
+        "right": 1450.5494384765625,
+        "bottom": 475.7421875,
+        "left": 1240.5494384765625
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "f373ebde-00a9-46ba-98dd-2fd0dc038559",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 13485.744999997318,
+      "box": {
+        "x": 1224,
+        "y": 205.7421875,
+        "width": 230,
+        "height": 46,
+        "top": 205.7421875,
+        "right": 1454,
+        "bottom": 251.7421875,
+        "left": 1224
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "361a33e3-023d-4998-9dcc-af4e39671610_2",
+      "source": "ai",
+      "text": "短暂的爆发声出现",
+      "at": 14452.469999998808,
+      "box": {
+        "x": 1260.3936767578125,
+        "y": 205.7421875,
+        "width": 190,
+        "height": 46,
+        "top": 205.7421875,
+        "right": 1450.3936767578125,
+        "bottom": 251.7421875,
+        "left": 1260.3936767578125
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    }
+  ],
+  "requests": [
+    {
+      "requestId": "361a33e3-023d-4998-9dcc-af4e39671610",
+      "at": 10865.52499999851,
+      "modelVersion": "yamnet-float32-1",
+      "events": [
+        {
+          "type": "accepted",
+          "at": 10950.559999994934
+        },
+        {
+          "type": "comment",
+          "at": 11638.509999997914,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_1"
+        },
+        {
+          "type": "comment",
+          "at": 11806.854999996722,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_2"
+        },
+        {
+          "type": "comment",
+          "at": 13357.634999997914,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_3"
+        },
+        {
+          "type": "comment",
+          "at": 13727.484999999404,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_4"
+        },
+        {
+          "type": "comment",
+          "at": 13979.269999995828,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_5"
+        },
+        {
+          "type": "comment",
+          "at": 14334.219999998808,
+          "commentId": "361a33e3-023d-4998-9dcc-af4e39671610_6"
+        },
+        {
+          "type": "done",
+          "at": 14398.514999993145,
+          "status": "partial",
+          "usage": {
+            "inputTokens": 827,
+            "outputTokens": 132
+          }
+        }
+      ],
+      "status": 200,
+      "eofAt": 14398.97499999404
+    }
+  ],
+  "events": [
+    {
+      "type": "model-ready",
+      "at": 7036.409999996424,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b"
+    },
+    {
+      "type": "model-result",
+      "at": 8058.844999998808,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 9063.309999994934,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 10067.945000000298,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 11073.734999999404,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 12095.94999999553,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 13094.334999993443,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 14100.109999999404,
+      "audioSessionId": "2741bc4a-f93a-4976-814a-3ff174573a2b",
+      "label": "Speech",
+      "score": 0.99609375
+    }
+  ],
+  "classificationCount": 7,
+  "captureModes": {
+    "worklet": 0,
+    "compatibility": 1
+  },
+  "firstFrameAt": 6895.32499999553,
+  "resources": {
+    "createdContexts": 1,
+    "activeContexts": 1,
+    "createdWorkers": 2,
+    "activeWorkers": 2,
+    "activeMedia": 1,
+    "commentNodes": 1,
+    "canvases": 1
+  },
+  "environment": {
+    "viewport": [
+      1470,
+      723
+    ],
+    "visibility": "visible",
+    "focus": true,
+    "timeOrigin": 1792037991697.25,
+    "now": 14476.84999999404
+  },
+  "evidence": {
+    "tempo": null,
+    "music": [
+      {
+        "label": "Music",
+        "score": 0.04296875
+      }
+    ]
+  },
+  "summary": {
+    "firstVisibleAiMs": 1687.1749999970198,
+    "firstNetworkCommentMs": 772.984999999404,
+    "firstInsideViewport": true,
+    "firstClearOfControls": true,
+    "batchMs": 3533.4499999955297
+  }
+}

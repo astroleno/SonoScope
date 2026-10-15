@@ -29,3 +29,6 @@ export { SonoScopeError } from './types';
 
 // 版本信息
 export const VERSION = '1.0.0';
+
+export * from './contracts';
+export * from './dsp';

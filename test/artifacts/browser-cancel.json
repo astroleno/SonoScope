@@ -1,0 +1,23 @@
+{
+  "testedAt": "2026-10-15T03:35:06.729Z",
+  "cancels": [
+    {
+      "createdContexts": 21,
+      "activeContexts": 0,
+      "createdWorkers": 40,
+      "activeWorkers": 0,
+      "activeMedia": 0,
+      "commentNodes": 0,
+      "canvases": 1
+    },
+    {
+      "createdContexts": 22,
+      "activeContexts": 0,
+      "createdWorkers": 40,
+      "activeWorkers": 0,
+      "activeMedia": 0,
+      "commentNodes": 0,
+      "canvases": 1
+    }
+  ]
+}

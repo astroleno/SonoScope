@@ -1,0 +1,114 @@
+{
+  "testedAt": "2026-10-15T04:32:38.564Z",
+  "buildId": "RlkckdnVtJQwXafBkmVGp",
+  "metrics": {
+    "audioSessionId": "67142242-8cc9-43bb-bf4d-0f513b94c96f",
+    "observedSeconds": 4,
+    "visualSamples": 140,
+    "visualP95Ms": 23,
+    "featureSamples": 230,
+    "dspComputeP95Ms": 4,
+    "captureToFeatureP95Ms": 5,
+    "featureToDrawP95Ms": 20,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0,
+    "fpsMedian": 29,
+    "localFirstP95Ms": 115,
+    "aiFirstP95Ms": null
+  },
+  "model": {
+    "version": "yamnet-float32-1",
+    "capturedAt": 1792038757623,
+    "categories": [
+      {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      {
+        "label": "Silence",
+        "score": 0.26171875
+      },
+      {
+        "label": "Speech synthesizer",
+        "score": 0.08203125
+      },
+      {
+        "label": "Speech",
+        "score": 0.03125
+      },
+      {
+        "label": "Sound effect",
+        "score": 0.01953125
+      },
+      {
+        "label": "Narration, monologue",
+        "score": 0.01171875
+      },
+      {
+        "label": "Plop",
+        "score": 0.01171875
+      },
+      {
+        "label": "Music",
+        "score": 0.01171875
+      },
+      {
+        "label": "Inside, small room",
+        "score": 0.0078125
+      },
+      {
+        "label": "Speech synthesizer",
+        "score": 0.0078125
+      },
+      {
+        "label": "Animal",
+        "score": 0.0078125
+      },
+      {
+        "label": "Conversation",
+        "score": 0.00390625
+      },
+      {
+        "label": "Tick",
+        "score": 0.00390625
+      },
+      {
+        "label": "Fart",
+        "score": 0.00390625
+      },
+      {
+        "label": "Ding",
+        "score": 0.00390625
+      },
+      {
+        "label": "Beep, bleep",
+        "score": 0.00390625
+      }
+    ],
+    "voiceProbability": 0.99609375,
+    "instrument": null
+  },
+  "resources": {
+    "createdContexts": 1,
+    "activeContexts": 1,
+    "createdWorkers": 2,
+    "activeWorkers": 2,
+    "activeMedia": 1,
+    "commentNodes": 4,
+    "canvases": 1
+  },
+  "afterStop": {
+    "createdContexts": 1,
+    "activeContexts": 0,
+    "createdWorkers": 2,
+    "activeWorkers": 0,
+    "activeMedia": 0,
+    "commentNodes": 0,
+    "canvases": 1
+  },
+  "capture": {
+    "worklet": 0,
+    "compatibility": 1
+  }
+}

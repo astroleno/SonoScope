@@ -1,0 +1,1303 @@
+{
+  "testedAt": "2026-10-15T03:31:51.118Z",
+  "node": "22.22.0",
+  "cycles": [
+    {
+      "cycle": 1,
+      "metrics": {
+        "audioSessionId": "156229de-1fc8-4d8e-b7c3-332d5874d8ef",
+        "observedSeconds": 1,
+        "visualSamples": 56,
+        "visualP95Ms": 26,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 91,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "bb016643-a8a6-4bfe-b021-86bf65c7946e",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 6476.25,
+          "box": {
+            "x": 1197.8895263671875,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.4520263671875,
+            "bottom": 251.7421875,
+            "left": 1197.8895263671875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "5a6e8739-0e04-4f56-9a0f-91de3ec56aa9",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 7992.640000000596,
+          "box": {
+            "x": 1262.4139404296875,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1452.4139404296875,
+            "bottom": 307.7421875,
+            "left": 1262.4139404296875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 1,
+        "activeContexts": 0,
+        "createdWorkers": 2,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 2,
+      "metrics": {
+        "audioSessionId": "cdf23b5e-5b8d-49f3-8bf5-72dd38c9fd6a",
+        "observedSeconds": 1,
+        "visualSamples": 58,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 30,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "b2b08650-0f6e-47ef-a742-837a4e1ac080",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 10826.070000000298,
+          "box": {
+            "x": 1197.6041259765625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.1666259765625,
+            "bottom": 251.7421875,
+            "left": 1197.6041259765625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "ee96d4fe-0ef5-415f-9c03-43922bf1752a",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 12343.094999998808,
+          "box": {
+            "x": 1261.3350830078125,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1451.3350830078125,
+            "bottom": 307.7421875,
+            "left": 1261.3350830078125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 2,
+        "activeContexts": 0,
+        "createdWorkers": 4,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 3,
+      "metrics": {
+        "audioSessionId": "edce68cd-59ab-4cfe-b36c-0557c156ecdd",
+        "observedSeconds": 1,
+        "visualSamples": 58,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 28,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "65cd395d-5293-4e99-9798-be90e5e3d00a",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 16075.384999997914,
+          "box": {
+            "x": 1196.9083251953125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1452.4708251953125,
+            "bottom": 251.7421875,
+            "left": 1196.9083251953125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "acea169a-aebb-4393-be0f-63c40f2e4020",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 17592.365000002086,
+          "box": {
+            "x": 1261.3055419921875,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1451.3055419921875,
+            "bottom": 307.7421875,
+            "left": 1261.3055419921875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 3,
+        "activeContexts": 0,
+        "createdWorkers": 6,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 4,
+      "metrics": {
+        "audioSessionId": "6736b564-cfe0-4c6f-8300-8fd980d0e976",
+        "observedSeconds": 1,
+        "visualSamples": 58,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 26,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "53e36d3e-0aa8-4882-a953-f2bd80c4a442",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 21359.17499999702,
+          "box": {
+            "x": 1197.98388671875,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.54638671875,
+            "bottom": 251.7421875,
+            "left": 1197.98388671875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "fefc8709-d863-4257-ae41-7764455b3ecb",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 22909.62999999523,
+          "box": {
+            "x": 1254.9876708984375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1444.9876708984375,
+            "bottom": 307.7421875,
+            "left": 1254.9876708984375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 4,
+        "activeContexts": 0,
+        "createdWorkers": 8,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 5,
+      "metrics": {
+        "audioSessionId": "8d58a4f5-4bbe-44c9-872a-3d6647cdcc5d",
+        "observedSeconds": 1,
+        "visualSamples": 57,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 28,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "dfedd28c-adca-4ea0-a3a5-139528a9a4a4",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 26608.625,
+          "box": {
+            "x": 1198.3408203125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.9033203125,
+            "bottom": 251.7421875,
+            "left": 1198.3408203125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "cea7eec3-7b5f-4a04-827b-537aa3c2bed8",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 28142.259999997914,
+          "box": {
+            "x": 1259.04296875,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1449.04296875,
+            "bottom": 307.7421875,
+            "left": 1259.04296875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 5,
+        "activeContexts": 0,
+        "createdWorkers": 10,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 6,
+      "preset": 1,
+      "metrics": {
+        "audioSessionId": "8a01adde-3212-4313-a366-243b8cfbfe39",
+        "observedSeconds": 1,
+        "visualSamples": 58,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 28,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "44f89f84-46e3-426a-950e-c2dcfe66884c",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 56458.884999997914,
+          "box": {
+            "x": 1196.1455078125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1451.7080078125,
+            "bottom": 251.7421875,
+            "left": 1196.1455078125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "a81a363c-25cd-4a81-82f3-b432e3b146ec",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 57960.04999999702,
+          "box": {
+            "x": 1264,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1454,
+            "bottom": 307.7421875,
+            "left": 1264
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 6,
+        "activeContexts": 0,
+        "createdWorkers": 12,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 7,
+      "preset": 2,
+      "metrics": {
+        "audioSessionId": "58056890-fc95-4b0f-8ac0-09fadcda2591",
+        "observedSeconds": 0,
+        "visualSamples": 57,
+        "visualP95Ms": 25,
+        "desktopFpsPassRate": null,
+        "mobileFpsPassRate": null,
+        "fpsMedian": null,
+        "localFirstP95Ms": 72,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "89448da2-2d59-4ab4-97c7-08f4e94defb9",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 61709.04500000179,
+          "box": {
+            "x": 1196.8094482421875,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1452.3719482421875,
+            "bottom": 251.7421875,
+            "left": 1196.8094482421875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "ab1ef87b-dae9-4b37-a907-ad6ab93f569a",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 63225.99499999732,
+          "box": {
+            "x": 1262.052490234375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1452.052490234375,
+            "bottom": 307.7421875,
+            "left": 1262.052490234375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 7,
+        "activeContexts": 0,
+        "createdWorkers": 14,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 8,
+      "preset": 3,
+      "metrics": {
+        "audioSessionId": "c0041837-08a1-4a97-ac17-da71f8255a7e",
+        "observedSeconds": 1,
+        "visualSamples": 57,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 27,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "944a158c-3f47-4ac9-af97-18cf71f277f9",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 67024.4149999991,
+          "box": {
+            "x": 1196.019287109375,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1451.581787109375,
+            "bottom": 251.7421875,
+            "left": 1196.019287109375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "50be45ff-f612-4cc3-a63d-ad8ec65e1cf4",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 68542.2349999994,
+          "box": {
+            "x": 1260.207275390625,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1450.207275390625,
+            "bottom": 307.7421875,
+            "left": 1260.207275390625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 8,
+        "activeContexts": 0,
+        "createdWorkers": 16,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 9,
+      "preset": 4,
+      "metrics": {
+        "audioSessionId": "78f255f5-33b0-4302-85f1-be88232a88f8",
+        "observedSeconds": 0,
+        "visualSamples": 28,
+        "visualP95Ms": 34,
+        "desktopFpsPassRate": null,
+        "mobileFpsPassRate": null,
+        "fpsMedian": null,
+        "localFirstP95Ms": 39,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "b509eaac-1924-4812-b34b-c45b0b2f4737",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 72355.46499999613,
+          "box": {
+            "x": 1197.7564697265625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.3189697265625,
+            "bottom": 251.7421875,
+            "left": 1197.7564697265625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 9,
+        "activeContexts": 0,
+        "createdWorkers": 18,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 10,
+      "preset": 5,
+      "metrics": {
+        "audioSessionId": "c9ed39d8-df2d-4b64-a5f1-54d6dd65761a",
+        "observedSeconds": 0,
+        "visualSamples": 53,
+        "visualP95Ms": 25,
+        "desktopFpsPassRate": null,
+        "mobileFpsPassRate": null,
+        "fpsMedian": null,
+        "localFirstP95Ms": 159,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.984375
+      },
+      "comments": [
+        {
+          "id": "805b987d-a102-4b6b-a125-c8dc6d257656",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 77726.44999999553,
+          "box": {
+            "x": 1197.0777587890625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1452.6402587890625,
+            "bottom": 251.7421875,
+            "left": 1197.0777587890625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "eead7e99-0eb4-4dae-a821-87ac3002429f",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 79259.4600000009,
+          "box": {
+            "x": 1261.8216552734375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1451.8216552734375,
+            "bottom": 307.7421875,
+            "left": 1261.8216552734375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 10,
+        "activeContexts": 0,
+        "createdWorkers": 20,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 11,
+      "preset": 1,
+      "metrics": {
+        "audioSessionId": "3b510c62-179d-4470-84ef-30f5dccaf427",
+        "observedSeconds": 1,
+        "visualSamples": 56,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 37,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "cfa172b4-1a09-4be5-80b0-0f8de722301e",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 95108.56000000238,
+          "box": {
+            "x": 1196.2852783203125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1451.8477783203125,
+            "bottom": 251.7421875,
+            "left": 1196.2852783203125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "8304d99f-e95f-4d7d-82a7-f82587ccac82",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 96608.6950000003,
+          "box": {
+            "x": 1262.38330078125,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1452.38330078125,
+            "bottom": 307.7421875,
+            "left": 1262.38330078125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 11,
+        "activeContexts": 0,
+        "createdWorkers": 22,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 12,
+      "preset": 2,
+      "metrics": {
+        "audioSessionId": "dcd00f7b-e4cf-4330-bf6d-51081cdd5052",
+        "observedSeconds": 1,
+        "visualSamples": 59,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 23,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "4a4c1309-49d9-4505-8b44-305d2f557dc7",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 100342.09499999881,
+          "box": {
+            "x": 1195.9635009765625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1451.5260009765625,
+            "bottom": 251.7421875,
+            "left": 1195.9635009765625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "7baa2f71-00b0-49d0-8a96-5a14b7aab0d1",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 101859.22999999672,
+          "box": {
+            "x": 1261.4100341796875,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1451.4100341796875,
+            "bottom": 307.7421875,
+            "left": 1261.4100341796875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 12,
+        "activeContexts": 0,
+        "createdWorkers": 24,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 13,
+      "preset": 3,
+      "metrics": {
+        "audioSessionId": "06191d48-3a00-4b2c-8add-24c8069a333d",
+        "observedSeconds": 1,
+        "visualSamples": 59,
+        "visualP95Ms": 25,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 26,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "7af77c89-0613-4789-8689-9d9aa6774b1d",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 105575.68999999762,
+          "box": {
+            "x": 1198.4193115234375,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.9818115234375,
+            "bottom": 251.7421875,
+            "left": 1198.4193115234375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "b61ce047-10e9-4dd8-9728-1ad651d72352",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 107108.81000000238,
+          "box": {
+            "x": 1259.5579833984375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1449.5579833984375,
+            "bottom": 307.7421875,
+            "left": 1259.5579833984375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 13,
+        "activeContexts": 0,
+        "createdWorkers": 26,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 14,
+      "preset": 4,
+      "metrics": {
+        "audioSessionId": "65e08b36-56f5-4f6e-9f85-3e703554ee02",
+        "observedSeconds": 1,
+        "visualSamples": 26,
+        "visualP95Ms": 39,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 16,
+        "localFirstP95Ms": 42,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "6f9c3de9-4a18-4ac2-bc01-be12d8a9c6e2",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 110957.02499999851,
+          "box": {
+            "x": 1197.7769775390625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.3394775390625,
+            "bottom": 251.7421875,
+            "left": 1197.7769775390625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "ad4deee8-9ae2-4f63-9785-cf3fe48be18d",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 112487.22999999672,
+          "box": {
+            "x": 1256.4075927734375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1446.4075927734375,
+            "bottom": 307.7421875,
+            "left": 1256.4075927734375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 14,
+        "activeContexts": 0,
+        "createdWorkers": 28,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 15,
+      "preset": 5,
+      "metrics": {
+        "audioSessionId": "72a88dfc-9028-4e94-8f1c-cc75bebc91de",
+        "observedSeconds": 1,
+        "visualSamples": 58,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 28,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "26ee685e-84d4-4cf2-bb10-4d97394e65eb",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 116207.47500000149,
+          "box": {
+            "x": 1197.828125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.390625,
+            "bottom": 251.7421875,
+            "left": 1197.828125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "9a317637-256e-49e5-a611-bb93990bddaf",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 117741.2650000006,
+          "box": {
+            "x": 1258.36767578125,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1448.36767578125,
+            "bottom": 307.7421875,
+            "left": 1258.36767578125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 15,
+        "activeContexts": 0,
+        "createdWorkers": 30,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 16,
+      "preset": 1,
+      "metrics": {
+        "audioSessionId": "653c399b-a013-4bcb-adb0-60f8ca75f139",
+        "observedSeconds": 0,
+        "visualSamples": 57,
+        "visualP95Ms": 27,
+        "desktopFpsPassRate": null,
+        "mobileFpsPassRate": null,
+        "fpsMedian": null,
+        "localFirstP95Ms": 50,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "5bcb634a-d82a-4dd6-aea2-0cfec9ecc011",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 139725.5249999985,
+          "box": {
+            "x": 1196.5535888671875,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1452.1160888671875,
+            "bottom": 251.7421875,
+            "left": 1196.5535888671875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "7a9ccb21-b64d-4a23-abff-64424c45d156",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 141258.57499999553,
+          "box": {
+            "x": 1257.166015625,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1447.166015625,
+            "bottom": 307.7421875,
+            "left": 1257.166015625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 16,
+        "activeContexts": 0,
+        "createdWorkers": 32,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 17,
+      "preset": 2,
+      "metrics": {
+        "audioSessionId": "47e49047-a234-4e9a-b37b-82699c1ca9c1",
+        "observedSeconds": 1,
+        "visualSamples": 57,
+        "visualP95Ms": 23,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 20,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      "comments": [
+        {
+          "id": "2ab9550e-e60d-4c14-84cb-f5d012b033d7",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 144958.3900000006,
+          "box": {
+            "x": 1195.2120361328125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1450.7745361328125,
+            "bottom": 251.7421875,
+            "left": 1195.2120361328125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "28eca246-69e3-4d9f-8893-fcfa3e0251b3",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 146474.9849999994,
+          "box": {
+            "x": 1261.3759765625,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1451.3759765625,
+            "bottom": 307.7421875,
+            "left": 1261.3759765625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 17,
+        "activeContexts": 0,
+        "createdWorkers": 34,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 18,
+      "preset": 3,
+      "metrics": {
+        "audioSessionId": "b6d816ec-fcc1-4b0f-820b-5de66a4f8859",
+        "observedSeconds": 1,
+        "visualSamples": 56,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 0,
+        "fpsMedian": 29,
+        "localFirstP95Ms": 30,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.98828125
+      },
+      "comments": [
+        {
+          "id": "1514095e-7852-4c6c-997f-192b2b596ea4",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 150459.4900000021,
+          "box": {
+            "x": 1182.32958984375,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1437.89208984375,
+            "bottom": 251.7421875,
+            "left": 1182.32958984375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "b3ab6682-42ba-42ae-b62b-570f7c989313",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 151925.7400000021,
+          "box": {
+            "x": 1257.671875,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1447.671875,
+            "bottom": 307.7421875,
+            "left": 1257.671875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 18,
+        "activeContexts": 0,
+        "createdWorkers": 36,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 19,
+      "preset": 4,
+      "metrics": {
+        "audioSessionId": "53cccca5-fba3-4bcf-a552-62360531a1a8",
+        "observedSeconds": 0,
+        "visualSamples": 59,
+        "visualP95Ms": 34,
+        "desktopFpsPassRate": null,
+        "mobileFpsPassRate": null,
+        "fpsMedian": null,
+        "localFirstP95Ms": 34,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.9921875
+      },
+      "comments": [
+        {
+          "id": "4478a818-1858-46f9-83a5-46700eae617f",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 155685.5450000018,
+          "box": {
+            "x": 1197.5382080078125,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.1007080078125,
+            "bottom": 251.7421875,
+            "left": 1197.5382080078125
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "8f860fd6-fdd2-433b-9635-cf45c28e9937",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 157187.2749999985,
+          "box": {
+            "x": 1263.13818359375,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1453.13818359375,
+            "bottom": 307.7421875,
+            "left": 1263.13818359375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 19,
+        "activeContexts": 0,
+        "createdWorkers": 38,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    },
+    {
+      "cycle": 20,
+      "preset": 5,
+      "metrics": {
+        "audioSessionId": "f37ed6cc-9017-432c-970f-bb3fbda0b619",
+        "observedSeconds": 1,
+        "visualSamples": 54,
+        "visualP95Ms": 24,
+        "desktopFpsPassRate": 0,
+        "mobileFpsPassRate": 1,
+        "fpsMedian": 30,
+        "localFirstP95Ms": 130,
+        "aiFirstP95Ms": null
+      },
+      "model": {
+        "label": "Speech",
+        "score": 0.984375
+      },
+      "comments": [
+        {
+          "id": "7e362c66-fbd9-4fa1-9f9c-69b55bc60247",
+          "source": "local",
+          "text": "声音进来了,画面跟着动了",
+          "at": 161126.3650000021,
+          "box": {
+            "x": 1198.3521728515625,
+            "y": 205.7421875,
+            "width": 255.5625,
+            "height": 46,
+            "top": 205.7421875,
+            "right": 1453.9146728515625,
+            "bottom": 251.7421875,
+            "left": 1198.3521728515625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "fadc977f-4de3-4a8c-9660-9f5c082649f3",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 162708.78499999642,
+          "box": {
+            "x": 1257.9049072265625,
+            "y": 261.7421875,
+            "width": 190,
+            "height": 46,
+            "top": 261.7421875,
+            "right": 1447.9049072265625,
+            "bottom": 307.7421875,
+            "left": 1257.9049072265625
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "after": {
+        "createdContexts": 20,
+        "activeContexts": 0,
+        "createdWorkers": 40,
+        "activeWorkers": 0,
+        "activeMedia": 0,
+        "commentNodes": 0,
+        "canvases": 1
+      }
+    }
+  ]
+}

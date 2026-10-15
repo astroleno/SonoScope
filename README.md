@@ -2,18 +2,20 @@
 
 > 基于浏览器的实时音乐可视化与弹幕引擎
 
+当前实施版的入口为 `/SonoScope`。共享运行时、流式协议、安全配额与实际验收状态见 [上线验收](docs/launch-validation.md) 和 [部署指南](docs/部署指南.md)；旧阶段报告中的功能完整性声明不作为本版发布证据。
+
 ## 🎯 项目简介
 
-SonoScope 是一个移动优先的实时音乐可视化系统，能够将音频特征转换为动态视觉效果和智能弹幕。项目采用双环路架构：本地快环提供即时可视化反馈，慢环通过 LLM 生成风格化弹幕和参数建议。
+SonoScope 将浏览器采集的声音转换为画面与弹幕。本地分析直接驱动画面和短反馈；可选的 AI 服务只接收当前声音摘要与最近弹幕，逐条返回评论。
 
 ## ✨ 核心特性
 
 - 🎵 **实时音频分析** - 支持 RMS、频谱质心、通量、节拍检测等特征提取
-- 🎼 **乐器识别融合** - Mediapipe YAMNet + Meyda 双通道，实时输出主唱/乐器标签并驱动弹幕
+- 🎼 **声音分类** - 独立 Worker 使用本地 YAMNet 模型；结果保留时间戳、置信度和来源，失败时标记未知
 - 🎨 **可视化插件系统** - 基于 p5.js 的可插拔可视化场景
-- 💬 **智能弹幕** - 本地句库 + GLM-4.5 增强的弹幕生成
-- 📱 **移动端优化** - 针对 iOS Safari 和 Chrome 的深度优化
-- ♿ **无障碍设计** - 完整的键盘导航和屏幕阅读器支持
+- 💬 **混合弹幕** - 本地与 AI 共用有界队列，取消、过期、去重与实际显示计数统一处理
+- 📱 **响应式控制** - 保留完整预设名称，支持缩放；真实手机验收状态见上线验收记录
+- ♿ **无障碍控制** - 可见焦点、预设方向键、明确开关、减少动态和可读弹幕记录
 - 🔧 **热插拔架构** - 统一数据契约，支持插件动态加载
 
 ## 🏗️ 项目结构
@@ -23,20 +25,22 @@ SonoScope/
 ├── app/                    # Next.js 主应用
 ├── packages/
 │   ├── core/              # 核心功能包 (事件总线、数据契约、状态管理)
+│   ├── sdk/               # 音频会话、特征 Worker 与共享运行时
+│   ├── danmu-pipeline/    # 单一队列、显示回执与流式客户端
 │   ├── visuals-basic/     # 基础粒子可视化插件
 │   ├── visuals-trap/      # Trap 风格可视化插件
 │   └── shared/            # 共享类型和工具
 ├── docs/                  # 技术文档
-├── public/                # 静态资源（部署到 Vercel 时使用）
 ├── app/public/            # Next.js 应用静态资源（含 TFLite 模型）
-└── edge/                  # Vercel Edge Functions
+├── deploy/                # 单实例 Node 服务与 nginx 配置模板
+└── test/launch/           # 当前发布链路的回归测试
 ```
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- Node.js 18+
+- Node.js 22.13+
 - pnpm 8+
 - 现代浏览器 (支持 Web Audio API)
 
@@ -76,10 +80,10 @@ pnpm type-check
 
 ### 基础使用
 
-1. **启动应用** - 访问 `http://localhost:3000`
-2. **授权麦克风** - 点击"开始"按钮授权音频访问
-3. **确认模型已加载** - 浏览器应能访问 `http://localhost:3000/model/yamnet_tflite/yamnet.tflite`
-4. **选择可视化** - 从插件列表中选择可视化场景
+1. **启动应用** - 访问 `http://localhost:3000/SonoScope`
+2. **选择声音输入** - 点击“开启麦克风”授权，或选择本地音频文件
+3. **确认模型可加载** - 浏览器应能访问 `http://localhost:3000/SonoScope/model/yamnet-1.tflite`；实际推理状态与验收另行检查。
+4. **选择可视化** - 选择 Wave / Accretion / Spiral / Mosaic / Mochi；预设与声音启停互相独立
 5. **享受效果** - 播放音乐或发出声音，观看实时可视化
 
 ### 开发者指南
@@ -147,26 +151,18 @@ eventBus.emit('decisionEvent', {
 ## 🔧 配置选项
 
 ### 音频参数
-- **FFT 大小**: 2048 (平衡性能和精度)
-- **跳跃长度**: 512 (控制更新频率)
+- **捕获／FFT 大小**: 1024，使用设备实际采样率
+- **分类输入**: 连续约1秒 PCM，按采样率重采样至16kHz
 - **特征窗口**: 2秒 (LLM 分析窗口)
 
 ### 性能设置
 - **目标帧率**: 桌面 60fps，移动端 30fps
-- **粒子密度**: 自适应设备性能
-- **降级策略**: 弱设备自动降低复杂度
+- **分析降级**: Worker 错误或超时后继续基础 DSP；未知声音分类不填模板结果
+- **停止策略**: 取消请求、释放音频与 Worker、清空显示队列，拒绝旧会话结果
 
 ## 📱 移动端支持
 
-### iOS Safari 优化
-- 手势激活 AudioContext
-- WebGL 降级处理
-- 内存管理优化
-
-### Android Chrome 优化
-- 硬件加速检测
-- 电池优化模式适配
-- 触摸交互增强
+AudioContext 在明确的用户操作中激活；控制支持窄屏、触摸与减少动态。桌面浏览器的尺寸模拟不能替代 iOS Safari / Android Chrome 实机测试，实际验收记录见 `docs/launch-validation.md`。
 
 ## ♿ 无障碍功能
 
@@ -177,27 +173,21 @@ eventBus.emit('decisionEvent', {
 
 ## 🔒 隐私与安全
 
-- **本地优先**: 默认仅本地处理，无网络传输
+- **本地优先**: 默认音频留在浏览器；模型与 WASM 从同源加载
 - **数据最小化**: 仅传输音频特征，不传输原始音频
 - **用户控制**: 明确的云端功能开关
 - **安全传输**: 所有网络通信使用 TLS
 
-## 📊 性能指标
+## 📊 验收目标
 
-- **首屏加载**: < 1秒
-- **首条弹幕**: < 1秒
-- **可视化延迟**: 20-60ms
-- **YAMNet 推理频率（TFLite wasm）**: 2–4Hz（移动端稳定）
-- **YAMNet 单次时延（TFLite wasm）**: 50–150ms（设备差异）
-- **LLM 响应**: 0.5–2Hz
-- **内存使用**: < 100MB（移动端）
+有效特征帧到实际画面 p95 ≤100ms，本地首条显示 p95 ≤1s，AI 请求到首条显示 p95 ≤3s，整批截止8s。桌面与真实目标手机各持续运行30分钟。以上是目标，测量口径与已取得的证据见 `docs/launch-validation.md`，不以模拟测试证明设备性能。
 
 ## 🔁 当前模型集成状态（重要）
 
-- 已采用 **TFLite Web（wasm）** 方案集成 YAMNet，移动端兼容性更好、首包更友好。
-- 模型文件路径：`app/public/model/yamnet_tflite/yamnet.tflite`（已内置，约 15MB）。
-- 页面加载逻辑：优先 TFLite → 失败时回退 TFJS GraphModel（如后续提供）→ 最终回退启发式，不阻塞主功能。
-- 代码位置：`app/app/standalone-client/page.tsx` 中的 `loadYAMNetModel()` 与分类调用逻辑。
+- 当前模型：`app/public/model/yamnet-1.tflite`，官方 float32 版本1，约4 MB；来源与校验值在同目录 `assets.json`。
+- 加载与真实分类入口：`app/lib/workers/features.worker.ts`；DSP 单独运行，不被模型加载阻塞。
+- `FeaturePipeline` 只合并当前会话的近期结果，再写入两秒摘要交给弹幕服务。加载失败或超时明确降级，分类字段为空。
+- `standalone-client` 是兼容入口，跳转到共享主页面，不再单独维护模型链路。
 
 ### 本地开发端口
 
@@ -205,18 +195,16 @@ eventBus.emit('decisionEvent', {
 
 ### 排错指引
 
-- 若控制台未出现 “YAMNet (TFLite) 加载成功”，请检查：
-  - `http://localhost:3000/model/yamnet_tflite/yamnet.tflite` 可直接下载（非 XML/HTML）；
+- 若声音分类不可用，请检查：
+  - `/SonoScope/model/yamnet-1.tflite` 与 `/SonoScope/vendor/mediapipe-audio-1.1.0/wasm/` 下资源能从同源加载；
   - 浏览器权限：麦克风已授权；
   - 网络与缓存：清理缓存后重试。
 
 ## 🛠️ 开发工具
 
-- **Storybook**: 插件开发和调试
-- **TypeScript**: 完整类型支持
-- **ESLint + Prettier**: 代码质量保证
-- **Jest**: 单元测试
-- **Playwright**: E2E 测试
+- **TypeScript / ESLint**：发布前类型与静态检查
+- **Vitest**：实际 DSP、会话生命周期、流式服务、配额与 UI 回归
+- **浏览器验收**：生产产物、真实模型、显示回执与实际绘制统计
 
 ## 📚 文档
 

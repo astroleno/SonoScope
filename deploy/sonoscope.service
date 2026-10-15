@@ -1,0 +1,27 @@
+[Unit]
+Description=SonoScope
+After=network.target
+
+[Service]
+Type=simple
+User=sonoscope
+Group=sonoscope
+WorkingDirectory=/srv/sonoscope/current/app
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3100
+EnvironmentFile=/etc/sonoscope/server.env
+# Dedicated Node 22.13+ runtime; the existing site's global Node may be older.
+ExecStartPre=/opt/sonoscope/node/bin/node ../assert-platform.mjs
+ExecStart=/opt/sonoscope/node/bin/node server.js
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/sonoscope
+
+[Install]
+WantedBy=multi-user.target

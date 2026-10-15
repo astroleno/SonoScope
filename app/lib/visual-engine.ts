@@ -258,7 +258,6 @@ class BasicParticlesPlugin implements VisualPlugin {
 
   async applyPreset(
     preset: Partial<VisualPreset>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _durationMs: number
   ): Promise<void> {
     this.currentPreset = { ...this.currentPreset, ...preset };
@@ -339,7 +338,6 @@ class BasicParticlesPlugin implements VisualPlugin {
     particle: Particle,
     rms: number,
     centroid: number,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _flux: number
   ): void {
     // 更新位置

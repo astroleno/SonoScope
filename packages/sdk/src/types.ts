@@ -40,8 +40,8 @@ export interface AudioFeatures {
   tempo?: {
     bpm: number;
     tempoConfidence: number;
-    timeSignature: [number, number];
-    rhythmPattern: string;
+    timeSignature?: [number, number];
+    rhythmPattern?: string;
   };
   timbre?: {
     brightness: number;
@@ -62,7 +62,7 @@ export interface AudioFeatures {
   };
 }
 
-export type VisualizationPreset = 'pulse' | 'accretion' | 'spiral' | 'mosaic';
+export type VisualizationPreset = import('@sonoscope/core').PresetId;
 
 export interface VisualizationControls {
   // Accretion controls

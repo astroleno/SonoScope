@@ -1,27 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { AccessibilityProvider } from '../components/accessibility-provider';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'SonoScope - 声象',
   description: '基于浏览器的实时音乐可视化与弹幕引擎',
   keywords: ['音频可视化', '音乐可视化', '实时渲染', 'Web Audio'],
   authors: [{ name: 'SonoScope Team' }],
-  manifest: '/manifest.json',
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: '#000000',
+  themeColor: '#0A0A0F',
 };
 
 export default function RootLayout({
@@ -32,14 +23,6 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
-        {/* 预加载关键资源 */}
-        <link
-          rel="preload"
-          href="/fonts/inter.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         {/* 移动端优化 */}
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -49,7 +32,7 @@ export default function RootLayout({
           content="black-translucent"
         />
       </head>
-      <body className={inter.className} suppressHydrationWarning={true}>
+      <body>
         {/* 无障碍支持 */}
         <div
           id="a11y-announcements"
@@ -57,7 +40,7 @@ export default function RootLayout({
           aria-atomic="true"
           className="sr-only"
         />
-        {children}
+        <AccessibilityProvider>{children}</AccessibilityProvider>
       </body>
     </html>
   );

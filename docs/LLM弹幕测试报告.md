@@ -1,5 +1,7 @@
 # LLM弹幕功能测试报告
 
+> 历史方案记录，密钥已脱敏，不作为当前版本验收依据。当前密钥只用服务端 `GLM_API_KEY`，不要复制下文旧的 `NEXT_PUBLIC_*` 配置。以[上线验收](launch-validation.md)为准；历史中出现过的密钥仍需在服务商侧撤销。
+
 ## 🎯 测试概述
 
 **测试时间**: 2024年12月19日  
@@ -11,7 +13,7 @@
 ### 1. 环境配置测试 ✅
 
 **智谱AI配置**:
-- ✅ API密钥: 已配置 (`cfca91df3e4043b78948427f1f3fcd79.eO5l0Gdba15pidl7`)
+- ✅ API密钥: 已配置 (`[REDACTED_API_KEY]`)
 - ✅ API端点: 已配置 (`https://open.bigmodel.cn/api/paas/v4/chat/completions`)
 - ✅ 环境变量加载: 正常
 

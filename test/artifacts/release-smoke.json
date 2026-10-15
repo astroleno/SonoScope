@@ -1,0 +1,58 @@
+{
+  "source": "local standalone release (same platform/architecture)",
+  "measuredAt": "2026-10-15T08:03:16.289Z",
+  "basePath": "/SonoScope",
+  "routes": [
+    {
+      "path": "/SonoScope",
+      "status": 200
+    },
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/runtime-config",
+      "status": 200
+    },
+    {
+      "path": "/standalone-client",
+      "status": 307,
+      "location": "/SonoScope/"
+    },
+    {
+      "path": "/mochi",
+      "status": 200
+    },
+    {
+      "path": "/test",
+      "status": 404
+    },
+    {
+      "path": "/icon.png",
+      "status": 200
+    },
+    {
+      "path": "/apple-icon.png",
+      "status": 200
+    },
+    {
+      "path": "/manifest.webmanifest",
+      "status": 200
+    },
+    {
+      "path": "/audio/capture-worklet.js",
+      "status": 200
+    },
+    {
+      "path": "/model/yamnet-1.tflite",
+      "status": 200
+    },
+    {
+      "path": "/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+      "status": 200
+    }
+  ],
+  "staticFiles": 44,
+  "providerKeyInPublicOutput": false
+}

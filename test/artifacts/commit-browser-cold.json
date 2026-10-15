@@ -1,0 +1,461 @@
+{
+  "testedAt": "2026-10-15T08:00:28.189Z",
+  "buildId": "4p8tuynwsdSywOG7Q0DtJ",
+  "bandwidthCeilingMbps": 5,
+  "addedResponseLatencyMs": 80,
+  "environment": "Fresh localhost origin through an aggregate bandwidth ceiling proxy. High host load and low-power mode remain; achieved throughput must be checked before treating this as normal 5 Mbps acceptance.",
+  "fixture": "music-fixture.json",
+  "stats": {
+    "workers": 2,
+    "contexts": 1,
+    "media": 1,
+    "events": [
+      {
+        "type": "dsp-ready",
+        "at": 1792051216066
+      },
+      {
+        "type": "model-loading",
+        "at": 1792051216193
+      },
+      {
+        "type": "model-ready",
+        "at": 1792051227017
+      }
+    ],
+    "statuses": [
+      {
+        "status": "unavailable",
+        "at": 1792051189646
+      },
+      {
+        "status": "loading",
+        "at": 1792051215883
+      },
+      {
+        "status": "ready",
+        "at": 1792051227017
+      }
+    ],
+    "shows": [
+      {
+        "id": "2b0b0e17-812f-415b-a481-d6d141e58661",
+        "source": "local",
+        "text": "声音进来了,开始听这一段",
+        "at": 1792051216267,
+        "visible": true
+      },
+      {
+        "id": "bfb7471d-9fe9-4d3a-b6e2-a3c349009366",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792051217766,
+        "visible": true
+      },
+      {
+        "id": "1e6eb322-1f18-485e-8dad-8dd3c468fb01",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792051219682,
+        "visible": true
+      },
+      {
+        "id": "79484f83-6038-46fe-a78b-dd921f8763f3",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792051221215,
+        "visible": true
+      },
+      {
+        "id": "6955a31b-1a40-4992-89a1-96d5b3fc4006",
+        "source": "local",
+        "text": "节奏大约 183 BPM",
+        "at": 1792051227066,
+        "visible": true
+      }
+    ],
+    "requests": [],
+    "errors": [],
+    "lastModel": {
+      "version": "yamnet-float32-1",
+      "capturedAt": 1792051228015,
+      "categories": [
+        {
+          "label": "Music",
+          "score": 0.96875
+        },
+        {
+          "label": "Silence",
+          "score": 0.109375
+        },
+        {
+          "label": "Music",
+          "score": 0.04296875
+        },
+        {
+          "label": "Sound effect",
+          "score": 0.04296875
+        },
+        {
+          "label": "Piano",
+          "score": 0.03125
+        },
+        {
+          "label": "Keyboard (musical)",
+          "score": 0.01953125
+        },
+        {
+          "label": "Speech",
+          "score": 0.01953125
+        },
+        {
+          "label": "Happy music",
+          "score": 0.015625
+        },
+        {
+          "label": "Music for children",
+          "score": 0.015625
+        },
+        {
+          "label": "Musical instrument",
+          "score": 0.015625
+        },
+        {
+          "label": "Video game music",
+          "score": 0.01171875
+        },
+        {
+          "label": "Theme music",
+          "score": 0.01171875
+        },
+        {
+          "label": "Background music",
+          "score": 0.01171875
+        },
+        {
+          "label": "Electric piano",
+          "score": 0.01171875
+        },
+        {
+          "label": "Whack, thwack",
+          "score": 0.01171875
+        },
+        {
+          "label": "Soundtrack music",
+          "score": 0.0078125
+        }
+      ],
+      "voiceProbability": 0.01953125,
+      "instrument": null
+    },
+    "startedAt": 1792051213808
+  },
+  "modelStatus": "ready",
+  "metrics": {
+    "audioSessionId": "6f9e41b2-fd88-40ba-b14b-a21997d519d7",
+    "observedSeconds": 11,
+    "visualSamples": 355,
+    "visualP95Ms": 23,
+    "featureSamples": 562,
+    "dspComputeP95Ms": 4,
+    "captureToFeatureP95Ms": 4,
+    "featureToDrawP95Ms": 21,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0.6363636363636364,
+    "fpsMedian": 30,
+    "localFirstP95Ms": 4,
+    "aiFirstP95Ms": null
+  },
+  "note": null,
+  "requests": [
+    {
+      "path": "/SonoScope",
+      "start": 1792051189189,
+      "bytes": 3618,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 151
+    },
+    {
+      "path": "/SonoScope/_next/static/css/8a2f33b7c9afdec9.css",
+      "start": 1792051189830,
+      "bytes": 5732,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 240
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/webpack-925b480cc097be5e.js",
+      "start": 1792051189840,
+      "bytes": 2012,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 231
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/9bae6b27-ee23394a7b5829b9.js",
+      "start": 1792051189868,
+      "bytes": 64058,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 386
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/834-8da9df1b06b5f3f7.js",
+      "start": 1792051189887,
+      "bytes": 67861,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 408
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/main-app-83c96ad7b78ea23f.js",
+      "start": 1792051189901,
+      "bytes": 513,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 204
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/app/layout-9dfcf6a027ee730f.js",
+      "start": 1792051189907,
+      "bytes": 879,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 200
+    },
+    {
+      "path": "/SonoScope/manifest.webmanifest",
+      "start": 1792051190079,
+      "bytes": 269,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 175
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/557-1ce76d465d37e2ca.js",
+      "start": 1792051190087,
+      "bytes": 6444,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 205
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/app/page-0acbf7d5b46c7ae3.js",
+      "start": 1792051190108,
+      "bytes": 124,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 146
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/665.02e802f20bbd34f2.js",
+      "start": 1792051192935,
+      "bytes": 36108,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 274
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/232.6381bdbd9b13d0d8.js",
+      "start": 1792051192981,
+      "bytes": 6114,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 135
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/731.9ca7771dbd96fbd1.js",
+      "start": 1792051192982,
+      "bytes": 4883,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 164
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/441.bab8fd6ddba33187.js",
+      "start": 1792051192983,
+      "bytes": 5658,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 141
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/49.3fd1d18b8e874c67.js",
+      "start": 1792051192984,
+      "bytes": 4429,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 150
+    },
+    {
+      "path": "/SonoScope/icon.png",
+      "start": 1792051192985,
+      "bytes": 1647,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 193
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/2b532a61.b78a45428c905ce8.js",
+      "start": 1792051193167,
+      "bytes": 250678,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 587
+    },
+    {
+      "path": "/SonoScope/api/runtime-config",
+      "start": 1792051193461,
+      "bytes": 48,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 169
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/291.9ededd3e29dfb9d7.js",
+      "start": 1792051193854,
+      "bytes": 2984,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 99
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/328.d50c5aeb714ef719.js",
+      "start": 1792051195278,
+      "bytes": 751,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 94
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/472.dd3884facde3190f.js",
+      "start": 1792051195278,
+      "bytes": 2616,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 93
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/89.7082a15cfbbe5834.js",
+      "start": 1792051195279,
+      "bytes": 3899,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 108
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/398.a3ce4bd246ce8581.js",
+      "start": 1792051195279,
+      "bytes": 4542,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 101
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/124.3cddc81f7244418a.js",
+      "start": 1792051195279,
+      "bytes": 7842,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 121
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/965.b8dc14e93c102d3a.js",
+      "start": 1792051215898,
+      "bytes": 1146,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 105
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/501.aa8725098e4ff920.js",
+      "start": 1792051215901,
+      "bytes": 1735,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 105
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/288.e45d2dc42622bcaf.js",
+      "start": 1792051216026,
+      "bytes": 19925,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 119
+    },
+    {
+      "path": "/SonoScope/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.js",
+      "start": 1792051216196,
+      "bytes": 66519,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 203
+    },
+    {
+      "path": "/SonoScope/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+      "start": 1792051216430,
+      "bytes": 2095140,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3579
+    },
+    {
+      "path": "/SonoScope/model/yamnet-1.tflite",
+      "start": 1792051220054,
+      "bytes": 4126810,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 6918
+    }
+  ],
+  "afterStop": {
+    "contexts": 0,
+    "workers": 0,
+    "media": 0,
+    "comments": 0,
+    "canvas": 1
+  },
+  "summary": {
+    "classificationReady": true,
+    "modelAssetsInitMs": 10824,
+    "assetThroughputMbps": {
+      "audio_wasm_internal.wasm": 4.683,
+      "yamnet-1.tflite": 4.772
+    },
+    "cloudCalls": 0,
+    "afterStopResourcesReleased": true,
+    "scope": "One cold-origin sample, not statistical p95 or normal-power desktop FPS acceptance."
+  }
+}

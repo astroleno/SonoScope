@@ -8,6 +8,7 @@ node_modules/
 out/
 dist/
 build/
+release/
 
 # Runtime data
 pids
@@ -55,6 +56,7 @@ jspm_packages/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -72,9 +74,9 @@ dist
 /public
 !public/model/
 !public/model/yamnet.task
-app/public/*
-!app/public/model/
-!app/public/model/yamnet.task
+app/.runtime/
+app/public/vendor/
+test/artifacts/private/
 
 # Storybook build outputs
 .out

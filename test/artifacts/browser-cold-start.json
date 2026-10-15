@@ -1,0 +1,335 @@
+{
+  "testedAt": "2026-10-15T05:59:20.683Z",
+  "buildId": "RlkckdnVtJQwXafBkmVGp",
+  "bandwidthMbps": 5,
+  "aggregateProxy": true,
+  "addedResponseLatencyMs": 80,
+  "source": "1810-second synthetic 440 Hz MP3",
+  "environmentCaveat": "Host load averages were 109.38/104.28/94.63 and AC low-power mode was enabled shortly before this run. This is not representative latency/FPS acceptance.",
+  "state": {
+    "at": 1792043959740,
+    "probe": {
+      "startedAt": 1792043808294,
+      "statuses": [
+        {
+          "status": "loading",
+          "at": 1792043810433
+        },
+        {
+          "status": "unavailable",
+          "at": 1792043825423
+        }
+      ]
+    },
+    "model": "unavailable",
+    "label": "",
+    "metrics": {
+      "audioSessionId": "0482db66-e1d2-4ba6-81e1-97ba9000f18c",
+      "observedSeconds": 146,
+      "visualSamples": 2918,
+      "visualP95Ms": 21,
+      "featureSamples": 6889,
+      "dspComputeP95Ms": 7,
+      "captureToFeatureP95Ms": 7,
+      "featureToDrawP95Ms": 17,
+      "dspMode": "local",
+      "desktopFpsPassRate": 0,
+      "mobileFpsPassRate": 0.00684931506849315,
+      "fpsMedian": 23,
+      "localFirstP95Ms": 70,
+      "aiFirstP95Ms": null
+    },
+    "note": "声音分类暂不可用；基础音频分析继续工作。",
+    "buttons": [
+      "W\nA\nV\nE\nW\nA\nV\nE",
+      "A\nC\nC\nR\nE\nT\nI\nO\nN\nA\nC\nC\nR\nE\nT\nI\nO\nN",
+      "S\nP\nI\nR\nA\nL\nS\nP\nI\nR\nA\nL",
+      "M\nO\nS\nA\nI\nC\nM\nO\nS\nA\nI\nC",
+      "M\nO\nC\nH\nI\nM\nO\nC\nH\nI",
+      "停止声音",
+      "弹幕 开",
+      "频谱 关",
+      "AI 增强 关",
+      "暂停动态",
+      "弹幕记录",
+      ""
+    ]
+  },
+  "requests": [
+    {
+      "path": "/SonoScope",
+      "start": 1792043542625,
+      "bytes": 3619,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 4302
+    },
+    {
+      "path": "/SonoScope/_next/static/css/8a2f33b7c9afdec9.css",
+      "start": 1792043547479,
+      "bytes": 5732,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1522
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/9bae6b27-ee23394a7b5829b9.js",
+      "start": 1792043547497,
+      "bytes": 64058,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1505
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/834-8da9df1b06b5f3f7.js",
+      "start": 1792043547864,
+      "bytes": 67861,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1249
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/main-app-83c96ad7b78ea23f.js",
+      "start": 1792043547981,
+      "bytes": 513,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 564
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/app/layout-9dfcf6a027ee730f.js",
+      "start": 1792043548178,
+      "bytes": 879,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 369
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/webpack-f4f79ce4a8c8b451.js",
+      "start": 1792043548181,
+      "bytes": 2017,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 2228
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/557-1ce76d465d37e2ca.js",
+      "start": 1792043548559,
+      "bytes": 6444,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 2284
+    },
+    {
+      "path": "/SonoScope/manifest.webmanifest",
+      "start": 1792043548563,
+      "bytes": 269,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 2281
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/app/page-0acbf7d5b46c7ae3.js",
+      "start": 1792043549066,
+      "bytes": 124,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 1613
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/665.02e802f20bbd34f2.js",
+      "start": 1792043554911,
+      "bytes": 36108,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3839
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/232.0b4dc8c5b7352b77.js",
+      "start": 1792043554914,
+      "bytes": 6111,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3795
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/731.37899373674ce959.js",
+      "start": 1792043555091,
+      "bytes": 4679,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3651
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/441.e532dd348d4ca79e.js",
+      "start": 1792043555092,
+      "bytes": 5459,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3769
+    },
+    {
+      "path": "/SonoScope/icon.png",
+      "start": 1792043555095,
+      "bytes": 1647,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 4207
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/49.3fd1d18b8e874c67.js",
+      "start": 1792043555112,
+      "bytes": 4429,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3793
+    },
+    {
+      "path": "/SonoScope/api/runtime-config",
+      "start": 1792043558908,
+      "bytes": 49,
+      "status": 200,
+      "encoding": null,
+      "completed": true,
+      "durationMs": 1600
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/2b532a61.b78a45428c905ce8.js",
+      "start": 1792043559161,
+      "bytes": 250678,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 2780
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/291.9ededd3e29dfb9d7.js",
+      "start": 1792043562193,
+      "bytes": 2984,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 896
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/328.d50c5aeb714ef719.js",
+      "start": 1792043563346,
+      "bytes": 751,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1228
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/472.dd3884facde3190f.js",
+      "start": 1792043563360,
+      "bytes": 2616,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1214
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/89.7082a15cfbbe5834.js",
+      "start": 1792043563362,
+      "bytes": 3899,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1826
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/398.a3ce4bd246ce8581.js",
+      "start": 1792043563363,
+      "bytes": 4542,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1826
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/124.3cddc81f7244418a.js",
+      "start": 1792043563364,
+      "bytes": 7842,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1961
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/965.13f4f2c83f7e159c.js",
+      "start": 1792043812488,
+      "bytes": 1132,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 4503
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/501.1c16ee7d073a4375.js",
+      "start": 1792043813561,
+      "bytes": 1724,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 3417
+    },
+    {
+      "path": "/SonoScope/_next/static/chunks/288.e45d2dc42622bcaf.js",
+      "start": 1792043817589,
+      "bytes": 19925,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 701
+    },
+    {
+      "path": "/SonoScope/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.js",
+      "start": 1792043818644,
+      "bytes": 66519,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": true,
+      "durationMs": 1191
+    },
+    {
+      "path": "/SonoScope/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+      "start": 1792043819877,
+      "bytes": 746564,
+      "status": 200,
+      "encoding": "gzip",
+      "completed": false,
+      "durationMs": 9338
+    }
+  ],
+  "acceptance": {
+    "classificationReady": false,
+    "representativePerformanceResult": false,
+    "modelLoadingDurationMs": 14990,
+    "wasmEffectiveMbps": 0.64,
+    "modelFileRequested": false,
+    "nextRequiredCheck": "Repeat cold startup on a normally loaded desktop or target staging environment at an achieved 5 Mbps before attributing failure to server bandwidth or changing deadlines."
+  },
+  "teardown": {
+    "waitingScreenObserved": true,
+    "audioElementsAfterStop": 0,
+    "taskSpaceClosed": true,
+    "previewAndProxyProcessesStopped": true
+  }
+}

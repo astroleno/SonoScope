@@ -107,7 +107,6 @@ export function applySensitivityConfig(
   baseSensitivity: number
 ): number {
   const globalMultiplier = config.globalSensitivity;
-  const visualizerConfig = config[visualizer];
   
   // 计算可视化器特定的敏感度
   let visualizerSensitivity = 1.0;
@@ -115,33 +114,33 @@ export function applySensitivityConfig(
   switch (visualizer) {
     case 'wave':
       visualizerSensitivity = (
-        visualizerConfig.amplitudeSensitivity +
-        visualizerConfig.frequencySensitivity +
-        visualizerConfig.glowSensitivity
+        config.wave.amplitudeSensitivity +
+        config.wave.frequencySensitivity +
+        config.wave.glowSensitivity
       ) / 3;
       break;
       
     case 'accretion':
       visualizerSensitivity = (
-        visualizerConfig.brightnessSensitivity +
-        visualizerConfig.pulseSensitivity +
-        visualizerConfig.overallBoostSensitivity
+        config.accretion.brightnessSensitivity +
+        config.accretion.pulseSensitivity +
+        config.accretion.overallBoostSensitivity
       ) / 3;
       break;
       
     case 'spiral':
       visualizerSensitivity = (
-        visualizerConfig.colorSensitivity +
-        visualizerConfig.paletteSensitivity +
-        visualizerConfig.jumpSensitivity
+        config.spiral.colorSensitivity +
+        config.spiral.paletteSensitivity +
+        config.spiral.jumpSensitivity
       ) / 3;
       break;
       
     case 'mosaic':
       visualizerSensitivity = (
-        visualizerConfig.spectrumSensitivity +
-        visualizerConfig.spawnSensitivity +
-        visualizerConfig.sizeSensitivity
+        config.mosaic.spectrumSensitivity +
+        config.mosaic.spawnSensitivity +
+        config.mosaic.sizeSensitivity
       ) / 3;
       break;
   }

@@ -1,0 +1,15 @@
+{
+  "title": "The Entertainer",
+  "composer": "Scott Joplin",
+  "performer": "Kevin MacLeod",
+  "sourcePage": "https://commons.wikimedia.org/wiki/File:The_Entertainer_by_Kevin_MacLeod.ogg",
+  "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6b/The_Entertainer_by_Kevin_MacLeod.ogg",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "sha1": "45111a083a1d5ea88142e4813a6727320cca5d4f",
+  "sha256": "f19ed758e6579a416f42145230a97b1333f49b24684f40936c3d5a9e46e94e69",
+  "bytes": 4278460,
+  "changes": "None for browser input: original Ogg recording.",
+  "distributedAudio": false,
+  "purpose": "Local real-music classification and feedback validation; a single piano recording is not a genre/diversity benchmark."
+}

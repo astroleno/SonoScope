@@ -24,3 +24,8 @@ export type {
 
 // Re-export from packages for convenience
 export type { EventBus } from '@sonoscope/core';
+
+export * from './audio-session';
+export * from './feature-pipeline';
+export * from './runtime';
+export * from './metrics';

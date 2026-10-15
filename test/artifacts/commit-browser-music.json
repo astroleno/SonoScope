@@ -1,0 +1,895 @@
+{
+  "testedAt": "2026-10-15T07:56:41.802Z",
+  "buildId": "4p8tuynwsdSywOG7Q0DtJ",
+  "environment": "macOS desktop, warm-cache localhost; AC low-power mode enabled and high competing host load. Not normal-environment FPS/p95 acceptance.",
+  "fixture": "music-fixture.json",
+  "stats": {
+    "workers": 2,
+    "contexts": 1,
+    "media": 1,
+    "events": [
+      {
+        "type": "dsp-ready",
+        "at": 1792050839679
+      },
+      {
+        "type": "model-loading",
+        "at": 1792050839696
+      },
+      {
+        "type": "model-ready",
+        "at": 1792050840287
+      }
+    ],
+    "statuses": [
+      {
+        "status": "unavailable",
+        "at": 1792050798338
+      },
+      {
+        "status": "loading",
+        "at": 1792050839389
+      },
+      {
+        "status": "ready",
+        "at": 1792050840289
+      }
+    ],
+    "shows": [
+      {
+        "id": "f08e3e69-07b8-486c-8ca4-9c3bf3977edc",
+        "source": "local",
+        "text": "声音进来了,开始听这一段",
+        "at": 1792050839920,
+        "visible": true
+      },
+      {
+        "id": "d10859f3-2ec1-4949-ac75-9042e30f1446",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050841301,
+        "visible": true
+      },
+      {
+        "id": "2bf4b8d3-723a-4b1d-a7f9-04a4433d142a",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050842803,
+        "visible": true
+      },
+      {
+        "id": "d26a78fe-3e25-4bc6-aa21-e6986e161185",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050844750,
+        "visible": true
+      },
+      {
+        "id": "1c8f46ad-86e6-46f4-bf2e-590d4e7fa65f",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050846285,
+        "visible": true
+      },
+      {
+        "id": "1eb92f9b-f14b-4bf0-8e14-4c90f83f1ded",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050852199,
+        "visible": true
+      },
+      {
+        "id": "1b02bb0d-914d-4d23-91fe-1fd54c006c35",
+        "source": "local",
+        "text": "节奏大约 179 BPM",
+        "at": 1792050853705,
+        "visible": true
+      },
+      {
+        "id": "b908beff-d423-4642-8058-5cd66a1de474",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050855366,
+        "visible": true
+      },
+      {
+        "id": "88e7c7c4-63a6-45ba-a227-b870364657a7",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050857049,
+        "visible": true
+      },
+      {
+        "id": "35648fe6-aa8e-44c4-8d08-1f9c73eb92ac",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050860732,
+        "visible": true
+      },
+      {
+        "id": "dbf29f5c-0d48-43b8-9cf5-6e8211ce5c57",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050862664,
+        "visible": true
+      },
+      {
+        "id": "ae71e6ba-b088-4e0f-b311-53d5a6feeffb",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050865865,
+        "visible": true
+      },
+      {
+        "id": "b0763c4b-7182-44bd-a6a6-50367519b0c0",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050867515,
+        "visible": true
+      },
+      {
+        "id": "dd0c807e-0e07-4fde-b4f8-7a92b32b171c",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050873048,
+        "visible": true
+      },
+      {
+        "id": "de937c3a-9886-458c-a1ce-afd14aabfb91",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050876182,
+        "visible": true
+      },
+      {
+        "id": "e65905e0-76c8-464c-8665-fe796dffb12d",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050877948,
+        "visible": true
+      },
+      {
+        "id": "0d47de31-c19f-4c96-86c3-dcaefb07940f",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050881597,
+        "visible": true
+      },
+      {
+        "id": "e1d5f527-213d-42b1-ac37-5338dea6366e",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050884463,
+        "visible": true
+      },
+      {
+        "id": "09966703-2078-4914-a0e5-427008059b05",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050886663,
+        "visible": true
+      },
+      {
+        "id": "e916dc73-d051-42f8-94a9-145f438e36e2",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050888347,
+        "visible": true
+      },
+      {
+        "id": "21d7d9ed-b9ba-4042-93b2-62d32ed84dd9",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050892046,
+        "visible": true
+      },
+      {
+        "id": "b234d4e0-0195-44f6-900b-da63ae8cdd6d",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050894696,
+        "visible": true
+      },
+      {
+        "id": "22c6e798-a0f8-433a-a85f-ce962ac8de41",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050897129,
+        "visible": true
+      },
+      {
+        "id": "967e3fd4-42fd-4a6a-be10-94fba7615ff0",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050898779,
+        "visible": true
+      },
+      {
+        "id": "54c519fb-6339-414f-886f-2649893abc60",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050904696,
+        "visible": true
+      },
+      {
+        "id": "b4666e14-3a6b-4cf9-a292-0b6de70c62a8",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050906396,
+        "visible": true
+      },
+      {
+        "id": "946b8558-68cc-4e73-81ef-9dfdde50c5df",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050908103,
+        "visible": true
+      },
+      {
+        "id": "06503423-f650-4fab-a6c9-6e4bab7b1c00",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050909761,
+        "visible": true
+      },
+      {
+        "id": "8ae07bd0-a915-414b-ba89-0e19c257000b",
+        "source": "local",
+        "text": "节奏大约 187 BPM",
+        "at": 1792050911395,
+        "visible": true
+      },
+      {
+        "id": "ce77af09-f06c-4dd2-9b90-f93e6af84de5",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050915144,
+        "visible": true
+      },
+      {
+        "id": "78f6aef3-3c62-4295-8f2b-1964aa1fa7bc",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050918195,
+        "visible": true
+      },
+      {
+        "id": "a21389ca-07e2-4d06-9db3-b8b35c0c4e45",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050919879,
+        "visible": true
+      },
+      {
+        "id": "886e84f6-e3f6-4708-8fbb-e3dd74efc39d",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050922194,
+        "visible": true
+      },
+      {
+        "id": "4591bfee-74b8-49c6-b93a-0013a682b8c5",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050925278,
+        "visible": true
+      },
+      {
+        "id": "352343c7-d39d-4194-8b15-b53abd772e2c",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050928178,
+        "visible": true
+      },
+      {
+        "id": "489443c3-8490-4fcd-b4c1-856ce34ca058",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050929961,
+        "visible": true
+      },
+      {
+        "id": "4340bdd1-acee-4fee-901a-e21ad78b5f52_1",
+        "source": "ai",
+        "text": "音色清脆,高频部分突出",
+        "at": 1792050931262,
+        "visible": true
+      },
+      {
+        "id": "59f75403-1995-4f16-beb2-7f3ab777f4a0",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050933695,
+        "visible": true
+      },
+      {
+        "id": "e66a506c-8fc6-4818-8156-c01bbd643673",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050935343,
+        "visible": true
+      },
+      {
+        "id": "f369ff9a-7153-42cb-a531-61ccacb47751",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050938194,
+        "visible": true
+      },
+      {
+        "id": "967b2487-dd21-490c-85a8-25d531a0f451",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050940093,
+        "visible": true
+      },
+      {
+        "id": "6fb0b3e4-f7b7-4f4f-91ca-58f7f173c7a7",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050943694,
+        "visible": true
+      },
+      {
+        "id": "9539180c-69d3-4ece-b342-23ea949f7ecd",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050946427,
+        "visible": true
+      },
+      {
+        "id": "ba37a762-e86e-40a8-9efc-654d265cb949",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050948860,
+        "visible": true
+      },
+      {
+        "id": "77beaff5-895b-4bcb-9e6d-8e29ec398b5c",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050950361,
+        "visible": true
+      },
+      {
+        "id": "f95de3e0-9f14-444e-9bfa-b67315862bb8",
+        "source": "local",
+        "text": "节奏大约 197 BPM",
+        "at": 1792050951877,
+        "visible": true
+      },
+      {
+        "id": "e33c5ca4-9a31-46da-a463-c96bd3f78fdc",
+        "source": "local",
+        "text": "节奏大约 205 BPM",
+        "at": 1792050955860,
+        "visible": true
+      },
+      {
+        "id": "f719c48f-a418-43d7-9937-2278c9feee79",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050957343,
+        "visible": true
+      },
+      {
+        "id": "7ebd45d0-f46a-42b4-8733-afe8972e4c3b",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050958977,
+        "visible": true
+      },
+      {
+        "id": "2b1d2892-11b8-40c4-a493-3b0f366b88f6",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050960493,
+        "visible": true
+      },
+      {
+        "id": "04998f5c-000f-4def-8ef3-56d4ec3b8863",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050962175,
+        "visible": true
+      },
+      {
+        "id": "ce79ec6f-033c-43a7-91b9-e20b702c8459",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050967526,
+        "visible": true
+      },
+      {
+        "id": "f723c16a-e4ce-4f73-b802-c02613d12397",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050969026,
+        "visible": true
+      },
+      {
+        "id": "34f7b870-35cf-41fb-a507-229e6b12625a",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050970826,
+        "visible": true
+      },
+      {
+        "id": "e8d0b88c-d2d4-416f-9d89-a4ee7a75164a",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050972842,
+        "visible": true
+      },
+      {
+        "id": "3bfe2c22-4120-4a80-890e-2cf4ded0a832",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050978425,
+        "visible": true
+      },
+      {
+        "id": "141b1f07-b125-4c3b-9e93-c1d1c51c5052",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050980026,
+        "visible": true
+      },
+      {
+        "id": "3dfe5f4b-4ce9-4fd3-b8f0-5a4bca8d101e",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050981558,
+        "visible": true
+      },
+      {
+        "id": "b500709a-1874-4f7f-990e-46095596008c",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050983092,
+        "visible": true
+      },
+      {
+        "id": "1032b851-4af8-47b2-b662-c4bb72d4f34f",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050989409,
+        "visible": true
+      },
+      {
+        "id": "3b9abb1b-0395-4e70-a360-08d7a2d57f0f",
+        "source": "local",
+        "text": "声音轻了下来",
+        "at": 1792050991207,
+        "visible": true
+      },
+      {
+        "id": "89fd0e6e-b9ac-4a11-a848-4b0173ed5746",
+        "source": "local",
+        "text": "声音变得更有力了",
+        "at": 1792050992858,
+        "visible": true
+      },
+      {
+        "id": "2b7a79fb-75b9-4a60-bb78-537bfa1a30d5",
+        "source": "local",
+        "text": "声音刚刚有了新的变化",
+        "at": 1792050994409,
+        "visible": true
+      },
+      {
+        "id": "a00b4dc9-40c1-47cb-9d37-b39349277a5d",
+        "source": "local",
+        "text": "低频的声音更明显了",
+        "at": 1792050999941,
+        "visible": true
+      }
+    ],
+    "requests": [
+      {
+        "at": 1792050929747,
+        "body": {
+          "version": "2",
+          "requestId": "4340bdd1-acee-4fee-901a-e21ad78b5f52",
+          "audioSessionId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e",
+          "danmuRunId": "9e2ab7bb-cdbb-4eab-8c03-1637360c4fed",
+          "snapshot": {
+            "version": "2",
+            "audioSessionId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e",
+            "snapshotId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e_4235",
+            "startAt": 1792050927544,
+            "endAt": 1792050929741,
+            "sampleRate": 48000,
+            "frames": 103,
+            "stats": {
+              "rmsMean": 0.040276038471211736,
+              "rmsPeak": 0.10301478821924846,
+              "centroidHzMean": 864.8803611918883,
+              "bandwidthHzMean": 1116.6075492512327,
+              "rolloffHzMean": 1676.5776699029127,
+              "flatnessMean": 0.002137237003123938,
+              "fluxMean": 0.10557881424291485,
+              "onsetRate": 3.6413290851160673,
+              "tempo": {
+                "bpm": 189.75903614457852,
+                "confidence": 0.9010327022375458
+              },
+              "hpss": {
+                "harmonic": 0.28613233558091455,
+                "percussive": 0.7138676644190854
+              }
+            },
+            "validity": {
+              "rms": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "0..1"
+              },
+              "centroidHz": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "Hz"
+              },
+              "bandwidthHz": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "Hz"
+              },
+              "rolloffHz": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "Hz"
+              },
+              "flatness": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "0..1"
+              },
+              "flux": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "0..1"
+              },
+              "tempo": {
+                "state": "valid",
+                "source": "heuristic",
+                "unit": "BPM"
+              },
+              "hpss": {
+                "state": "valid",
+                "source": "dsp",
+                "unit": "ratio"
+              },
+              "classification": {
+                "state": "valid",
+                "source": "model",
+                "unit": "score"
+              }
+            },
+            "model": {
+              "version": "yamnet-float32-1",
+              "capturedAt": 1792050928952,
+              "categories": [
+                {
+                  "label": "Music",
+                  "score": 0.99609375
+                },
+                {
+                  "label": "Silence",
+                  "score": 0.1484375
+                },
+                {
+                  "label": "Music",
+                  "score": 0.08203125
+                },
+                {
+                  "label": "Piano",
+                  "score": 0.05859375
+                },
+                {
+                  "label": "Keyboard (musical)",
+                  "score": 0.04296875
+                },
+                {
+                  "label": "Musical instrument",
+                  "score": 0.03125
+                },
+                {
+                  "label": "Sound effect",
+                  "score": 0.03125
+                },
+                {
+                  "label": "Electric piano",
+                  "score": 0.015625
+                },
+                {
+                  "label": "Happy music",
+                  "score": 0.01171875
+                },
+                {
+                  "label": "Video game music",
+                  "score": 0.01171875
+                },
+                {
+                  "label": "Bowed string instrument",
+                  "score": 0.01171875
+                },
+                {
+                  "label": "Speech",
+                  "score": 0.01171875
+                },
+                {
+                  "label": "Violin, fiddle",
+                  "score": 0.0078125
+                },
+                {
+                  "label": "Boing",
+                  "score": 0.0078125
+                },
+                {
+                  "label": "Tender music",
+                  "score": 0.00390625
+                },
+                {
+                  "label": "Soundtrack music",
+                  "score": 0.00390625
+                }
+              ],
+              "voiceProbability": 0.01171875,
+              "instrument": null
+            },
+            "capabilities": [
+              "rms",
+              "spectrum.Hz",
+              "flux.normalized",
+              "mfcc",
+              "chroma",
+              "contrast.dB",
+              "tempo.heuristic",
+              "hpss.median",
+              "yamnet"
+            ]
+          },
+          "locale": "zh-CN",
+          "history": [
+            "声音刚刚有了新的变化",
+            "声音变得更有力了",
+            "低频的声音更明显了",
+            "声音轻了下来",
+            "声音刚刚有了新的变化",
+            "节奏大约 187 BPM",
+            "声音变得更有力了",
+            "声音轻了下来",
+            "声音刚刚有了新的变化",
+            "低频的声音更明显了",
+            "声音变得更有力了",
+            "声音轻了下来"
+          ]
+        },
+        "aborted": true,
+        "events": [
+          {
+            "at": 1792050930040,
+            "event": {
+              "type": "accepted",
+              "requestId": "4340bdd1-acee-4fee-901a-e21ad78b5f52"
+            }
+          },
+          {
+            "at": 1792050931235,
+            "event": {
+              "type": "comment",
+              "requestId": "4340bdd1-acee-4fee-901a-e21ad78b5f52",
+              "comment": {
+                "commentId": "4340bdd1-acee-4fee-901a-e21ad78b5f52_1",
+                "audioSessionId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e",
+                "danmuRunId": "9e2ab7bb-cdbb-4eab-8c03-1637360c4fed",
+                "snapshotId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e_4235",
+                "source": "ai",
+                "kind": "regular",
+                "text": "音色清脆,高频部分突出",
+                "createdAt": 1792050931232,
+                "expiresAt": 1792050941232
+              }
+            }
+          }
+        ],
+        "status": 200,
+        "readerCancelled": true
+      }
+    ],
+    "errors": [],
+    "lastModel": {
+      "version": "yamnet-float32-1",
+      "capturedAt": 1792051001163,
+      "categories": [
+        {
+          "label": "Music",
+          "score": 0.9921875
+        },
+        {
+          "label": "Silence",
+          "score": 0.1484375
+        },
+        {
+          "label": "Music",
+          "score": 0.08203125
+        },
+        {
+          "label": "Sound effect",
+          "score": 0.03125
+        },
+        {
+          "label": "Piano",
+          "score": 0.01953125
+        },
+        {
+          "label": "Happy music",
+          "score": 0.015625
+        },
+        {
+          "label": "Keyboard (musical)",
+          "score": 0.015625
+        },
+        {
+          "label": "Electric piano",
+          "score": 0.01171875
+        },
+        {
+          "label": "Musical instrument",
+          "score": 0.01171875
+        },
+        {
+          "label": "Speech",
+          "score": 0.01171875
+        },
+        {
+          "label": "Video game music",
+          "score": 0.0078125
+        },
+        {
+          "label": "Soundtrack music",
+          "score": 0.0078125
+        },
+        {
+          "label": "Theme music",
+          "score": 0.0078125
+        },
+        {
+          "label": "Background music",
+          "score": 0.0078125
+        },
+        {
+          "label": "Exciting music",
+          "score": 0.00390625
+        },
+        {
+          "label": "Tender music",
+          "score": 0.00390625
+        }
+      ],
+      "voiceProbability": 0.01171875,
+      "instrument": null
+    },
+    "startedAt": 1792050837340,
+    "toggleOff": {
+      "at": 1792050931299,
+      "shownAI": 1,
+      "requests": 1,
+      "button": "true"
+    }
+  },
+  "model": {
+    "version": "yamnet-float32-1",
+    "capturedAt": 1792051001163,
+    "categories": [
+      {
+        "label": "Music",
+        "score": 0.9921875
+      },
+      {
+        "label": "Silence",
+        "score": 0.1484375
+      },
+      {
+        "label": "Music",
+        "score": 0.08203125
+      },
+      {
+        "label": "Sound effect",
+        "score": 0.03125
+      },
+      {
+        "label": "Piano",
+        "score": 0.01953125
+      },
+      {
+        "label": "Happy music",
+        "score": 0.015625
+      },
+      {
+        "label": "Keyboard (musical)",
+        "score": 0.015625
+      },
+      {
+        "label": "Electric piano",
+        "score": 0.01171875
+      },
+      {
+        "label": "Musical instrument",
+        "score": 0.01171875
+      },
+      {
+        "label": "Speech",
+        "score": 0.01171875
+      },
+      {
+        "label": "Video game music",
+        "score": 0.0078125
+      },
+      {
+        "label": "Soundtrack music",
+        "score": 0.0078125
+      },
+      {
+        "label": "Theme music",
+        "score": 0.0078125
+      },
+      {
+        "label": "Background music",
+        "score": 0.0078125
+      },
+      {
+        "label": "Exciting music",
+        "score": 0.00390625
+      },
+      {
+        "label": "Tender music",
+        "score": 0.00390625
+      }
+    ],
+    "voiceProbability": 0.01171875,
+    "instrument": null
+  },
+  "metrics": {
+    "audioSessionId": "b87cb9e8-a48c-4a17-917f-bab8ba2b728e",
+    "observedSeconds": 161,
+    "visualSamples": 4478,
+    "visualP95Ms": 32,
+    "featureSamples": 7461,
+    "dspComputeP95Ms": 16,
+    "captureToFeatureP95Ms": 26,
+    "featureToDrawP95Ms": 22,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0.2546583850931677,
+    "fpsMedian": 29,
+    "localFirstP95Ms": 3,
+    "aiFirstP95Ms": 1488
+  },
+  "note": null,
+  "aiButton": "false",
+  "afterStop": {
+    "contexts": 0,
+    "workers": 0,
+    "media": 0,
+    "comments": 0,
+    "canvas": 1
+  },
+  "summary": {
+    "actualFirstAiVisibleMs": 1515,
+    "shownAiBeforeOff": 1,
+    "shownAiAfterOff": 1,
+    "requestAbortedAfterOff": true,
+    "readerCancelled": true,
+    "firstVisibleBeforeDone": true,
+    "singleCallOnly": true,
+    "afterStopResourcesReleased": true,
+    "batchNote": "Intentionally cancelled after first visible AI comment to exercise shutdown; this run is not a complete-batch or stable-p95 sample."
+  },
+  "testQuota": {
+    "calls": 1,
+    "chargedOrReservedTokens": 4034,
+    "actualInvoiceUsageKnown": false
+  }
+}

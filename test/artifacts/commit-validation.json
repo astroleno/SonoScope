@@ -1,0 +1,28 @@
+{
+  "testedAt": "2026-10-15T08:05:55.227572+00:00",
+  "buildId": "4p8tuynwsdSywOG7Q0DtJ",
+  "node": "22.22.0",
+  "newRegressionTests": 80,
+  "legacyMockTests": 47,
+  "packageBuildAndDts": "passed",
+  "lint": "passed",
+  "typeChecks": "passed (all workspaces, sequential rerun after diagnostic interruption)",
+  "testSourceTypeCheck": "passed",
+  "productionBuild": "passed",
+  "standaloneRoutes": 12,
+  "staticFiles": 44,
+  "productionAuditKnownVulnerabilities": 0,
+  "credentialScan": "passed",
+  "realMusicAndCloudCancellation": "commit-browser-music.json",
+  "singleColdStartup": "commit-browser-cold.json",
+  "releaseAccepted": false,
+  "outstanding": [
+    "Normal-power/normal-load desktop 30-minute FPS acceptance",
+    "Native microphone and AudioWorklet device acceptance",
+    "Diverse music/AI quality, stable first-visible p95, batch completion and production limits",
+    "Target Linux x64 package and actual HTTPS/NDJSON proxy validation",
+    "Legacy credential revocation not verified"
+  ],
+  "phoneAcceptance": "User agreed to defer",
+  "published": false
+}

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { FeatureFrame } from '@sonoscope/core';
 
 interface Features {
   rms?: number;
@@ -40,6 +41,9 @@ interface AudioWeights {
 }
 
 interface VisualizerProps {
+  liveFrame?: React.RefObject<FeatureFrame | null>;
+  onRendered?: (frame: FeatureFrame | null, at: number) => void;
+  reducedMotion?: boolean;
   audioLevel: number; // 0 ~ 1
   running: boolean;
   preset?: 'pulse' | 'accretion' | 'spiral' | 'mosaic' | 'wave' | 'mochi';
@@ -69,6 +73,9 @@ interface VisualizerProps {
 }
 
 export default function Visualizer({
+  liveFrame,
+  onRendered,
+  reducedMotion = false,
   audioLevel,
   running,
   preset = 'pulse',
@@ -79,6 +86,13 @@ export default function Visualizer({
   accretionControls,
   mosaicControls,
 }: VisualizerProps) {
+  const [renderError, setRenderError] = useState(false);
+  const motionRef = useRef(reducedMotion);
+  const liveFrameRef = useRef(liveFrame);
+  const renderedRef = useRef(onRendered);
+  useEffect(() => { renderedRef.current = onRendered; }, [onRendered]);
+  useEffect(() => { liveFrameRef.current = liveFrame; }, [liveFrame]);
+  useEffect(() => { motionRef.current = reducedMotion; const p = p5InstanceRef.current; if (p) { if (reducedMotion) { p.noLoop(); p.redraw(); } else p.loop(); } }, [reducedMotion]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const p5InstanceRef = useRef<any | null>(null);
   const levelRef = useRef<number>(0);
@@ -126,6 +140,8 @@ export default function Visualizer({
   useEffect(() => {
     if (!containerRef.current) return;
     let isCancelled = false;
+    setRenderError(false);
+    const scheduled: (() => void)[] = [];
 
     (async () => {
       try {
@@ -152,9 +168,10 @@ export default function Visualizer({
         // 预取其余模块（非阻塞）
         const ric = (cb: () => void) => {
           if (typeof (window as any).requestIdleCallback === 'function') {
-            (window as any).requestIdleCallback(cb);
+            const id = (window as any).requestIdleCallback(cb);
+            scheduled.push(() => (window as any).cancelIdleCallback?.(id));
           } else {
-            setTimeout(cb, 1000);
+            const id = setTimeout(cb, 1000); scheduled.push(() => clearTimeout(id));
           }
         };
         ric(async () => { if (!pulseMod) pulseMod = await loadPulse().catch(() => null); });
@@ -164,6 +181,7 @@ export default function Visualizer({
         ric(async () => { if (!waveMod) waveMod = await loadWave().catch(() => null); });
         ric(async () => { if (!mochiMod) mochiMod = await loadMochi().catch(() => null); });
 
+        if (isCancelled || !containerRef.current) return;
         const sketch = (p: any) => {
           // 简易移动端检测：用于性能模式（降帧/减粒子）
           const ua = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase() : '';
@@ -234,8 +252,10 @@ export default function Visualizer({
             p.pixelDensity(1);
             // 降低移动端帧率，优先保证交互流畅
             p.frameRate(isMobile ? 45 : 60);
+            if (motionRef.current) p.noLoop();
             // 某些布局在首帧后才稳定，延迟一次 resize 保证满屏
-            try { setTimeout(() => { p.resizeCanvas(p.windowWidth, p.windowHeight); }, 50); } catch (_) {}
+            const resizeTimer = setTimeout(() => { if (!isCancelled) p.resizeCanvas(p.windowWidth, p.windowHeight); }, 50);
+            scheduled.push(() => clearTimeout(resizeTimer));
 
             if (mode === 'accretion') {
               try {
@@ -321,14 +341,18 @@ export default function Visualizer({
           };
 
           p.draw = () => {
+            try {
             const mode = presetRef.current;
-            const rawLvl = levelRef.current;
-            const f = featuresRef.current;
+            const current = liveFrameRef.current?.current;
+            const rawLvl = current?.values.rms ?? levelRef.current;
+            const f = current ? {
+              rms: current.values.rms, spectralCentroid: current.values.centroidHz, spectralFlux: current.values.flux,
+              spectralFlatness: current.values.flatness, zcr: current.values.zcr, mfcc: current.values.mfcc,
+              voiceProb: current.model?.voiceProbability, percussiveRatio: current.values.hpss?.percussive, harmonicRatio: current.values.hpss?.harmonic,
+              bandLow: current.values.bands.low, bandMid: current.values.bands.mid, bandHigh: current.values.bands.high, bandColumns: current.values.bands.columns,
+              tempo: current.values.tempo,
+            } : featuresRef.current;
             
-            // 调试日志 - 每100帧输出一次
-            if (Math.random() < 0.01) {
-              console.log('Visualizer - 模式:', mode, '音频级别:', rawLvl.toFixed(3), '特征:', f);
-            }
 
             // 频谱优先模式：更激进的响应，减少平滑
             const isSpectrumPriority = spectrumPriorityRef.current;
@@ -561,7 +585,7 @@ export default function Visualizer({
                 const high = Math.max(0, Math.min(1, audioModel.bandHigh));
                 const energy = Math.max(0, Math.min(1, audioModel.level));
                 columns = Array.from({ length: segs }, (_, idx) => {
-                  const t = segs === 1 ? 0 : idx / (segs - 1);
+                  const t = idx / (segs - 1);
                   const spectrum = t < 0.5
                     ? low + (mid - low) * (t / 0.5)
                     : mid + (high - mid) * ((t - 0.5) / 0.5);
@@ -803,6 +827,8 @@ export default function Visualizer({
               const stateText = runningRef.current ? label : 'Paused';
               p.text(stateText, x, yBase);
             }
+            renderedRef.current?.(current ?? null, Date.now());
+            } catch { p.noLoop(); setRenderError(true); }
           };
         };
 
@@ -810,11 +836,13 @@ export default function Visualizer({
         p5InstanceRef.current = instance;
       } catch (e) {
         console.error('Visualizer 初始化失败:', e);
+        if (!isCancelled) setRenderError(true);
       }
     })();
 
     return () => {
       isCancelled = true;
+      for (const cancel of scheduled) cancel();
       try {
         if (p5InstanceRef.current) {
           p5InstanceRef.current.remove();
@@ -826,5 +854,5 @@ export default function Visualizer({
     };
   }, [preset]);
 
-  return <div ref={containerRef} className="absolute inset-0" aria-hidden />;
+  return <><div ref={containerRef} className="absolute inset-0" aria-hidden />{renderError && <p className="visual-error" role="alert">画面暂不可用，请切换预设或刷新。</p>}</>;
 }

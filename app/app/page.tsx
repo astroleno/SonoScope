@@ -1,6 +1,3 @@
-import { redirect } from 'next/navigation';
+import SonoScopeExperience from '../components/sonoscope-experience';
 
-export default function Page() {
-  redirect('/standalone-client');
-  return null;
-}
+export default function Page() { return <SonoScopeExperience />; }

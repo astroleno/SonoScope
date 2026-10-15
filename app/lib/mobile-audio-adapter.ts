@@ -41,7 +41,7 @@ export class MobileAudioAdapter {
    * 检测移动设备类型
    */
   private detectMobileDevice(): MobileInfo {
-    const userAgent = navigator.userAgent.toLowerCase();
+    const userAgent = typeof navigator === 'undefined' ? '' : navigator.userAgent.toLowerCase();
 
     // iOS 检测
     const isIOS = /ipad|iphone|ipod/.test(userAgent);

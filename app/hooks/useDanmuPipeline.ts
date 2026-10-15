@@ -3,7 +3,7 @@
  * 管理弹幕管线的生命周期和状态
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { EventBus } from '../lib/event-bus';
 import { ConsoleTamer } from '../lib/console-tamer';
 import { DanmuEngine } from '../lib/danmu-engine';
@@ -28,7 +28,9 @@ export interface DanmuPipelineState {
 }
 
 export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
-  const { enabled = true, autoStart = true, useSimple = true, ...pipelineConfig } = options;
+  const { enabled = true, autoStart = true, useSimple = true, ...configValues } = options;
+  const configKey = JSON.stringify(configValues);
+  const pipelineConfig = useMemo<PipelineConfig>(() => JSON.parse(configKey), [configKey]);
 
   const [state, setState] = useState<DanmuPipelineState>({
     isActive: false,
@@ -42,10 +44,12 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
   const danmuEngineRef = useRef<DanmuEngine | null>(null);
   const pipelineRef = useRef<DanmuPipelineEnhanced | DanmuPipelineSimple | null>(null);
   const initializedRef = useRef(false);
+  const [isReady, setReady] = useState(false);
 
   // 初始化弹幕引擎和管线
   useEffect(() => {
-    if (initializedRef.current) return;
+    if (!enabled || initializedRef.current) return;
+    let cancelled = false;
 
     const initPipeline = async () => {
       try {
@@ -56,6 +60,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         // 创建弹幕引擎
         const danmuEngine = new DanmuEngine(eventBus);
         await danmuEngine.initialize();
+        if (cancelled) { danmuEngine.dispose(); return; }
         danmuEngineRef.current = danmuEngine;
 
         // 创建弹幕管线（根据配置选择版本）
@@ -65,6 +70,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         pipelineRef.current = pipeline;
 
         initializedRef.current = true;
+        setReady(true);
         ConsoleTamer.info('danmu.init', '弹幕管线初始化完成');
         ConsoleTamer.debug('danmu.init', '🎵 弹幕管线状态:', {
           isReady: pipelineRef.current?.isReady,
@@ -78,6 +84,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     initPipeline();
 
     return () => {
+      cancelled = true;
       if (pipelineRef.current) {
         pipelineRef.current.stop();
       }
@@ -86,8 +93,9 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         danmuEngineRef.current.dispose();
       }
       initializedRef.current = false;
+      setReady(false);
     };
-  }, [enabled, ...Object.values(pipelineConfig)]);
+  }, [enabled, pipelineConfig, useSimple]);
 
   // 启动/停止管线
   const start = () => {
@@ -132,8 +140,6 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (danmuEngineRef.current) {
       danmuEngineRef.current.stop();
     }
-    // 重置初始化状态，允许重新启动
-    initializedRef.current = false;
     setState(prev => ({ ...prev, isActive: false }));
   };
 
@@ -215,7 +221,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (autoStart && enabled && initializedRef.current && !state.isActive) {
       start();
     }
-  }, [autoStart, enabled, state.isActive]);
+  }, [autoStart, enabled, state.isActive, isReady]);
 
   const returnValue = {
     ...state,
@@ -223,18 +229,8 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     stop,
     trigger,
     handleAudioFeatures,
-    isReady: initializedRef.current,
+    isReady,
   };
-  
-  // 调试：记录Hook的返回值（降低频率，每5秒记录一次）
-  if (
-    typeof window !== 'undefined' && (
-    !(window as any).__lastHookReturnLog ||
-    Date.now() - (window as any).__lastHookReturnLog > 5000
-  )) {
-    (window as any).__lastHookReturnLog = Date.now();
-    console.log('🎵 Hook返回值:', returnValue);
-  }
   
   return returnValue;
 }

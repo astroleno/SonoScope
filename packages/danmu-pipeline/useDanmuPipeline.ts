@@ -3,8 +3,8 @@
  * 管理弹幕管线的生命周期和状态
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { EventBus } from '@sonoscope/core';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { EventBus } from './event-bus';
 import { DanmuEngine } from './danmu-engine';
 import { DanmuPipeline, PipelineConfig } from './danmu-pipeline';
 
@@ -24,8 +24,10 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
   const {
     enabled = true,
     autoStart = true,
-    ...pipelineConfig
+    ...configValues
   } = options;
+  const configKey = JSON.stringify(configValues);
+  const pipelineConfig = useMemo<PipelineConfig>(() => JSON.parse(configKey), [configKey]);
 
   const [state, setState] = useState<DanmuPipelineState>({
     isActive: false,
@@ -38,10 +40,12 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
   const danmuEngineRef = useRef<DanmuEngine | null>(null);
   const pipelineRef = useRef<DanmuPipeline | null>(null);
   const initializedRef = useRef(false);
+  const [isReady, setReady] = useState(false);
 
   // 初始化弹幕引擎和管线
   useEffect(() => {
     if (!enabled || initializedRef.current) return;
+    let cancelled = false;
 
     const initPipeline = async () => {
       try {
@@ -52,6 +56,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         // 创建弹幕引擎
         const danmuEngine = new DanmuEngine(eventBus);
         await danmuEngine.initialize();
+        if (cancelled) { danmuEngine.dispose(); return; }
         danmuEngineRef.current = danmuEngine;
 
         // 创建弹幕管线
@@ -59,6 +64,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         pipelineRef.current = pipeline;
 
         initializedRef.current = true;
+        setReady(true);
         console.log('弹幕管线初始化完成');
       } catch (error) {
         console.error('弹幕管线初始化失败:', error);
@@ -68,6 +74,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     initPipeline();
 
     return () => {
+      cancelled = true;
       if (pipelineRef.current) {
         pipelineRef.current.stop();
       }
@@ -76,8 +83,9 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
         danmuEngineRef.current.dispose();
       }
       initializedRef.current = false;
+      setReady(false);
     };
-  }, [enabled, ...Object.values(pipelineConfig)]);
+  }, [enabled, pipelineConfig]);
 
   // 启动/停止管线
   const start = () => {
@@ -134,7 +142,7 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     if (autoStart && enabled && initializedRef.current && !state.isActive) {
       start();
     }
-  }, [autoStart, enabled, state.isActive]);
+  }, [autoStart, enabled, state.isActive, isReady]);
 
   return {
     ...state,
@@ -142,6 +150,6 @@ export function useDanmuPipeline(options: UseDanmuPipelineOptions = {}) {
     stop,
     trigger,
     handleAudioFeatures,
-    isReady: initializedRef.current,
+    isReady,
   };
 }

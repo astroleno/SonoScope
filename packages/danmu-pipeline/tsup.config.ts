@@ -1,9 +1,9 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['useDanmuPipeline.ts', 'danmu-pipeline.ts', 'danmu-engine.ts'],
+  entry: ['index.ts'],
   format: ['cjs', 'esm'],
-  dts: false, // 暂时禁用DTS生成
+  dts: true,
   clean: true,
   sourcemap: true,
   treeshake: true,

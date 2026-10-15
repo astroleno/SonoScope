@@ -1,0 +1,309 @@
+{
+  "testedAt": "2026-10-15T04:23:21.553Z",
+  "manual": {
+    "before": {
+      "draws": 8,
+      "id": "dfd81fc8-3409-4876-a4f3-a60dd4068486",
+      "transform": "translate3d(607.219px, 205.742px, 0px)"
+    },
+    "after": {
+      "draws": 8,
+      "transform": "translate3d(607.219px, 205.742px, 0px)",
+      "copies": 0
+    }
+  },
+  "system": {
+    "before": {
+      "draws": 23,
+      "classifications": 5
+    },
+    "after": {
+      "draws": 23,
+      "copies": 0
+    }
+  },
+  "rapidPresets": {
+    "canvases": 1,
+    "errors": [],
+    "resources": {
+      "createdContexts": 1,
+      "activeContexts": 0,
+      "createdWorkers": 2,
+      "activeWorkers": 0,
+      "activeMedia": 0,
+      "commentNodes": 0,
+      "canvases": 1
+    }
+  },
+  "microphonePermission": "prompt",
+  "layouts": [
+    {
+      "label": "portrait",
+      "viewport": [
+        320,
+        568
+      ],
+      "scrollWidth": 320,
+      "headerBottom": 194,
+      "footerTop": 390,
+      "presetLabels": [
+        "Wave",
+        "Accretion",
+        "Spiral",
+        "Mosaic",
+        "Mochi"
+      ],
+      "comments": [
+        {
+          "id": "53293226-7540-426d-9b35-0ef1117e826e",
+          "source": "local",
+          "text": "声音进来了,开始听这一段",
+          "at": 145326.24499999732,
+          "box": {
+            "x": 114.72445678710938,
+            "y": 206,
+            "width": 187.890625,
+            "height": 37,
+            "top": 206,
+            "right": 302.6150817871094,
+            "bottom": 243,
+            "left": 114.72445678710938
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "c7424451-90b8-4e6a-9594-8fb2bed88e16",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 146851.46499999613,
+          "box": {
+            "x": 161.94247436523438,
+            "y": 253,
+            "width": 142,
+            "height": 37,
+            "top": 253,
+            "right": 303.9424743652344,
+            "bottom": 290,
+            "left": 161.94247436523438
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "159b739d-9c11-4b61-bab5-a7af8bd6e6cc",
+          "source": "local",
+          "text": "声音变得更有力了",
+          "at": 148366.5850000009,
+          "box": {
+            "x": 161.87106323242188,
+            "y": 300,
+            "width": 142,
+            "height": 37,
+            "top": 300,
+            "right": 303.8710632324219,
+            "bottom": 337,
+            "left": 161.87106323242188
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "visibleIds": [
+        "53293226-7540-426d-9b35-0ef1117e826e",
+        "c7424451-90b8-4e6a-9594-8fb2bed88e16",
+        "159b739d-9c11-4b61-bab5-a7af8bd6e6cc"
+      ],
+      "resources": {
+        "createdContexts": 2,
+        "activeContexts": 1,
+        "createdWorkers": 4,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 3,
+        "canvases": 1
+      },
+      "exposedCommentNames": 0
+    },
+    {
+      "label": "landscape",
+      "viewport": [
+        740,
+        320
+      ],
+      "scrollWidth": 740,
+      "headerBottom": 105,
+      "footerTop": 224,
+      "presetLabels": [
+        "Wave",
+        "Accretion",
+        "Spiral",
+        "Mosaic",
+        "Mochi"
+      ],
+      "comments": [
+        {
+          "id": "e99b099c-1cb1-4ab7-9f6c-f04596395e75",
+          "source": "local",
+          "text": "声音进来了,开始听这一段",
+          "at": 154283.3350000009,
+          "box": {
+            "x": 535.5978393554688,
+            "y": 117,
+            "width": 187.890625,
+            "height": 37,
+            "top": 117,
+            "right": 723.4884643554688,
+            "bottom": 154,
+            "left": 535.5978393554688
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "1c41d1c8-01f7-446b-b80c-55876ad37c1a",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 155799.1099999994,
+          "box": {
+            "x": 581.3366088867188,
+            "y": 164,
+            "width": 142,
+            "height": 37,
+            "top": 164,
+            "right": 723.3366088867188,
+            "bottom": 201,
+            "left": 581.3366088867188
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "8e1d1582-098b-4af3-9116-2750b6bd6e02",
+          "source": "local",
+          "text": "声音变得更有力了",
+          "at": 157332.86999999732,
+          "box": {
+            "x": 579.2134399414062,
+            "y": 117,
+            "width": 142,
+            "height": 37,
+            "top": 117,
+            "right": 721.2134399414062,
+            "bottom": 154,
+            "left": 579.2134399414062
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "visibleIds": [
+        "1c41d1c8-01f7-446b-b80c-55876ad37c1a",
+        "8e1d1582-098b-4af3-9116-2750b6bd6e02"
+      ],
+      "resources": {
+        "createdContexts": 3,
+        "activeContexts": 1,
+        "createdWorkers": 6,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 2,
+        "canvases": 1
+      },
+      "exposedCommentNames": 0
+    },
+    {
+      "label": "200-percent-equivalent-reflow",
+      "viewport": [
+        735,
+        361
+      ],
+      "scrollWidth": 735,
+      "headerBottom": 105,
+      "footerTop": 265,
+      "presetLabels": [
+        "Wave",
+        "Accretion",
+        "Spiral",
+        "Mosaic",
+        "Mochi"
+      ],
+      "comments": [
+        {
+          "id": "0f5310ad-39f3-4d15-87d5-be1d11191cdf",
+          "source": "local",
+          "text": "声音进来了,开始听这一段",
+          "at": 160832.0099999979,
+          "box": {
+            "x": 530.638427734375,
+            "y": 117,
+            "width": 187.890625,
+            "height": 37,
+            "top": 117,
+            "right": 718.529052734375,
+            "bottom": 154,
+            "left": 530.638427734375
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "8648a40e-48f5-4631-9d34-d1ce2e8e5635",
+          "source": "local",
+          "text": "像是有人声进来了",
+          "at": 162347.2800000012,
+          "box": {
+            "x": 576.3701782226562,
+            "y": 164,
+            "width": 142,
+            "height": 37,
+            "top": 164,
+            "right": 718.3701782226562,
+            "bottom": 201,
+            "left": 576.3701782226562
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        },
+        {
+          "id": "b7a345e4-93f8-4c4d-baa0-64218111885f",
+          "source": "local",
+          "text": "声音变得更有力了",
+          "at": 163864.3900000006,
+          "box": {
+            "x": 576.3758544921875,
+            "y": 211,
+            "width": 142,
+            "height": 37,
+            "top": 211,
+            "right": 718.3758544921875,
+            "bottom": 248,
+            "left": 576.3758544921875
+          },
+          "inViewport": true,
+          "clearOfControls": true
+        }
+      ],
+      "visibleIds": [
+        "0f5310ad-39f3-4d15-87d5-be1d11191cdf",
+        "8648a40e-48f5-4631-9d34-d1ce2e8e5635",
+        "b7a345e4-93f8-4c4d-baa0-64218111885f"
+      ],
+      "resources": {
+        "createdContexts": 4,
+        "activeContexts": 1,
+        "createdWorkers": 8,
+        "activeWorkers": 2,
+        "activeMedia": 1,
+        "commentNodes": 3,
+        "canvases": 1
+      },
+      "exposedCommentNames": 0
+    }
+  ],
+  "pinch": {
+    "scale": 2.0000007152557373,
+    "viewportMeta": "width=device-width, initial-scale=1"
+  },
+  "scopeNote": "Chromium desktop, device metrics and native pinch emulation; not physical phone or microphone approval. UI behavior is unchanged by the later separate timing counters."
+}

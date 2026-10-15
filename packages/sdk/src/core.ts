@@ -1,245 +1,39 @@
-import { 
-  CoreConfig, 
-  CoreEvents, 
-  AudioSource, 
-  VisualizationPreset, 
-  VisualizationControls,
-  AudioFeatures,
-  DanmuEvent,
-  ThemeTokens,
-  Transport
-} from './types';
-import { AudioAdapter, WebAudioAdapter } from './adapters/audio';
-import { VisualAdapter, P5VisualAdapter } from './adapters/visual';
-import { DanmuAdapter, SimpleDanmuAdapter } from './adapters/danmu-simple';
-import { MemoryTransport } from './transports/memory';
-import { WorkerTransport } from './transports/worker';
+import type { CoreConfig, CoreEvents, AudioSource, VisualizationPreset, VisualizationControls, AudioFeatures, ThemeTokens } from './types';
+import type { VisualAdapter } from './adapters/visual';
+import { SonoRuntime, type RuntimeOptions } from './runtime';
+import { toLegacyFeatures } from './adapters/audio';
 
+/** Compatibility facade over the shared runtime; no independent audio/danmu engine. */
 export class Core {
+  readonly runtime: SonoRuntime;
   private config: CoreConfig;
-  private transport: Transport;
-  private audioAdapter: AudioAdapter;
-  private visualAdapter: VisualAdapter | null = null;
-  private danmuAdapter: DanmuAdapter;
-  private eventHandlers = new Map<keyof CoreEvents, Set<CoreEvents[keyof CoreEvents]>>();
-  private isInitialized = false;
-  private isRunning = false;
-  private currentFeatures: AudioFeatures | null = null;
-
-  constructor(config: CoreConfig = {}) {
-    this.config = {
-      sensitivity: 1.0,
-      themeTokens: this.getDefaultThemeTokens(),
-      ...config,
-    };
-
-    // Initialize transport
-    if (config.transports?.type === 'worker') {
-      this.transport = new WorkerTransport(config.transports.options?.workerScript);
-    } else {
-      this.transport = new MemoryTransport();
-    }
-
-    // Initialize adapters
-    this.audioAdapter = new WebAudioAdapter();
-    this.danmuAdapter = new SimpleDanmuAdapter();
-
-    // Set up event forwarding
-    this.setupEventForwarding();
+  private source: AudioSource = { type: 'device' };
+  private visual: VisualAdapter | null = null;
+  private handlers = new Map<keyof CoreEvents, Set<CoreEvents[keyof CoreEvents]>>();
+  private ready = false;
+  constructor(config: CoreConfig = {}, options: Partial<RuntimeOptions> = {}) {
+    this.config = config;
+    this.runtime = new SonoRuntime({ ...options, sink: options.sink ?? { clear() {}, show: c => { this.emit('danmu', { id: c.commentId, command: { text: c.text, style: c.source, duration: 6500 }, timestamp: c.createdAt }); return true; } } });
+    this.runtime.features.onFrame(frame => this.emit('features', toLegacyFeatures(frame)));
+    this.runtime.audio.subscribeState(state => { if (state.error) this.emit('error', new Error(state.error.message)); });
   }
-
-  private getDefaultThemeTokens(): ThemeTokens {
-    return {
-      neonBlue: '#00D4FF',
-      neonPurple: '#8B5CF6',
-      neonPink: '#FF006E',
-      neonGreen: '#39FF14',
-      bgDark: '#0A0A0F',
-      bgMedium: '#1A1A2E',
-      bgLight: '#16213E',
-      textPrimary: '#ffffff',
-      textSecondary: '#cccccc',
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-      accentColor: '#00D4FF',
-    };
-  }
-
-  private setupEventForwarding(): void {
-    // Audio features
-    this.audioAdapter.onFeatures((features) => {
-      this.currentFeatures = features;
-      this.emit('features', features);
-      
-      // Forward to danmu adapter
-      if (this.danmuAdapter && this.isRunning) {
-        (this.danmuAdapter as any).handleAudioFeatures(features.rms || 0, features);
-      }
-    });
-
-    // Danmu events
-    this.danmuAdapter.onDanmu((event) => {
-      this.emit('danmu', event);
-    });
-  }
-
-  async init(): Promise<void> {
-    if (this.isInitialized) return;
-
-    try {
-      // Initialize danmu adapter
-      this.danmuAdapter.start();
-      
-      this.isInitialized = true;
-      this.emit('ready');
-      this.log('info', 'Core initialized successfully');
-    } catch (error) {
-      this.emit('error', error as Error);
-      throw error;
-    }
-  }
-
-  async start(): Promise<void> {
-    if (!this.isInitialized) {
-      await this.init();
-    }
-
-    if (this.isRunning) return;
-
-    try {
-      this.isRunning = true;
-      await this.audioAdapter.start();
-      this.log('info', 'Core started');
-    } catch (error) {
-      this.isRunning = false;
-      this.emit('error', error as Error);
-      throw error;
-    }
-  }
-
-  stop(): void {
-    if (!this.isRunning) return;
-
-    this.isRunning = false;
-    this.audioAdapter.stop();
-    this.danmuAdapter.stop();
-    this.emit('stopped');
-    this.log('info', 'Core stopped');
-  }
-
-  dispose(): void {
-    this.stop();
-    this.audioAdapter.dispose();
-    this.danmuAdapter.dispose();
-    this.transport.dispose();
-    this.eventHandlers.clear();
-    this.isInitialized = false;
-  }
-
-  // Audio methods
-  async setAudioSource(source: AudioSource): Promise<void> {
-    await this.audioAdapter.setSource(source);
-  }
-
-  // Visual methods
-  setVisualAdapter(adapter: VisualAdapter): void {
-    this.visualAdapter = adapter;
-  }
-
-  setPreset(preset: VisualizationPreset, controls?: VisualizationControls): void {
-    if (this.visualAdapter) {
-      this.visualAdapter.setPreset(preset, controls);
-    }
-  }
-
-  render(canvas: HTMLCanvasElement | any): void {
-    if (this.visualAdapter) {
-      this.visualAdapter.render(canvas, this.currentFeatures || undefined);
-    }
-  }
-
-  resize(width: number, height: number): void {
-    if (this.visualAdapter) {
-      this.visualAdapter.resize(width, height);
-    }
-  }
-
-  // Danmu methods
-  triggerDanmu(payload?: any): void {
-    this.danmuAdapter.trigger(payload);
-  }
-
-  // Config methods
-  setConfig(config: Partial<CoreConfig>): void {
-    this.config = { ...this.config, ...config };
-    
-    // Apply theme tokens if provided
-    if (config.themeTokens) {
-      this.applyThemeTokens(config.themeTokens);
-    }
-  }
-
-  private applyThemeTokens(tokens: ThemeTokens): void {
-    const root = document.documentElement;
-    (Object.entries as any)(tokens).forEach(([key, value]: [string, any]) => {
-      if (value) {
-        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-        root.style.setProperty(cssVar, value);
-      }
-    });
-  }
-
-  // Event system
-  on<K extends keyof CoreEvents>(event: K, handler: CoreEvents[K]): void {
-    if (!this.eventHandlers.has(event)) {
-      this.eventHandlers.set(event, new Set());
-    }
-    this.eventHandlers.get(event)!.add(handler);
-  }
-
-  off<K extends keyof CoreEvents>(event: K, handler: CoreEvents[K]): void {
-    const handlers = this.eventHandlers.get(event);
-    if (handlers) {
-      handlers.delete(handler);
-    }
-  }
-
-  private emit<K extends keyof CoreEvents>(event: K, ...args: Parameters<CoreEvents[K]>): void {
-    const handlers = this.eventHandlers.get(event);
-    if (handlers) {
-      handlers.forEach(handler => {
-        try {
-          (handler as any)(...args);
-        } catch (error) {
-          console.error(`Error in event handler for ${event}:`, error);
-        }
-      });
-    }
-  }
-
-  private log(level: 'info' | 'warn' | 'error', message: string, data?: any): void {
-    this.emit('log', level, message, data);
-  }
-
-  // Getters
-  get initialized(): boolean {
-    return this.isInitialized;
-  }
-
-  get running(): boolean {
-    return this.isRunning;
-  }
-
-  get features(): AudioFeatures | null {
-    return this.currentFeatures;
-  }
-
-  get danmuStatus() {
-    return {
-      isReady: (this.danmuAdapter as any).isReady,
-      isActive: this.isRunning,
-      count: (this.danmuAdapter as any).danmuCount,
-      pendingRequests: (this.danmuAdapter as any).pendingRequests,
-      currentStyle: (this.danmuAdapter as any).currentStyle,
-    };
-  }
+  async init() { if (this.ready) return; this.ready = true; this.emit('ready'); }
+  start() { if (!this.ready) void this.init(); return this.runtime.start(this.source); }
+  stop() { this.runtime.stop(); this.emit('stopped'); }
+  dispose() { this.runtime.dispose(); this.visual?.dispose(); this.handlers.clear(); this.ready = false; }
+  async setAudioSource(source: AudioSource) { const running = this.running; this.runtime.stop('source-change'); this.source = source; if (running) await this.runtime.start(source); }
+  setVisualAdapter(adapter: VisualAdapter) { this.visual?.dispose(); this.visual = adapter; }
+  setPreset(preset: VisualizationPreset, controls?: VisualizationControls) { this.visual?.setPreset(preset, controls); }
+  render(canvas: HTMLCanvasElement) { this.visual?.render(canvas, this.features ?? undefined); }
+  resize(width: number, height: number) { this.visual?.resize(width, height); }
+  triggerDanmu(payload?: { text?: string }) { return this.runtime.danmu.manual(payload?.text); }
+  setConfig(config: Partial<CoreConfig>) { this.config = { ...this.config, ...config }; if (config.themeTokens) this.applyThemeTokens(config.themeTokens); }
+  applyThemeTokens(tokens: ThemeTokens) { if (typeof document === 'undefined') return; for (const [key, value] of Object.entries(tokens)) if (value) document.documentElement.style.setProperty(`--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value); }
+  on<K extends keyof CoreEvents>(event: K, handler: CoreEvents[K]) { if (!this.handlers.has(event)) this.handlers.set(event, new Set()); this.handlers.get(event)!.add(handler); }
+  off<K extends keyof CoreEvents>(event: K, handler: CoreEvents[K]) { this.handlers.get(event)?.delete(handler); }
+  private emit<K extends keyof CoreEvents>(event: K, ...args: Parameters<CoreEvents[K]>) { for (const handler of this.handlers.get(event) ?? []) (handler as (...values: Parameters<CoreEvents[K]>) => void)(...args); }
+  get initialized() { return this.ready; }
+  get running() { return this.runtime.audio.current.status === 'running'; }
+  get features(): AudioFeatures | null { return this.runtime.latestFrame ? toLegacyFeatures(this.runtime.latestFrame) : null; }
+  get danmuStatus() { const s = this.runtime.danmu.current; return { isReady: this.ready, isActive: s.active, count: s.displayed, pendingRequests: s.pendingRequests, currentStyle: s.cloud === 'off' ? 'local' : 'hybrid' }; }
 }

@@ -1,0 +1,28 @@
+{
+  "testedAt": "2026-10-15T03:29:05.159Z",
+  "source": "Same browser-generated speech features, standalone Node provider outside Next.js",
+  "modelVersion": "yamnet-float32-1",
+  "trace": [
+    {
+      "type": "accepted",
+      "ms": 27.796375000000012
+    },
+    {
+      "type": "headers",
+      "ms": 328.54687500000006,
+      "status": 200,
+      "contentType": "text/event-stream; charset=utf-8"
+    },
+    {
+      "type": "error",
+      "ms": 8014.5962500000005,
+      "code": "deadline"
+    },
+    {
+      "type": "done",
+      "ms": 8034.912,
+      "status": "cancelled",
+      "count": 0
+    }
+  ]
+}

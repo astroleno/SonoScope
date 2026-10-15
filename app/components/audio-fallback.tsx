@@ -31,6 +31,7 @@ export default function AudioFallback({
   useEffect(() => {
     // 初始化可用源
     setAvailableSources(fallbackManager.getAvailableSources());
+    return () => fallbackManager.dispose();
   }, [fallbackManager]);
 
   const handleStartTestTone = async (configIndex: number = 0) => {

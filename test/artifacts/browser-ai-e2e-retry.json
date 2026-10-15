@@ -1,0 +1,338 @@
+{
+  "testedAt": "2026-10-15T03:24:54.024Z",
+  "model": {
+    "version": "yamnet-float32-1",
+    "capturedAt": 1792034693570,
+    "categories": [
+      {
+        "label": "Speech",
+        "score": 0.99609375
+      },
+      {
+        "label": "Silence",
+        "score": 0.1484375
+      },
+      {
+        "label": "Speech synthesizer",
+        "score": 0.109375
+      },
+      {
+        "label": "Sound effect",
+        "score": 0.05859375
+      },
+      {
+        "label": "Speech",
+        "score": 0.03125
+      },
+      {
+        "label": "Whack, thwack",
+        "score": 0.01953125
+      },
+      {
+        "label": "Fart",
+        "score": 0.015625
+      },
+      {
+        "label": "Animal",
+        "score": 0.015625
+      },
+      {
+        "label": "Music",
+        "score": 0.015625
+      },
+      {
+        "label": "Plop",
+        "score": 0.015625
+      },
+      {
+        "label": "Boing",
+        "score": 0.015625
+      },
+      {
+        "label": "Groan",
+        "score": 0.01171875
+      },
+      {
+        "label": "Door",
+        "score": 0.01171875
+      },
+      {
+        "label": "Whoosh, swoosh, swish",
+        "score": 0.01171875
+      },
+      {
+        "label": "Breaking",
+        "score": 0.01171875
+      },
+      {
+        "label": "Inside, small room",
+        "score": 0.01171875
+      }
+    ],
+    "voiceProbability": 0.99609375,
+    "instrument": null
+  },
+  "metrics": {
+    "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+    "observedSeconds": 10,
+    "visualSamples": 346,
+    "visualP95Ms": 23,
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0.1,
+    "fpsMedian": 29,
+    "localFirstP95Ms": 38,
+    "aiFirstP95Ms": null
+  },
+  "comments": [
+    {
+      "id": "e2578b23-a428-4048-a6a8-5a5a5f553acb",
+      "source": "local",
+      "text": "声音进来了,画面跟着动了",
+      "at": 3857.7750000059605,
+      "box": {
+        "x": 1195.681640625,
+        "y": 205.7421875,
+        "width": 255.5625,
+        "height": 46,
+        "top": 205.7421875,
+        "right": 1451.244140625,
+        "bottom": 251.7421875,
+        "left": 1195.681640625
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "1ec3f2a6-030a-4436-811c-84d7d9b67f05",
+      "source": "local",
+      "text": "像是有人声进来了",
+      "at": 5357.230000004172,
+      "box": {
+        "x": 1262.4139404296875,
+        "y": 261.7421875,
+        "width": 190,
+        "height": 46,
+        "top": 261.7421875,
+        "right": 1452.4139404296875,
+        "bottom": 307.7421875,
+        "left": 1262.4139404296875
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "98a81595-9168-4069-8c2c-3dbe3ef5f963",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 6890.609999999404,
+      "box": {
+        "x": 1257.6900634765625,
+        "y": 317.7421875,
+        "width": 190,
+        "height": 46,
+        "top": 317.7421875,
+        "right": 1447.6900634765625,
+        "bottom": 363.7421875,
+        "left": 1257.6900634765625
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "3b89bdd4-9eb1-4c37-a0d5-1da345d6ce52",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 8523.980000004172,
+      "box": {
+        "x": 1299.467041015625,
+        "y": 373.7421875,
+        "width": 150,
+        "height": 46,
+        "top": 373.7421875,
+        "right": 1449.467041015625,
+        "bottom": 419.7421875,
+        "left": 1299.467041015625
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "93bb44e5-90b8-4092-a789-b227a7aaf930",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 10357.65000000596,
+      "box": {
+        "x": 1220.2344970703125,
+        "y": 429.7421875,
+        "width": 230,
+        "height": 46,
+        "top": 429.7421875,
+        "right": 1450.2344970703125,
+        "bottom": 475.7421875,
+        "left": 1220.2344970703125
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "7cfdd076-eb76-4194-b446-5198e46c24a6",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 12041.340000003576,
+      "box": {
+        "x": 1240.2982177734375,
+        "y": 205.7421875,
+        "width": 210,
+        "height": 46,
+        "top": 205.7421875,
+        "right": 1450.2982177734375,
+        "bottom": 251.7421875,
+        "left": 1240.2982177734375
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    },
+    {
+      "id": "5816fe18-4c16-40d9-a891-7848245914fc",
+      "source": "local",
+      "text": "高频的声音更明显了",
+      "at": 14490.605000004172,
+      "box": {
+        "x": 1240.92236328125,
+        "y": 261.7421875,
+        "width": 210,
+        "height": 46,
+        "top": 261.7421875,
+        "right": 1450.92236328125,
+        "bottom": 307.7421875,
+        "left": 1240.92236328125
+      },
+      "inViewport": true,
+      "clearOfControls": true
+    }
+  ],
+  "requests": [
+    {
+      "requestId": "83e00b2c-268b-4915-b582-bd7b4d5fbc42",
+      "at": 7798.785000003874,
+      "modelVersion": "yamnet-float32-1",
+      "events": [
+        {
+          "type": "accepted",
+          "at": 7872.395000003278
+        }
+      ],
+      "status": 200,
+      "readError": true,
+      "eofAt": 15799.17500000447
+    }
+  ],
+  "events": [
+    {
+      "type": "model-ready",
+      "at": 4129.030000001192,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f"
+    },
+    {
+      "type": "model-result",
+      "at": 5312.20000000298,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.98828125
+    },
+    {
+      "type": "model-result",
+      "at": 6326.295000001788,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 7347.990000002086,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 8368.980000004172,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 9370.260000005364,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 10375.17500000447,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.9921875
+    },
+    {
+      "type": "model-result",
+      "at": 11377.215000003576,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.984375
+    },
+    {
+      "type": "model-result",
+      "at": 12379.605000004172,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 13382.615000002086,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.98046875
+    },
+    {
+      "type": "model-result",
+      "at": 14380.895000003278,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    },
+    {
+      "type": "model-result",
+      "at": 15387.734999999404,
+      "audioSessionId": "02ae04fd-1f97-45c4-814c-805007ea164f",
+      "label": "Speech",
+      "score": 0.99609375
+    }
+  ],
+  "captureModes": {
+    "worklet": 0,
+    "compatibility": 1
+  },
+  "firstFrameAt": 3839.8950000032783,
+  "resources": {
+    "createdContexts": 1,
+    "activeContexts": 1,
+    "createdWorkers": 2,
+    "activeWorkers": 2,
+    "activeMedia": 1,
+    "commentNodes": 3,
+    "canvases": 1
+  },
+  "environment": {
+    "viewport": [
+      1470,
+      723
+    ],
+    "visibility": "visible",
+    "focus": true,
+    "timeOrigin": 1792034678201.705,
+    "now": 15821.625
+  }
+}

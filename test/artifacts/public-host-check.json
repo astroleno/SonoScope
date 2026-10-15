@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-15T03:45:58.626Z",
+  "dns": [
+    {
+      "host": "aitoshuu.me",
+      "addresses": [
+        "47.103.120.24"
+      ]
+    },
+    {
+      "host": "aitoshuu.art",
+      "addresses": [
+        "122.51.59.89"
+      ]
+    }
+  ],
+  "http": [
+    {
+      "url": "https://aitoshuu.me/SonoScope",
+      "status": 200,
+      "finalUrl": "https://aitoshuu.me/SonoScope",
+      "contentType": "text/html",
+      "bytes": 994,
+      "server": "nginx",
+      "title": "琅环 — 个人介绍"
+    },
+    {
+      "url": "https://aitoshuu.me/SonoScope/api/runtime-config",
+      "status": 200,
+      "finalUrl": "https://aitoshuu.me/SonoScope/api/runtime-config",
+      "contentType": "text/html",
+      "bytes": 994,
+      "server": "nginx",
+      "title": "琅环 — 个人介绍"
+    },
+    {
+      "url": "https://aitoshuu.me/api/runtime-config",
+      "status": 200,
+      "finalUrl": "https://aitoshuu.me/api/runtime-config",
+      "contentType": "text/html",
+      "bytes": 994,
+      "server": "nginx",
+      "title": "琅环 — 个人介绍"
+    },
+    {
+      "url": "https://aitoshuu.me/SonoScope/api/health",
+      "status": 200,
+      "finalUrl": "https://aitoshuu.me/SonoScope/api/health",
+      "contentType": "text/html",
+      "bytes": 994,
+      "server": "nginx",
+      "title": "琅环 — 个人介绍"
+    },
+    {
+      "url": "https://aitoshuu.art/SonoScope",
+      "status": 404,
+      "finalUrl": "https://aitoshuu.art/SonoScope",
+      "contentType": "text/html",
+      "bytes": 146,
+      "server": "nginx",
+      "title": "404 Not Found"
+    },
+    {
+      "url": "https://aitoshuu.art/SonoScope/api/runtime-config",
+      "status": 404,
+      "finalUrl": "https://aitoshuu.art/SonoScope/api/runtime-config",
+      "contentType": "text/html",
+      "bytes": 146,
+      "server": "nginx",
+      "title": "404 Not Found"
+    },
+    {
+      "url": "https://aitoshuu.art/api/runtime-config",
+      "status": 404,
+      "finalUrl": "https://aitoshuu.art/api/runtime-config",
+      "contentType": "text/html",
+      "bytes": 146,
+      "server": "nginx",
+      "title": "404 Not Found"
+    },
+    {
+      "url": "https://aitoshuu.art/SonoScope/api/health",
+      "status": 404,
+      "finalUrl": "https://aitoshuu.art/SonoScope/api/health",
+      "contentType": "text/html",
+      "bytes": 146,
+      "server": "nginx",
+      "title": "404 Not Found"
+    }
+  ]
+}
