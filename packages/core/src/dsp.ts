@@ -32,30 +32,8 @@ export function spectrum(pcm: Float32Array): Float32Array {
   return Float32Array.from(re.subarray(0, n / 2), (v, i) => 2 * Math.hypot(v, im[i]) / n);
 }
 
-export class TempoTracker {
-  private peaks: number[] = [];
-  private lastEnergy = 0;
-  private baseline = 0;
-  update(timeSeconds: number, rms: number, flux: number): { bpm: number; confidence: number } | null {
-    const rising = rms > Math.max(0.012, this.baseline * 2.2) && rms > this.lastEnergy * 1.5;
-    const last = this.peaks.at(-1) ?? -Infinity;
-    if ((rising || (flux > 0.25 && rms > 0.02 && rms > this.lastEnergy * 1.2)) && timeSeconds - last > 0.22) this.peaks.push(timeSeconds);
-    this.peaks = this.peaks.filter(t => timeSeconds - t < 12).slice(-32);
-    this.baseline = this.baseline * 0.96 + rms * 0.04;
-    this.lastEnergy = rms;
-    if (this.peaks.length < 4 || timeSeconds - last > 2.5) return null;
-    const intervals = this.peaks.slice(1).map((t, i) => t - this.peaks[i]);
-    const mid = median(intervals);
-    const inliers = intervals.filter(t => Math.abs(t - mid) < mid * 0.16);
-    if (inliers.length < 3 || inliers.length / intervals.length < 0.7) return null;
-    const mean = inliers.reduce((a, b) => a + b, 0) / inliers.length;
-    const bpm = 60 / mean;
-    if (bpm < 40 || bpm > 220) return null;
-    const deviation = inliers.reduce((a, b) => a + Math.abs(b - mean), 0) / inliers.length;
-    return { bpm, confidence: clamp(1 - deviation / mean * 5) };
-  }
-  get onsetCount() { return this.peaks.length; }
-}
+import { TempoTracker } from './tempo';
+export { TempoTracker } from './tempo';
 
 export class FeatureExtractor {
   private previous: Float32Array | null = null;

@@ -9,6 +9,36 @@ const pcm = () => new Float32Array(1024).fill(.1);
 afterEach(() => vi.useRealTimers());
 
 describe('worker readiness and bounded processing', () => {
+  it.each([16000, 44100, 48000])('sends complete non-padded model windows at %s Hz without losing the remainder', rate => {
+    vi.useFakeTimers(); const w = worker(), pipeline = new FeaturePipeline({ modelWorkerFactory: () => w, workerAssets: assets });
+    try {
+      pipeline.start('audio'); send(w, 'model-loading');
+      for (let i = 0; i < Math.ceil(rate / 1024); i++) pipeline.feed(new Float32Array(1024).fill(i), rate, i * 1024 / rate, 'audio');
+      expect(w.postMessage.mock.calls.filter(([m]) => m.type === 'classify')).toHaveLength(0);
+      send(w, 'model-ready'); pipeline.feed(new Float32Array(1024).fill(100), rate, 1.1, 'audio');
+      const first = w.postMessage.mock.calls.at(-1)![0];
+      expect(first.type).toBe('classify'); expect(first.pcm.length).toBe(Math.ceil(rate * .975));
+      const overlapValue = first.pcm[Math.round(rate * .48)];
+      send(w, 'model-result', { result: { capturedAt: Date.now(), categories: [], voiceProbability: 0, instrument: null } });
+      for (let i = 0; i < Math.ceil(rate / 1024); i++) pipeline.feed(new Float32Array(1024).fill(200 + i), rate, 1.2 + i * 1024 / rate, 'audio');
+      const next = w.postMessage.mock.calls.filter(([m]) => m.type === 'classify')[1][0];
+      expect(next.pcm.length).toBe(first.pcm.length); expect(next.pcm[0]).toBe(overlapValue);
+      expect(next.capturedAt).toBeLessThanOrEqual(Date.now());
+    } finally { pipeline.dispose(); expect(vi.getTimerCount()).toBe(0); }
+  });
+  it('bounds PCM accumulated behind an in-flight classification and keeps the capture timestamp truthful', () => {
+    vi.useFakeTimers(); const w = worker(), pipeline = new FeaturePipeline({ modelWorkerFactory: () => w, workerAssets: assets });
+    try {
+      pipeline.start('audio'); send(w, 'model-loading'); send(w, 'model-ready');
+      for (let i = 0; i < 80; i++) pipeline.feed(new Float32Array(1024).fill(i), 16000, i * .064, 'audio');
+      expect(w.postMessage.mock.calls.filter(([m]) => m.type === 'classify')).toHaveLength(1);
+      send(w, 'model-result', { result: { capturedAt: Date.now(), categories: [], voiceProbability: 0, instrument: null } });
+      pipeline.feed(pcm(), 16000, 5.2, 'audio');
+      const next = w.postMessage.mock.calls.filter(([m]) => m.type === 'classify')[1][0];
+      expect(next.pcm[0]).toBeGreaterThan(40); expect(next.pcm.length).toBe(15600);
+      expect(Date.now() - next.capturedAt).toBeGreaterThan(0); expect(Date.now() - next.capturedAt).toBeLessThan(1000);
+    } finally { pipeline.dispose(); }
+  });
   it('produces local frames during cold script loading and switches only after the DSP handshake', async () => {
     vi.useFakeTimers(); const w = worker(), pipeline = new FeaturePipeline({ workerFactory: () => w }), timing = vi.fn();
     pipeline.onTiming(timing);

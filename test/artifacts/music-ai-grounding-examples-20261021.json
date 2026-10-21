@@ -1,0 +1,842 @@
+{
+  "source": "Actual Ego Lite feature snapshots and accepted GLM-4-32B responses from six explicitly budgeted local calls. Five request bodies were captured; the aborted piano case is preserved in the validation report rather than reconstructed. No raw PCM or authentication headers.",
+  "cases": [
+    {
+      "name": "ai-guitar",
+      "snapshot": {
+        "version": "2",
+        "audioSessionId": "3d359390-47f4-4d28-9949-5edb037ee442",
+        "snapshotId": "3d359390-47f4-4d28-9949-5edb037ee442_564",
+        "startAt": 1792582806486,
+        "endAt": 1792582808683,
+        "sampleRate": 48000,
+        "frames": 104,
+        "stats": {
+          "rmsMean": 0.01977306465635971,
+          "rmsPeak": 0.08454318630098615,
+          "centroidHzMean": 1390.8364419797292,
+          "bandwidthHzMean": 2416.106840884685,
+          "rolloffHzMean": 2698.016826923077,
+          "flatnessMean": 0.037076202828175205,
+          "fluxMean": 0.11733346519477474,
+          "onsetRate": 6.372325898953117,
+          "tempo": null,
+          "hpss": {
+            "harmonic": 0.9742458441727482,
+            "percussive": 0.025754155827251806
+          }
+        },
+        "validity": {
+          "rms": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "centroidHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "bandwidthHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "rolloffHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "flatness": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "flux": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "tempo": {
+            "state": "unknown",
+            "source": "heuristic",
+            "unit": "BPM"
+          },
+          "hpss": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "ratio"
+          },
+          "classification": {
+            "state": "valid",
+            "source": "model",
+            "unit": "score"
+          }
+        },
+        "model": {
+          "version": "yamnet-float32-1-temporal-1",
+          "capturedAt": 1792582808645,
+          "categories": [
+            {
+              "label": "Music",
+              "score": 0.98046875
+            },
+            {
+              "label": "Acoustic guitar",
+              "score": 0.1484375
+            },
+            {
+              "label": "Guitar",
+              "score": 0.109375
+            },
+            {
+              "label": "Plucked string instrument",
+              "score": 0.109375
+            },
+            {
+              "label": "Strum",
+              "score": 0.08203125
+            },
+            {
+              "label": "Musical instrument",
+              "score": 0.05859375
+            },
+            {
+              "label": "Singing",
+              "score": 0.00390625
+            },
+            {
+              "label": "Independent music",
+              "score": 0
+            },
+            {
+              "label": "Field recording",
+              "score": 0
+            },
+            {
+              "label": "Yell",
+              "score": 0
+            },
+            {
+              "label": "Children shouting",
+              "score": 0
+            },
+            {
+              "label": "Screaming",
+              "score": 0
+            },
+            {
+              "label": "Whispering",
+              "score": 0
+            },
+            {
+              "label": "Laughter",
+              "score": 0
+            },
+            {
+              "label": "Baby laughter",
+              "score": 0
+            },
+            {
+              "label": "Giggle",
+              "score": 0
+            }
+          ],
+          "voiceProbability": 0.00390625,
+          "instrument": {
+            "label": "Guitar",
+            "confidence": 0.19921875
+          }
+        },
+        "capabilities": [
+          "rms",
+          "spectrum.Hz",
+          "flux.normalized",
+          "mfcc",
+          "chroma",
+          "contrast.dB",
+          "tempo.heuristic",
+          "hpss.median",
+          "yamnet"
+        ]
+      },
+      "comments": [
+        "频谱明亮,高频成分丰富",
+        "声音起伏自然,细节明显",
+        "整体音色温暖,纹理细腻",
+        "安静陪伴,享受这段音乐时光"
+      ]
+    },
+    {
+      "name": "ai-percussion",
+      "snapshot": {
+        "version": "2",
+        "audioSessionId": "d1117199-a82d-4c15-87ab-01c0455ed49f",
+        "snapshotId": "d1117199-a82d-4c15-87ab-01c0455ed49f_564",
+        "startAt": 1792583508602,
+        "endAt": 1792583510798,
+        "sampleRate": 48000,
+        "frames": 104,
+        "stats": {
+          "rmsMean": 0.08714633084561438,
+          "rmsPeak": 0.25263236401578093,
+          "centroidHzMean": 1142.5999175236095,
+          "bandwidthHzMean": 2279.585873382799,
+          "rolloffHzMean": 1912.4098557692307,
+          "flatnessMean": 0.02288139118823714,
+          "fluxMean": 0.1431088271538239,
+          "onsetRate": 7.285974499089253,
+          "tempo": null,
+          "hpss": {
+            "harmonic": 0.8199005878108053,
+            "percussive": 0.18009941218919465
+          }
+        },
+        "validity": {
+          "rms": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "centroidHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "bandwidthHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "rolloffHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "flatness": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "flux": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "tempo": {
+            "state": "unknown",
+            "source": "heuristic",
+            "unit": "BPM"
+          },
+          "hpss": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "ratio"
+          },
+          "classification": {
+            "state": "valid",
+            "source": "model",
+            "unit": "score"
+          }
+        },
+        "model": {
+          "version": "yamnet-float32-1-temporal-1",
+          "capturedAt": 1792583510760,
+          "categories": [
+            {
+              "label": "Music",
+              "score": 0.94140625
+            },
+            {
+              "label": "Musical instrument",
+              "score": 0.109375
+            },
+            {
+              "label": "Wood block",
+              "score": 0.109375
+            },
+            {
+              "label": "Percussion",
+              "score": 0.109375
+            },
+            {
+              "label": "Drum",
+              "score": 0.08203125
+            },
+            {
+              "label": "Plucked string instrument",
+              "score": 0.03125
+            },
+            {
+              "label": "Banjo",
+              "score": 0.015625
+            },
+            {
+              "label": "Drum kit",
+              "score": 0.015625
+            },
+            {
+              "label": "Inside, small room",
+              "score": 0.01171875
+            },
+            {
+              "label": "Guitar",
+              "score": 0.01171875
+            },
+            {
+              "label": "Tabla",
+              "score": 0.01171875
+            },
+            {
+              "label": "Ukulele",
+              "score": 0.0078125
+            },
+            {
+              "label": "Pizzicato",
+              "score": 0.0078125
+            },
+            {
+              "label": "Bass drum",
+              "score": 0.00390625
+            },
+            {
+              "label": "Bowed string instrument",
+              "score": 0.00390625
+            },
+            {
+              "label": "Traditional music",
+              "score": 0.00390625
+            }
+          ],
+          "voiceProbability": 0,
+          "instrument": {
+            "label": "Percussion",
+            "confidence": 0.33203125
+          }
+        },
+        "capabilities": [
+          "rms",
+          "spectrum.Hz",
+          "flux.normalized",
+          "mfcc",
+          "chroma",
+          "contrast.dB",
+          "tempo.heuristic",
+          "hpss.median",
+          "yamnet"
+        ]
+      },
+      "comments": [
+        "听起来像是打击乐的敲击声,声音明亮而有力",
+        "声音成分以高频为主,有明显的颗粒感",
+        "声音响度适中,起伏感较为明显",
+        "声音纹理清晰,带有短暂的瞬态变化",
+        "声音明亮程度较高,频谱分布较广",
+        "静静地陪伴这声音,感受它的力量"
+      ]
+    },
+    {
+      "name": "ai-tempo",
+      "snapshot": {
+        "version": "2",
+        "audioSessionId": "5d6b360b-2280-4d22-870b-c9074600af38",
+        "snapshotId": "5d6b360b-2280-4d22-870b-c9074600af38_564",
+        "startAt": 1792583641412,
+        "endAt": 1792583643609,
+        "sampleRate": 48000,
+        "frames": 104,
+        "stats": {
+          "rmsMean": 0.019773615333653946,
+          "rmsPeak": 0.08467771286736675,
+          "centroidHzMean": 1391.697599647032,
+          "bandwidthHzMean": 2416.282431439989,
+          "rolloffHzMean": 2699.3689903846152,
+          "flatnessMean": 0.03707319637128528,
+          "fluxMean": 0.11762890885734915,
+          "onsetRate": 6.372325898953117,
+          "tempo": {
+            "bpm": 131.42682348437825,
+            "confidence": 0.8252549093098106
+          },
+          "hpss": {
+            "harmonic": 0.9746908857544955,
+            "percussive": 0.02530911424550459
+          }
+        },
+        "validity": {
+          "rms": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "centroidHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "bandwidthHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "rolloffHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "flatness": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "flux": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "tempo": {
+            "state": "valid",
+            "source": "heuristic",
+            "unit": "BPM"
+          },
+          "hpss": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "ratio"
+          },
+          "classification": {
+            "state": "valid",
+            "source": "model",
+            "unit": "score"
+          }
+        },
+        "model": {
+          "version": "yamnet-float32-1-temporal-1",
+          "capturedAt": 1792583643571,
+          "categories": [
+            {
+              "label": "Music",
+              "score": 0.98046875
+            },
+            {
+              "label": "Acoustic guitar",
+              "score": 0.1484375
+            },
+            {
+              "label": "Guitar",
+              "score": 0.109375
+            },
+            {
+              "label": "Plucked string instrument",
+              "score": 0.109375
+            },
+            {
+              "label": "Strum",
+              "score": 0.08203125
+            },
+            {
+              "label": "Musical instrument",
+              "score": 0.05859375
+            },
+            {
+              "label": "Singing",
+              "score": 0.00390625
+            },
+            {
+              "label": "Independent music",
+              "score": 0
+            },
+            {
+              "label": "Field recording",
+              "score": 0
+            },
+            {
+              "label": "Yell",
+              "score": 0
+            },
+            {
+              "label": "Children shouting",
+              "score": 0
+            },
+            {
+              "label": "Screaming",
+              "score": 0
+            },
+            {
+              "label": "Whispering",
+              "score": 0
+            },
+            {
+              "label": "Laughter",
+              "score": 0
+            },
+            {
+              "label": "Baby laughter",
+              "score": 0
+            },
+            {
+              "label": "Giggle",
+              "score": 0
+            }
+          ],
+          "voiceProbability": 0.00390625,
+          "instrument": {
+            "label": "Guitar",
+            "confidence": 0.19921875
+          }
+        },
+        "capabilities": [
+          "rms",
+          "spectrum.Hz",
+          "flux.normalized",
+          "mfcc",
+          "chroma",
+          "contrast.dB",
+          "tempo.heuristic",
+          "hpss.median",
+          "yamnet"
+        ]
+      },
+      "comments": [
+        "听起来像是吉他的拨弦声,声音清晰而明亮",
+        "声音带有一定的节奏感,大约131 BPM",
+        "高频成分较多,声音听起来很清脆",
+        "声音的起伏比较平缓,没有剧烈变化",
+        "整体声音饱满,没有明显的空洞感",
+        "安静地陪伴着你,倾听这清脆的弹拨声"
+      ]
+    },
+    {
+      "name": "ai-speech",
+      "snapshot": {
+        "version": "2",
+        "audioSessionId": "664a0428-d935-45e4-bf39-1781a935cce6",
+        "snapshotId": "664a0428-d935-45e4-bf39-1781a935cce6_564",
+        "startAt": 1792583854966,
+        "endAt": 1792583857163,
+        "sampleRate": 48000,
+        "frames": 104,
+        "stats": {
+          "rmsMean": 0.04353002357862223,
+          "rmsPeak": 0.22454631582858664,
+          "centroidHzMean": 968.4656784027846,
+          "bandwidthHzMean": 1147.2222691861998,
+          "rolloffHzMean": 1557.6923076923076,
+          "flatnessMean": 0.001940982306827873,
+          "fluxMean": 0.15406105207751056,
+          "onsetRate": 5.461993627674101,
+          "tempo": null,
+          "hpss": {
+            "harmonic": 0.6986706464832368,
+            "percussive": 0.30132935351676315
+          }
+        },
+        "validity": {
+          "rms": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "centroidHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "bandwidthHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "rolloffHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "flatness": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "flux": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "tempo": {
+            "state": "unknown",
+            "source": "heuristic",
+            "unit": "BPM"
+          },
+          "hpss": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "ratio"
+          },
+          "classification": {
+            "state": "valid",
+            "source": "model",
+            "unit": "score"
+          }
+        },
+        "model": {
+          "version": "yamnet-float32-1-temporal-1",
+          "capturedAt": 1792583857125,
+          "categories": [
+            {
+              "label": "Speech",
+              "score": 0.96875
+            },
+            {
+              "label": "Narration, monologue",
+              "score": 0.03125
+            },
+            {
+              "label": "Inside, large room or hall",
+              "score": 0.00390625
+            },
+            {
+              "label": "Conversation",
+              "score": 0.00390625
+            },
+            {
+              "label": "Inside, small room",
+              "score": 0.00390625
+            },
+            {
+              "label": "Independent music",
+              "score": 0
+            },
+            {
+              "label": "Field recording",
+              "score": 0
+            },
+            {
+              "label": "Bellow",
+              "score": 0
+            },
+            {
+              "label": "Whoop",
+              "score": 0
+            },
+            {
+              "label": "Yell",
+              "score": 0
+            },
+            {
+              "label": "Children shouting",
+              "score": 0
+            },
+            {
+              "label": "Screaming",
+              "score": 0
+            },
+            {
+              "label": "Whispering",
+              "score": 0
+            },
+            {
+              "label": "Laughter",
+              "score": 0
+            },
+            {
+              "label": "Baby laughter",
+              "score": 0
+            },
+            {
+              "label": "Giggle",
+              "score": 0
+            }
+          ],
+          "voiceProbability": 0.96875,
+          "instrument": null
+        },
+        "capabilities": [
+          "rms",
+          "spectrum.Hz",
+          "flux.normalized",
+          "mfcc",
+          "chroma",
+          "contrast.dB",
+          "tempo.heuristic",
+          "hpss.median",
+          "yamnet"
+        ]
+      },
+      "comments": [
+        "声音有清晰的人声成分",
+        "明亮程度中等偏上",
+        "声音纹理比较平滑",
+        "响度中等,有起伏变化",
+        "声音成分以谐波为主",
+        "我们一起来听这段声音吧",
+        "一起感受这声音的流动"
+      ]
+    },
+    {
+      "name": "ai-noise",
+      "snapshot": {
+        "version": "2",
+        "audioSessionId": "42e8764e-8d5a-433e-a25d-2f80cf0628c2",
+        "snapshotId": "42e8764e-8d5a-433e-a25d-2f80cf0628c2_564",
+        "startAt": 1792583934394,
+        "endAt": 1792583936591,
+        "sampleRate": 48000,
+        "frames": 104,
+        "stats": {
+          "rmsMean": 0.032839713663582765,
+          "rmsPeak": 0.034484366873453284,
+          "centroidHzMean": 10135.675188067935,
+          "bandwidthHzMean": 5859.0809814514705,
+          "rolloffHzMean": 17192.75841346154,
+          "flatnessMean": 0.38653099129448315,
+          "fluxMean": 0.14630802769227022,
+          "onsetRate": 0,
+          "tempo": null,
+          "hpss": {
+            "harmonic": 0.4902541372143308,
+            "percussive": 0.5097458627856692
+          }
+        },
+        "validity": {
+          "rms": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "centroidHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "bandwidthHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "rolloffHz": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "Hz"
+          },
+          "flatness": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "flux": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "0..1"
+          },
+          "tempo": {
+            "state": "unknown",
+            "source": "heuristic",
+            "unit": "BPM"
+          },
+          "hpss": {
+            "state": "valid",
+            "source": "dsp",
+            "unit": "ratio"
+          },
+          "classification": {
+            "state": "valid",
+            "source": "model",
+            "unit": "score"
+          }
+        },
+        "model": {
+          "version": "yamnet-float32-1-temporal-1",
+          "capturedAt": 1792583936553,
+          "categories": [
+            {
+              "label": "White noise",
+              "score": 0.73828125
+            },
+            {
+              "label": "Noise",
+              "score": 0.66796875
+            },
+            {
+              "label": "Static",
+              "score": 0.4140625
+            },
+            {
+              "label": "Pink noise",
+              "score": 0.26171875
+            },
+            {
+              "label": "Spray",
+              "score": 0.109375
+            },
+            {
+              "label": "Liquid",
+              "score": 0.04296875
+            },
+            {
+              "label": "Hiss",
+              "score": 0.03125
+            },
+            {
+              "label": "Waterfall",
+              "score": 0.01953125
+            },
+            {
+              "label": "Inside, small room",
+              "score": 0.015625
+            },
+            {
+              "label": "Water",
+              "score": 0.015625
+            },
+            {
+              "label": "Steam",
+              "score": 0.015625
+            },
+            {
+              "label": "Rustle",
+              "score": 0.015625
+            },
+            {
+              "label": "Snake",
+              "score": 0.01171875
+            },
+            {
+              "label": "Outside, rural or natural",
+              "score": 0.01171875
+            },
+            {
+              "label": "Wind",
+              "score": 0.01171875
+            },
+            {
+              "label": "Rustling leaves",
+              "score": 0.0078125
+            }
+          ],
+          "voiceProbability": 0.00390625,
+          "instrument": null
+        },
+        "capabilities": [
+          "rms",
+          "spectrum.Hz",
+          "flux.normalized",
+          "mfcc",
+          "chroma",
+          "contrast.dB",
+          "tempo.heuristic",
+          "hpss.median",
+          "yamnet"
+        ]
+      },
+      "comments": [
+        "声音很柔和,整体音量不高",
+        "高频成分明显,声音较亮",
+        "声音纹理比较均匀,起伏不大",
+        "有明显的白噪音特征",
+        "声音成分比较单一,无明显变化",
+        "一起听这段独特的声音",
+        "安静地陪伴着这段声音"
+      ]
+    }
+  ]
+}

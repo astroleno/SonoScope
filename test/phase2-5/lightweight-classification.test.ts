@@ -6,7 +6,7 @@ import { request } from '../launch/fixtures';
 
 // Genre/formant templates are no longer treated as real model predictions.
 describe('model join and provenance', () => {
-  it('loads a separate inference worker and sends a continuous second of actual-rate PCM', () => {
+  it('loads a separate inference worker and sends a complete 975 ms actual-rate PCM window', () => {
     const dsp = { onmessage: null, onerror: null, postMessage: vi.fn(), terminate: vi.fn() } as FeatureWorker;
     const model = { onmessage: null, onerror: null, postMessage: vi.fn(), terminate: vi.fn() } as FeatureWorker;
     const pipeline = new FeaturePipeline({ workerFactory: () => dsp, modelWorkerFactory: () => model, workerAssets: { modelUrl: '/model', wasmUrl: '/wasm', modelVersion: 'test-model' } });
@@ -17,7 +17,7 @@ describe('model join and provenance', () => {
       dsp.onmessage!({ data: { type: 'frame', audioSessionId: 'session', seq, capturedAt: Date.now(), audioTime: seq * 1024 / 8000, sampleRate: 8000, values: extractor.extract(pcm, 8000, seq * 1024 / 8000) } } as MessageEvent);
     }
     const calls = (model.postMessage as ReturnType<typeof vi.fn>).mock.calls.filter(([msg]) => msg.type === 'classify');
-    expect(calls).toHaveLength(1); expect(calls[0][0].sampleRate).toBe(8000); expect(calls[0][0].pcm.length).toBeGreaterThanOrEqual(8000);
+    expect(calls).toHaveLength(1); expect(calls[0][0].sampleRate).toBe(8000); expect(calls[0][0].pcm).toHaveLength(7800);
     pipeline.dispose();
   });
   it('joins a real-format model response by session and exposes unknown when inference fails', () => {
@@ -43,7 +43,7 @@ describe('model join and provenance', () => {
     pipeline.start('session'); dsp.onmessage!({ data: { type: 'dsp-ready', audioSessionId: 'session' } } as MessageEvent); model.onmessage!({ data: { type: 'model-loading', audioSessionId: 'session' } } as MessageEvent); model.onmessage!({ data: { type: 'model-ready', audioSessionId: 'session' } } as MessageEvent);
     for (let i = 0; i < 9; i++) pipeline.feed(new Float32Array(1024).fill((i + 1) / 10), 8000, i * 1024 / 8000, 'session');
     const messages = (model.postMessage as ReturnType<typeof vi.fn>).mock.calls.filter(([m]) => m.type === 'classify');
-    expect(messages).toHaveLength(1); expect(messages[0][0].pcm).toHaveLength(8192); expect(messages[0][0].pcm[4096]).toBeCloseTo(.5);
+    expect(messages).toHaveLength(1); expect(messages[0][0].pcm).toHaveLength(7800); expect(messages[0][0].pcm[4096]).toBeCloseTo(.5); expect(messages[0][0].pcm.at(-1)).toBeCloseTo(.8);
     expect((dsp.postMessage as ReturnType<typeof vi.fn>).mock.calls.filter(([m]) => m.type === 'pcm')).toHaveLength(3); pipeline.dispose();
   });
   it('prompt transmits numeric model scores and provenance without claiming a genre or raw audio', () => {

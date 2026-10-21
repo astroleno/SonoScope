@@ -1,4 +1,4 @@
-import { FeatureExtractor, makeFrame, summarizeFrames, type FeatureFrame, type FeatureSnapshot, type ModelResult, type AudioValues } from '@sonoscope/core';
+import { FeatureExtractor, makeFrame, summarizeFrames, AUDIO_MODEL_SAMPLE_RATE, AUDIO_MODEL_SAMPLES, AUDIO_MODEL_HOP_SAMPLES, type FeatureFrame, type FeatureSnapshot, type ModelResult, type AudioValues } from '@sonoscope/core';
 
 export interface FeatureWorker {
   postMessage(message: unknown, transfer?: Transferable[]): void;
@@ -23,6 +23,7 @@ export class FeaturePipeline {
   private model: ModelResult | null = null;
   private modelPCM: Float32Array[] = [];
   private modelSamples = 0;
+  private modelSampleRate = 0;
   private modelBusy = false;
   private status: FeatureStatus = { dsp: 'local', model: 'unavailable', message: null };
   private initTimer: ReturnType<typeof setTimeout> | null = null;
@@ -121,14 +122,29 @@ export class FeaturePipeline {
       const started = performance.now(), values = this.extractor.extract(pcm, sampleRate, audioTime);
       this.publish(seq, audioTime, capturedAt, sampleRate, values, performance.now() - started, 'local');
     }
-    if (this.modelWorker && this.status.model === 'ready' && !this.modelBusy) {
+    if (this.modelWorker) {
+        if (sampleRate !== this.modelSampleRate) { this.modelPCM = []; this.modelSamples = 0; this.modelSampleRate = sampleRate; }
         this.modelPCM.push(pcm); this.modelSamples += pcm.length;
-        if (this.modelSamples >= sampleRate) {
-          const samples = new Float32Array(this.modelSamples); let offset = 0;
-          for (const c of this.modelPCM) { samples.set(c, offset); offset += c.length; }
-          this.modelPCM = []; this.modelSamples = 0; this.modelBusy = true;
+        const target = Math.ceil(sampleRate * AUDIO_MODEL_SAMPLES / AUDIO_MODEL_SAMPLE_RATE);
+        // Continue collecting during inference, bounding the history to two windows.
+        while (this.modelSamples > target * 2 && this.modelPCM.length > 1) this.modelSamples -= this.modelPCM.shift()!.length;
+        if (this.status.model === 'ready' && !this.modelBusy && this.modelSamples >= target) {
+          const samples = new Float32Array(target); let offset = 0;
+          const windowEndAt = capturedAt - (this.modelSamples - target) / sampleRate * 1000;
+          for (const chunk of this.modelPCM) {
+            const take = Math.min(chunk.length, target - offset); samples.set(chunk.subarray(0, take), offset); offset += take;
+            if (offset === target) break;
+          }
+          // YAMNet's 0.48s hop preserves context between 0.975s waveform windows.
+          let consume = Math.round(sampleRate * AUDIO_MODEL_HOP_SAMPLES / AUDIO_MODEL_SAMPLE_RATE);
+          while (consume > 0) {
+            const chunk = this.modelPCM.shift()!, take = Math.min(chunk.length, consume);
+            consume -= take; this.modelSamples -= take;
+            if (take < chunk.length) this.modelPCM.unshift(chunk.subarray(take));
+          }
+          this.modelBusy = true;
           const worker = this.modelWorker; this.modelTimer = setTimeout(() => this.failModel(worker), 5000);
-          try { worker.postMessage({ type: 'classify', audioSessionId, sampleRate, capturedAt, pcm: samples }, [samples.buffer]); }
+          try { worker.postMessage({ type: 'classify', audioSessionId, sampleRate, capturedAt: windowEndAt, pcm: samples }, [samples.buffer]); }
           catch { this.failModel(worker); }
         }
       }

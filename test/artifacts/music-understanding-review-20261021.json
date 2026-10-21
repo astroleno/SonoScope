@@ -1,0 +1,25 @@
+{
+  "reviewer": "correctness",
+  "reviewType": "main-thread self-review",
+  "findings": [],
+  "resolved": [
+    "Exclude padded classifier chunks and duplicate class/head scores.",
+    "Keep complete overlapping PCM windows during loading and backpressure, preserving original window timestamps.",
+    "Qualify tentative instrument observations without inflating raw scores; reject voice and competing weak candidates.",
+    "Keep compatibility capture monotonic through duplicate callback timestamps while preserving real discontinuities.",
+    "Reject ambiguous tempo and reset on silence, gaps and rewind; reacquire only with fresh periodicity.",
+    "Require qualified AI wording and prevent broad percussion from authorizing specific drum kits or piano-like claims."
+  ],
+  "residual_risks": [
+    "One guitar excerpt remains at 62.5% coverage and about 12 seconds to first identification; another takes about 5.2 seconds.",
+    "Several complex or fast musical excerpts remain unknown; scores and tempo confidence are not calibrated population probabilities.",
+    "Four completed post-prompt-fix AI calls are insufficient to establish production semantics, repetition quality or latency p95.",
+    "Desktop 45 FPS acceptance remains open."
+  ],
+  "testing_gaps": [
+    "Physical microphone and phone acceptance are pending.",
+    "This round exercised Ego Lite compatibility capture; it does not replace native Worklet acceptance on the final music logic.",
+    "Final tempo re-entry and quiet-score qualification were checked locally after the six upstream calls were exhausted; no additional real AI calls were made.",
+    "Instrument recordings and diagnostic traces informed development; there is no independent unseen evaluation."
+  ]
+}

@@ -81,7 +81,15 @@ export function browserAudioEnvironment(workletUrl: string): AudioEnvironment {
 function scriptCapture(context: AudioContext, input: AudioNode, onPCM: (pcm: Float32Array, time: number) => void): CaptureHandle {
   const node = context.createScriptProcessor(1024, 1, 1);
   const mute = context.createGain(); mute.gain.value = 0;
-  node.onaudioprocess = e => onPCM(e.inputBuffer.getChannelData(0).slice(), e.playbackTime);
+  let nextTime: number | null = null;
+  node.onaudioprocess = e => {
+    const pcm = e.inputBuffer.getChannelData(0).slice(), duration = pcm.length / context.sampleRate;
+    // Late callbacks can share a playbackTime. PCM still advances by its sample count.
+    // Re-anchor on a larger gap or rewind so real discontinuities remain observable.
+    const time = nextTime !== null && Math.abs(e.playbackTime - nextTime) <= 2 * duration ? nextTime : e.playbackTime;
+    nextTime = time + duration;
+    onPCM(pcm, time);
+  };
   input.connect(node); node.connect(mute); mute.connect(context.destination);
   return { mode: 'compatibility', dispose: () => { node.onaudioprocess = null; input.disconnect(); node.disconnect(); mute.disconnect(); } };
 }

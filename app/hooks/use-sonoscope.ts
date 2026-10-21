@@ -28,7 +28,7 @@ export function useSonoScope(container: React.RefObject<HTMLDivElement | null>, 
       const r = new Runtime({ sink: renderer, workletUrl: appPath('/audio/capture-worklet.js'),
         workerFactory: () => new Worker(new URL('../lib/workers/dsp.worker.ts', import.meta.url)),
         modelWorkerFactory: () => new Worker(new URL('../lib/workers/features.worker.ts', import.meta.url)),
-        workerAssets: { wasmUrl: new URL(appPath('/vendor/mediapipe-audio-1.1.0/wasm'), location.origin).href, modelUrl: new URL(appPath('/model/yamnet-1.tflite'), location.origin).href, modelVersion: 'yamnet-float32-1' },
+        workerAssets: { wasmUrl: new URL(appPath('/vendor/mediapipe-audio-1.1.0/wasm'), location.origin).href, modelUrl: new URL(appPath('/model/yamnet-1.tflite'), location.origin).href, modelVersion: 'yamnet-float32-1-temporal-1' },
         generate: streamingClient(appPath('/api/danmu/stream')),
       });
       runtime.current = r;
