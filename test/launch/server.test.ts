@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FileQuotaStore } from '../../app/lib/server/quota-store';
 import { LlmService } from '../../app/lib/server/llm-service';
 import { readLlmConfig } from '../../app/lib/server/config';
-import { IncrementalComments, GlmProvider } from '../../app/lib/server/provider';
+import { IncrementalComments, GlmProvider, isGroundedComment } from '../../app/lib/server/provider';
 import { handleGeneration } from '../../app/lib/server/route-handler';
 import { request, deferred } from './fixtures';
 
@@ -71,6 +71,11 @@ describe('durable server guards', () => {
     for (const c of text) parser.feed(c);
     expect(emit).toHaveBeenCalledOnce(); expect(emit.mock.calls[0][0]).toContain('{ 光 }');
   });
+  it('skips a malformed output item without losing later valid comments or repairing model text', () => {
+    const emit = vi.fn(), parser = new IncrementalComments(emit);
+    parser.feed('[{"text": missing_quotes,"kind":"companionship"},{"text":"这一段声音轻轻展开","kind":"regular"}]');
+    expect(emit).toHaveBeenCalledOnce(); expect(emit).toHaveBeenCalledWith('这一段声音轻轻展开', 'regular');
+  });
   it('uses actual upstream SSE increments and ignores reasoning text', async () => {
     const encoder = new TextEncoder(), emit = vi.fn();
     const sse = [ { choices: [{ delta: { reasoning_content: 'private thought' } }] }, { choices: [{ delta: { content: '[{"text":"声音慢慢展开","kind":"regular"}' } }] }, { choices: [{ delta: { content: ']' } }], usage: { prompt_tokens: 12, completion_tokens: 24 } } ];
@@ -92,5 +97,31 @@ describe('durable server guards', () => {
     supported.snapshot.validity.classification = { state: 'valid', source: 'model', unit: 'score' };
     const accepted: any[] = [], next = await service.prepare(supported, 'p2'); await service.stream(supported, new AbortController().signal, e => accepted.push(e), next.deadlineAt);
     expect(accepted.filter(e => e.type === 'comment')).toHaveLength(3); expect(generate).toHaveBeenCalledTimes(2);
+  });
+  it('does not infer music, instruments, voice, pitch or a direction of change from an unsupported window', () => {
+    const r = request();
+    for (const text of ['这段音乐听起来层次丰富', '这一段钢琴声音比较清脆', '声音层次中打击乐比较突出', '这一段人声听起来很清晰', '音量逐渐增强', '高频声音突然出现', '节奏感明显增强', '音调偏高但十分清晰', '声音轻了下来，细节较为柔和', '平均RMS值在0.08左右', '频谱质心在一千赫兹左右', '频谱rolloff较高，高频能量不少']) expect(isGroundedComment(r.snapshot, text), text).toBe(false);
+    expect(isGroundedComment(r.snapshot, '当前这一段声音比较清亮')).toBe(true);
+  });
+  it('allows fresh supported instrument and voice labels, but never treats stale labels as evidence', () => {
+    const r = request(); r.snapshot.validity.classification = { state: 'valid', source: 'model', unit: 'score' };
+    r.snapshot.model = { version: 'yamnet-1', capturedAt: r.snapshot.endAt, categories: [{ label: 'Music', score: .95 }], voiceProbability: .9, instrument: { label: 'Piano', confidence: .8 } };
+    expect(isGroundedComment(r.snapshot, '这一段钢琴声音比较清脆')).toBe(true);
+    expect(isGroundedComment(r.snapshot, '这一段人声听起来很清晰')).toBe(true);
+    expect(isGroundedComment(r.snapshot, '声音层次中打击乐比较突出')).toBe(false);
+    r.snapshot.model.capturedAt -= 4000;
+    expect(isGroundedComment(r.snapshot, '这一段钢琴声音比较清脆')).toBe(false);
+    expect(isGroundedComment(r.snapshot, '这一段人声听起来很清晰')).toBe(false);
+  });
+  it('enforces the promised AI text length and reports a partial batch without issuing a replacement call', async () => {
+    const generate = vi.fn(async (_r, _s, emit) => {
+      emit('音色清脆', 'regular'); emit('声音'.repeat(13), 'regular');
+      emit('当前这一段声音比较清亮', 'regular');
+      return { inputTokens: 30, outputTokens: 40 };
+    });
+    const r = request(), service = new LlmService(config(), await quota(), { generate }), events: any[] = [];
+    const prepared = await service.prepare(r, 'length-test'); await service.stream(r, new AbortController().signal, event => events.push(event), prepared.deadlineAt);
+    expect(events.filter(e => e.type === 'comment').map(e => e.comment.text)).toEqual(['当前这一段声音比较清亮']);
+    expect(events).toContainEqual(expect.objectContaining({ type: 'done', status: 'partial', count: 1 })); expect(generate).toHaveBeenCalledOnce();
   });
 });

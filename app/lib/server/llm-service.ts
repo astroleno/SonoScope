@@ -33,7 +33,7 @@ export class LlmService {
       const generated = this.provider.generate(request, deadline.signal, (text, kind) => {
         if (Date.now() >= deadlineAt) deadline.abort(new Error('deadline'));
         if (deadline.signal.aborted || count >= 7 || (kind === 'regular' && regular >= 5) || (kind === 'companionship' && company >= 2)) return;
-        const valid = cleanComment(text); if (!valid || !isGroundedComment(request.snapshot, valid) || seen.has(textKey(valid))) return;
+        const valid = cleanComment(text); if (!valid || Array.from(valid).length < 8 || Array.from(valid).length > 24 || !isGroundedComment(request.snapshot, valid) || seen.has(textKey(valid))) return;
         seen.add(textKey(valid)); count++; if (kind === 'regular') regular++; else company++;
         const now = Date.now();
         emit({ type: 'comment', requestId: request.requestId, comment: { commentId: `${request.requestId}_${count}`, audioSessionId: request.audioSessionId, danmuRunId: request.danmuRunId, snapshotId: request.snapshot.snapshotId, source: 'ai', kind, text: valid, createdAt: now, expiresAt: Math.min(now + 10000, started + 15000) } });
