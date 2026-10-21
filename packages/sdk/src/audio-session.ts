@@ -36,9 +36,23 @@ export function browserAudioEnvironment(workletUrl: string): AudioEnvironment {
       return { input, play: () => element.play(), dispose: () => { element.onended = null; element.pause(); element.removeAttribute('src'); element.load(); URL.revokeObjectURL(url); } };
     },
     async capture(context, input, onPCM, signal) {
+      const cancelled = () => signal?.aborted || context.state === 'closed';
+      if (cancelled()) throw new DOMException('Capture cancelled', 'AbortError');
       if (context.audioWorklet && typeof AudioWorkletNode !== 'undefined') {
         let timer: ReturnType<typeof setTimeout> | undefined;
         let removeAbort = () => {};
+        let node: AudioWorkletNode | undefined, mute: GainNode | undefined;
+        const releaseWorklet = () => {
+          if (node) {
+            node.port.onmessage = null;
+            try { node.port.close(); } catch { /* already closed */ }
+            // Preserve a file input's direct playback connection when capture falls back.
+            try { input.disconnect(node); } catch { /* not connected */ }
+            try { node.disconnect(); } catch { /* already disconnected */ }
+            node = undefined;
+          }
+          if (mute) { try { mute.disconnect(); } catch { /* already disconnected */ } mute = undefined; }
+        };
         try {
           const timeout = new Promise<never>((_resolve, reject) => {
             timer = setTimeout(() => reject(new Error('Capture module timeout')), 2000);
@@ -46,17 +60,19 @@ export function browserAudioEnvironment(workletUrl: string): AudioEnvironment {
             if (signal?.aborted) abort(); else { signal?.addEventListener('abort', abort, { once: true }); removeAbort = () => signal?.removeEventListener('abort', abort); }
           });
           await Promise.race([context.audioWorklet.addModule(workletUrl), timeout]);
+          if (cancelled()) throw new DOMException('Capture cancelled', 'AbortError');
+          node = new AudioWorkletNode(context, 'sonoscope-capture', { numberOfInputs: 1, numberOfOutputs: 1, channelCount: 1 });
+          mute = context.createGain(); mute.gain.value = 0;
+          node.port.onmessage = e => {
+            if (e.data?.pcm instanceof Float32Array && typeof e.data.audioTime === 'number') onPCM(e.data.pcm, e.data.audioTime);
+          };
+          input.connect(node); node.connect(mute); mute.connect(context.destination);
+          return { mode: 'worklet', dispose: releaseWorklet };
         } catch (error) {
-          if (signal?.aborted || context.state === 'closed') throw error;
+          releaseWorklet();
+          if (cancelled()) throw error;
           return scriptCapture(context, input, onPCM);
         } finally { if (timer) clearTimeout(timer); removeAbort(); }
-        const node = new AudioWorkletNode(context, 'sonoscope-capture', { numberOfInputs: 1, numberOfOutputs: 1, channelCount: 1 });
-        const mute = context.createGain(); mute.gain.value = 0;
-        node.port.onmessage = e => {
-          if (e.data?.pcm instanceof Float32Array && typeof e.data.audioTime === 'number') onPCM(e.data.pcm, e.data.audioTime);
-        };
-        input.connect(node); node.connect(mute); mute.connect(context.destination);
-        return { mode: 'worklet', dispose: () => { node.port.onmessage = null; node.port.close(); input.disconnect(); node.disconnect(); mute.disconnect(); } };
       }
       return scriptCapture(context, input, onPCM);
     }
