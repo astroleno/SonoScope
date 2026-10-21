@@ -1,0 +1,31 @@
+{
+  "testedAt": "2026-10-21T07:32:11.116Z",
+  "powerMode": "AC low power off",
+  "scope": "Isolated localhost page; raw native canvas, no p5, no DSP or model.",
+  "results": [
+    {
+      "mode": "dom",
+      "count": 5,
+      "medianMs": 1015.9000000000233,
+      "p95Ms": 1016.6999999999534
+    },
+    {
+      "mode": "2d",
+      "count": 62,
+      "medianMs": 33.300000000046566,
+      "p95Ms": 34.199999999953434
+    },
+    {
+      "mode": "webgl-preserve",
+      "count": 91,
+      "medianMs": 33.300000000046566,
+      "p95Ms": 34.40000000002328
+    },
+    {
+      "mode": "webgl-discard",
+      "count": 91,
+      "medianMs": 33.300000000046566,
+      "p95Ms": 49.79999999993015
+    }
+  ]
+}

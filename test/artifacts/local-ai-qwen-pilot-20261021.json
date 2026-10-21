@@ -1,0 +1,1590 @@
+{
+  "testedAt": "2026-10-21T08:07:30.404Z",
+  "model": "Qwen/Qwen3.5-9B",
+  "buildId": null,
+  "scope": "Comparison after initial grounding and length rules, before final temporal/plain-language changes. The build identifier was not captured; not final-build evidence.",
+  "test": {
+    "name": "rock-qwen-grounded",
+    "startedAt": 1792569886320,
+    "baseRequest": 0,
+    "baseComment": 2,
+    "limit": 4,
+    "finished": true,
+    "finishedAt": 1792570050404,
+    "reason": "sample-limit"
+  },
+  "requests": [
+    {
+      "at": 8269.230000000447,
+      "body": {
+        "version": "2",
+        "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+        "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+        "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+          "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+          "startAt": 1792569886047,
+          "endAt": 1792569888244,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.06554907071350004,
+            "rmsPeak": 0.3010367697271237,
+            "centroidHzMean": 3310.2287224847964,
+            "bandwidthHzMean": 3929.495445869864,
+            "rolloffHzMean": 7353.966346153846,
+            "flatnessMean": 0.021372964137563604,
+            "fluxMean": 0.15768585899929535,
+            "onsetRate": 6.372325898953117,
+            "tempo": null,
+            "hpss": {
+              "harmonic": 0.6863905458243228,
+              "percussive": 0.31360945417567715
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "unknown",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569887369,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.99609375
+              },
+              {
+                "label": "Silence",
+                "score": 0.1484375
+              },
+              {
+                "label": "Drum kit",
+                "score": 0.05859375
+              },
+              {
+                "label": "Drum",
+                "score": 0.04296875
+              },
+              {
+                "label": "Percussion",
+                "score": 0.04296875
+              },
+              {
+                "label": "Musical instrument",
+                "score": 0.04296875
+              },
+              {
+                "label": "Bass drum",
+                "score": 0.03125
+              },
+              {
+                "label": "Speech",
+                "score": 0.03125
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.03125
+              },
+              {
+                "label": "Bass guitar",
+                "score": 0.01953125
+              },
+              {
+                "label": "Music",
+                "score": 0.01953125
+              },
+              {
+                "label": "Rimshot",
+                "score": 0.015625
+              },
+              {
+                "label": "Snare drum",
+                "score": 0.015625
+              },
+              {
+                "label": "Drum machine",
+                "score": 0.015625
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.015625
+              },
+              {
+                "label": "Funk",
+                "score": 0.01171875
+              }
+            ],
+            "voiceProbability": 0.03125,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "声音进来了,开始听这一段",
+          "声音轻了下来",
+          "声音变得更有力了"
+        ]
+      },
+      "events": [
+        {
+          "at": 8338.98999999836,
+          "event": {
+            "type": "accepted",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec"
+          }
+        },
+        {
+          "at": 12036.695000000298,
+          "event": {
+            "type": "comment",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+            "comment": {
+              "commentId": "eb743110-b8bd-4030-86c1-4e7c725a2dec_1",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+              "source": "ai",
+              "kind": "regular",
+              "text": "声音明亮且分布较宽,充满中高频能量。",
+              "createdAt": 1792569892013,
+              "expiresAt": 1792569902013
+            }
+          }
+        },
+        {
+          "at": 12757.175000000745,
+          "event": {
+            "type": "comment",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+            "comment": {
+              "commentId": "eb743110-b8bd-4030-86c1-4e7c725a2dec_2",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+              "source": "ai",
+              "kind": "regular",
+              "text": "能量峰值不高,整体听起来比较柔和。",
+              "createdAt": 1792569892734,
+              "expiresAt": 1792569902734
+            }
+          }
+        },
+        {
+          "at": 13633.125,
+          "event": {
+            "type": "comment",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+            "comment": {
+              "commentId": "eb743110-b8bd-4030-86c1-4e7c725a2dec_3",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+              "source": "ai",
+              "kind": "regular",
+              "text": "频谱能量变化较快,听觉上略显跳跃。",
+              "createdAt": 1792569893610,
+              "expiresAt": 1792569903313
+            }
+          }
+        },
+        {
+          "at": 14463.25,
+          "event": {
+            "type": "comment",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+            "comment": {
+              "commentId": "eb743110-b8bd-4030-86c1-4e7c725a2dec_4",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+              "source": "ai",
+              "kind": "regular",
+              "text": "声音集中在较高频段,听起来清脆透亮。",
+              "createdAt": 1792569894439,
+              "expiresAt": 1792569903313
+            }
+          }
+        },
+        {
+          "at": 15419.339999999851,
+          "event": {
+            "type": "comment",
+            "requestId": "eb743110-b8bd-4030-86c1-4e7c725a2dec",
+            "comment": {
+              "commentId": "eb743110-b8bd-4030-86c1-4e7c725a2dec_5",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_188",
+              "source": "ai",
+              "kind": "regular",
+              "text": "能量起伏不大,维持着平稳的听感状态。",
+              "createdAt": 1792569895395,
+              "expiresAt": 1792569903313
+            }
+          }
+        }
+      ],
+      "aborted": true,
+      "status": 200,
+      "readError": true,
+      "eofAt": 16269.625
+    },
+    {
+      "at": 46370.36499999836,
+      "body": {
+        "version": "2",
+        "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+        "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+        "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+          "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+          "startAt": 1792569924146,
+          "endAt": 1792569926344,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.14472482547922627,
+            "rmsPeak": 0.2539650032869899,
+            "centroidHzMean": 1812.5896331742904,
+            "bandwidthHzMean": 2669.42375065795,
+            "rolloffHzMean": 3827.5240384615386,
+            "flatnessMean": 0.01179483570648266,
+            "fluxMean": 0.12830024858094802,
+            "onsetRate": 4.549590536851683,
+            "tempo": null,
+            "hpss": {
+              "harmonic": 0.33973806118649785,
+              "percussive": 0.6602619388135021
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "unknown",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569925470,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.99609375
+              },
+              {
+                "label": "Silence",
+                "score": 0.109375
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.04296875
+              },
+              {
+                "label": "Music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Speech",
+                "score": 0.01953125
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.01171875
+              },
+              {
+                "label": "Video game music",
+                "score": 0.0078125
+              },
+              {
+                "label": "Speech synthesizer",
+                "score": 0.0078125
+              },
+              {
+                "label": "Exciting music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Soundtrack music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Theme music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Background music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Blues",
+                "score": 0.00390625
+              },
+              {
+                "label": "Jazz",
+                "score": 0.00390625
+              },
+              {
+                "label": "Country",
+                "score": 0.00390625
+              },
+              {
+                "label": "Rhythm and blues",
+                "score": 0.00390625
+              }
+            ],
+            "voiceProbability": 0.01953125,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "频谱能量变化较快,听觉上略显跳跃。",
+          "声音集中在较高频段,听起来清脆透亮。",
+          "能量起伏不大,维持着平稳的听感状态。",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化"
+        ]
+      },
+      "events": [
+        {
+          "at": 46412.15500000119,
+          "event": {
+            "type": "accepted",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee"
+          }
+        },
+        {
+          "at": 47448.76999999955,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_1",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "regular",
+              "text": "高频能量集中,音色清脆透亮。",
+              "createdAt": 1792569927424,
+              "expiresAt": 1792569937424
+            }
+          }
+        },
+        {
+          "at": 47919.42000000179,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_2",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "regular",
+              "text": "频谱起伏明显,听觉略显跳跃。",
+              "createdAt": 1792569927895,
+              "expiresAt": 1792569937895
+            }
+          }
+        },
+        {
+          "at": 48418.85000000149,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_3",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "regular",
+              "text": "整体能量平稳,听感状态持续。",
+              "createdAt": 1792569928394,
+              "expiresAt": 1792569938394
+            }
+          }
+        },
+        {
+          "at": 48917.324999999255,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_4",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "regular",
+              "text": "能量分布均匀,无明显强弱波动。",
+              "createdAt": 1792569928893,
+              "expiresAt": 1792569938893
+            }
+          }
+        },
+        {
+          "at": 49444.63500000164,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_5",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "regular",
+              "text": "高频细节丰富,声音较为清晰。",
+              "createdAt": 1792569929421,
+              "expiresAt": 1792569939421
+            }
+          }
+        },
+        {
+          "at": 49968.640000000596,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_6",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "声音在静静流淌,陪伴你此刻。",
+              "createdAt": 1792569929945,
+              "expiresAt": 1792569939945
+            }
+          }
+        },
+        {
+          "at": 50526.234999999404,
+          "event": {
+            "type": "comment",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "comment": {
+              "commentId": "b2b46e26-5792-46f9-8df0-c8e965b066ee_7",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_1974",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "愿这清脆声浪,为你带来片刻安宁。",
+              "createdAt": 1792569930502,
+              "expiresAt": 1792569940502
+            }
+          }
+        },
+        {
+          "at": 50624.37000000104,
+          "event": {
+            "type": "done",
+            "requestId": "b2b46e26-5792-46f9-8df0-c8e965b066ee",
+            "status": "complete",
+            "count": 7,
+            "usage": {
+              "inputTokens": 1147,
+              "outputTokens": 137
+            }
+          }
+        }
+      ],
+      "aborted": false,
+      "status": 200,
+      "eofAt": 50626.625
+    },
+    {
+      "at": 58402.42000000179,
+      "body": {
+        "version": "2",
+        "requestId": "bfddaa09-af87-49e9-a18e-841af49e6ba7",
+        "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+        "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+          "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_2538",
+          "startAt": 1792569936178,
+          "endAt": 1792569938376,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.1500603718801009,
+            "rmsPeak": 0.30079016482326243,
+            "centroidHzMean": 2769.548033331469,
+            "bandwidthHzMean": 3476.1204320790607,
+            "rolloffHzMean": 6352.914663461538,
+            "flatnessMean": 0.01808756694635054,
+            "fluxMean": 0.14008366531897137,
+            "onsetRate": 4.549590536851683,
+            "tempo": null,
+            "hpss": {
+              "harmonic": 0.6087750564315115,
+              "percussive": 0.3912249435684885
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "unknown",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569937502,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.98828125
+              },
+              {
+                "label": "Silence",
+                "score": 0.109375
+              },
+              {
+                "label": "Rock music",
+                "score": 0.05859375
+              },
+              {
+                "label": "Drum kit",
+                "score": 0.04296875
+              },
+              {
+                "label": "Drum",
+                "score": 0.04296875
+              },
+              {
+                "label": "Music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Musical instrument",
+                "score": 0.03125
+              },
+              {
+                "label": "Progressive rock",
+                "score": 0.03125
+              },
+              {
+                "label": "Punk rock",
+                "score": 0.03125
+              },
+              {
+                "label": "Bass drum",
+                "score": 0.03125
+              },
+              {
+                "label": "Percussion",
+                "score": 0.03125
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.03125
+              },
+              {
+                "label": "Psychedelic rock",
+                "score": 0.01953125
+              },
+              {
+                "label": "Heavy metal",
+                "score": 0.01953125
+              },
+              {
+                "label": "Rimshot",
+                "score": 0.01953125
+              },
+              {
+                "label": "Snare drum",
+                "score": 0.01953125
+              }
+            ],
+            "voiceProbability": 0.01953125,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "声音刚刚有了新的变化",
+          "高频能量集中,音色清脆透亮。",
+          "频谱起伏明显,听觉略显跳跃。",
+          "声音轻了下来",
+          "整体能量平稳,听感状态持续。",
+          "声音变得更有力了",
+          "能量分布均匀,无明显强弱波动。",
+          "声音刚刚有了新的变化",
+          "高频细节丰富,声音较为清晰。",
+          "声音在静静流淌,陪伴你此刻。",
+          "低频的声音更明显了",
+          "愿这清脆声浪,为你带来片刻安宁。"
+        ]
+      },
+      "events": [
+        {
+          "at": 58426.93499999866,
+          "event": {
+            "type": "accepted",
+            "requestId": "bfddaa09-af87-49e9-a18e-841af49e6ba7"
+          }
+        },
+        {
+          "at": 66033.6649999991,
+          "event": {
+            "type": "comment",
+            "requestId": "bfddaa09-af87-49e9-a18e-841af49e6ba7",
+            "comment": {
+              "commentId": "bfddaa09-af87-49e9-a18e-841af49e6ba7_1",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_2538",
+              "source": "ai",
+              "kind": "regular",
+              "text": "声音轻了下来,细节较为柔和。",
+              "createdAt": 1792569946008,
+              "expiresAt": 1792569953400
+            }
+          }
+        }
+      ],
+      "aborted": true,
+      "status": 200,
+      "readError": true,
+      "eofAt": 66403.04500000179
+    },
+    {
+      "at": 96503.83999999985,
+      "body": {
+        "version": "2",
+        "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+        "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+        "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+          "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+          "startAt": 1792569974279,
+          "endAt": 1792569976476,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.14137267558065963,
+            "rmsPeak": 0.31584328550298096,
+            "centroidHzMean": 2537.7432084569364,
+            "bandwidthHzMean": 3272.2558757819424,
+            "rolloffHzMean": 5751.6526442307695,
+            "flatnessMean": 0.015036203492492751,
+            "fluxMean": 0.13180943248168828,
+            "onsetRate": 3.6413290851160673,
+            "tempo": null,
+            "hpss": {
+              "harmonic": 0.9035239945930109,
+              "percussive": 0.09647600540698908
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "unknown",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569975601,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.99609375
+              },
+              {
+                "label": "Silence",
+                "score": 0.1484375
+              },
+              {
+                "label": "Rock music",
+                "score": 0.05859375
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.04296875
+              },
+              {
+                "label": "Progressive rock",
+                "score": 0.03125
+              },
+              {
+                "label": "Music",
+                "score": 0.03125
+              },
+              {
+                "label": "Speech",
+                "score": 0.03125
+              },
+              {
+                "label": "Psychedelic rock",
+                "score": 0.01953125
+              },
+              {
+                "label": "Grunge",
+                "score": 0.01953125
+              },
+              {
+                "label": "Punk rock",
+                "score": 0.01953125
+              },
+              {
+                "label": "Rock and roll",
+                "score": 0.015625
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.015625
+              },
+              {
+                "label": "Plop",
+                "score": 0.01171875
+              },
+              {
+                "label": "Fart",
+                "score": 0.0078125
+              },
+              {
+                "label": "Animal",
+                "score": 0.0078125
+              },
+              {
+                "label": "Speech synthesizer",
+                "score": 0.0078125
+              }
+            ],
+            "voiceProbability": 0.03125,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "愿这清脆声浪,为你带来片刻安宁。",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来,细节较为柔和。",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来"
+        ]
+      },
+      "events": [
+        {
+          "at": 96537.2349999994,
+          "event": {
+            "type": "accepted",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211"
+          }
+        },
+        {
+          "at": 98194.34499999881,
+          "event": {
+            "type": "comment",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+            "comment": {
+              "commentId": "d456eafb-06ff-433c-9da9-de6343952211_1",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+              "source": "ai",
+              "kind": "regular",
+              "text": "高频能量充盈,声浪明亮而清澈。",
+              "createdAt": 1792569978169,
+              "expiresAt": 1792569988169
+            }
+          }
+        },
+        {
+          "at": 99583.19000000134,
+          "event": {
+            "type": "comment",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+            "comment": {
+              "commentId": "d456eafb-06ff-433c-9da9-de6343952211_2",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+              "source": "ai",
+              "kind": "regular",
+              "text": "音频纹理细致,波动中透着灵动。",
+              "createdAt": 1792569979556,
+              "expiresAt": 1792569989556
+            }
+          }
+        },
+        {
+          "at": 101148.63500000164,
+          "event": {
+            "type": "comment",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+            "comment": {
+              "commentId": "d456eafb-06ff-433c-9da9-de6343952211_3",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+              "source": "ai",
+              "kind": "regular",
+              "text": "能量分布集中,音色显得十分锐利。",
+              "createdAt": 1792569981123,
+              "expiresAt": 1792569991123
+            }
+          }
+        },
+        {
+          "at": 102259.7650000006,
+          "event": {
+            "type": "comment",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+            "comment": {
+              "commentId": "d456eafb-06ff-433c-9da9-de6343952211_4",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+              "source": "ai",
+              "kind": "regular",
+              "text": "频谱细节丰富,听觉感受颇为鲜活。",
+              "createdAt": 1792569982234,
+              "expiresAt": 1792569991508
+            }
+          }
+        },
+        {
+          "at": 103792.67000000179,
+          "event": {
+            "type": "comment",
+            "requestId": "d456eafb-06ff-433c-9da9-de6343952211",
+            "comment": {
+              "commentId": "d456eafb-06ff-433c-9da9-de6343952211_5",
+              "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+              "danmuRunId": "9391cbfb-9c5b-4dd3-b6cc-8f08a20c0c81",
+              "snapshotId": "bf1bd492-e0af-4ee1-86df-924554f89414_4324",
+              "source": "ai",
+              "kind": "regular",
+              "text": "声音充满穿透力,质感清晰可辨。",
+              "createdAt": 1792569983766,
+              "expiresAt": 1792569991508
+            }
+          }
+        }
+      ],
+      "aborted": true,
+      "status": 200,
+      "readError": true,
+      "eofAt": 104504.11499999836
+    }
+  ],
+  "comments": [
+    {
+      "id": "a241179b-4234-47ec-a0af-a1fc7b8d697e",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 7705.045000001788,
+      "visible": true
+    },
+    {
+      "id": "1db77160-a2e9-4642-94bf-a7d2fb8e3cb2",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 9572.504999998957,
+      "visible": true
+    },
+    {
+      "id": "9c858194-e151-487f-941f-a7217b160ca5",
+      "source": "local",
+      "text": "高频的声音更明显了",
+      "at": 11438.050000000745,
+      "visible": true
+    },
+    {
+      "id": "eb743110-b8bd-4030-86c1-4e7c725a2dec_1",
+      "source": "ai",
+      "text": "声音明亮且分布较宽,充满中高频能量。",
+      "at": 12403.730000000447,
+      "visible": true
+    },
+    {
+      "id": "eb743110-b8bd-4030-86c1-4e7c725a2dec_2",
+      "source": "ai",
+      "text": "能量峰值不高,整体听起来比较柔和。",
+      "at": 13371.155000001192,
+      "visible": true
+    },
+    {
+      "id": "eb743110-b8bd-4030-86c1-4e7c725a2dec_3",
+      "source": "ai",
+      "text": "频谱能量变化较快,听觉上略显跳跃。",
+      "at": 14322.129999998957,
+      "visible": true
+    },
+    {
+      "id": "eb743110-b8bd-4030-86c1-4e7c725a2dec_4",
+      "source": "ai",
+      "text": "声音集中在较高频段,听起来清脆透亮。",
+      "at": 15271.519999999553,
+      "visible": true
+    },
+    {
+      "id": "eb743110-b8bd-4030-86c1-4e7c725a2dec_5",
+      "source": "ai",
+      "text": "能量起伏不大,维持着平稳的听感状态。",
+      "at": 16237.960000000894,
+      "visible": true
+    },
+    {
+      "id": "2e8df0f1-da7c-4f86-9e4e-0160d80b89f1",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 17154.554999999702,
+      "visible": true
+    },
+    {
+      "id": "1ad0fc99-4305-4535-a0df-0ab0e53b7d9a",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 18237.620000001043,
+      "visible": true
+    },
+    {
+      "id": "c86d08a4-810f-4d7c-8334-02f0aecc5d7e",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 20370.96499999985,
+      "visible": true
+    },
+    {
+      "id": "69cf411d-f50d-405c-98ec-aa025db80203",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 26387.85000000149,
+      "visible": true
+    },
+    {
+      "id": "a882261d-e1ab-40cc-bf43-9e3ba3c93fe1",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 28804.254999998957,
+      "visible": true
+    },
+    {
+      "id": "ec0aac61-28eb-4f52-8c5b-f972eaf8527a",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 30454.324999999255,
+      "visible": true
+    },
+    {
+      "id": "dad4e35c-f373-4f21-86f5-e9d4001145af",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 36754.67000000179,
+      "visible": true
+    },
+    {
+      "id": "52a5723e-4a08-4083-9e9c-b9e5f9f393eb",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 39337.765000000596,
+      "visible": true
+    },
+    {
+      "id": "4355868a-f07b-44cc-a585-2804c68734f2",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 41687.65500000119,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_1",
+      "source": "ai",
+      "text": "高频能量集中,音色清脆透亮。",
+      "at": 47454.01000000164,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_2",
+      "source": "ai",
+      "text": "频谱起伏明显,听觉略显跳跃。",
+      "at": 48455.26000000164,
+      "visible": true
+    },
+    {
+      "id": "31872b17-3fe9-4b23-85d9-abc8f7e5f26e",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 49421.20499999821,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_3",
+      "source": "ai",
+      "text": "整体能量平稳,听感状态持续。",
+      "at": 50371.16000000015,
+      "visible": true
+    },
+    {
+      "id": "9e11119a-7021-487d-a8c4-cb89955299a8",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 51321.27499999851,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_4",
+      "source": "ai",
+      "text": "能量分布均匀,无明显强弱波动。",
+      "at": 52271.375,
+      "visible": true
+    },
+    {
+      "id": "449082d2-2c24-4c3a-ba6a-44a53d29d7ce",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 53222.050000000745,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_5",
+      "source": "ai",
+      "text": "高频细节丰富,声音较为清晰。",
+      "at": 54955.289999999106,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_6",
+      "source": "ai",
+      "text": "声音在静静流淌,陪伴你此刻。",
+      "at": 55971.30999999866,
+      "visible": true
+    },
+    {
+      "id": "af29b260-46de-44a6-b880-a3508dbffb76",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 56921.22500000149,
+      "visible": true
+    },
+    {
+      "id": "b2b46e26-5792-46f9-8df0-c8e965b066ee_7",
+      "source": "ai",
+      "text": "愿这清脆声浪,为你带来片刻安宁。",
+      "at": 57870.789999999106,
+      "visible": true
+    },
+    {
+      "id": "190ad484-d435-4f9c-bf43-cd6b012c07d5",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 59271.65500000119,
+      "visible": true
+    },
+    {
+      "id": "d10f7b09-9a15-4ab1-b23b-1a12fad68b6d",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 61370.73999999836,
+      "visible": true
+    },
+    {
+      "id": "f1edcb96-8532-462e-ade1-92eb1a3b1221",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 64187.47500000149,
+      "visible": true
+    },
+    {
+      "id": "bfddaa09-af87-49e9-a18e-841af49e6ba7_1",
+      "source": "ai",
+      "text": "声音轻了下来,细节较为柔和。",
+      "at": 66055.125,
+      "visible": true
+    },
+    {
+      "id": "84ea6614-5de6-4608-ad50-c83a5bf32c8a",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 71270.37999999896,
+      "visible": true
+    },
+    {
+      "id": "5dc2f49f-5e55-48bc-9394-dc5fe7e5a05f",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 73804.51000000164,
+      "visible": true
+    },
+    {
+      "id": "85655530-5408-45d2-964d-1c66b046702a",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 75455.18499999866,
+      "visible": true
+    },
+    {
+      "id": "6a871b34-7afc-4c03-85e8-a5c764ef1105",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 83021.74500000104,
+      "visible": true
+    },
+    {
+      "id": "f2b9a48c-18c5-4923-9c55-31f3daf5b8c8",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 85054.4600000009,
+      "visible": true
+    },
+    {
+      "id": "81a4b353-c9ba-42de-8ca4-f9652758e741",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 87154.3200000003,
+      "visible": true
+    },
+    {
+      "id": "b92da636-2550-449e-bad3-59110c5c191b",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 95221.0150000006,
+      "visible": true
+    },
+    {
+      "id": "2373a476-4f24-4eb7-849a-da01fb1b0748",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 97221.58999999985,
+      "visible": true
+    },
+    {
+      "id": "d456eafb-06ff-433c-9da9-de6343952211_1",
+      "source": "ai",
+      "text": "高频能量充盈,声浪明亮而清澈。",
+      "at": 98204.36499999836,
+      "visible": true
+    },
+    {
+      "id": "fc4679ad-4355-4fd1-b179-35bd55ee4e31",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 99353.78500000015,
+      "visible": true
+    },
+    {
+      "id": "d456eafb-06ff-433c-9da9-de6343952211_2",
+      "source": "ai",
+      "text": "音频纹理细致,波动中透着灵动。",
+      "at": 100304.64499999955,
+      "visible": true
+    },
+    {
+      "id": "d456eafb-06ff-433c-9da9-de6343952211_3",
+      "source": "ai",
+      "text": "能量分布集中,音色显得十分锐利。",
+      "at": 101320.1950000003,
+      "visible": true
+    },
+    {
+      "id": "d456eafb-06ff-433c-9da9-de6343952211_4",
+      "source": "ai",
+      "text": "频谱细节丰富,听觉感受颇为鲜活。",
+      "at": 102271.05000000075,
+      "visible": true
+    },
+    {
+      "id": "d456eafb-06ff-433c-9da9-de6343952211_5",
+      "source": "ai",
+      "text": "声音充满穿透力,质感清晰可辨。",
+      "at": 103803.98000000045,
+      "visible": true
+    },
+    {
+      "id": "8a316edf-b8ae-47ce-a4af-f73d215c5811",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 105853.94000000134,
+      "visible": true
+    },
+    {
+      "id": "239c0bc2-d71d-4ad5-96a9-91a4b4241ace",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 108237.25499999896,
+      "visible": true
+    },
+    {
+      "id": "866372fa-dec5-4920-abfd-f7294b09256d",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 111304.01000000164,
+      "visible": true
+    },
+    {
+      "id": "d6f67e56-50db-4869-9519-bcf6d6f22853",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 118187.50499999896,
+      "visible": true
+    },
+    {
+      "id": "b8ffb1d3-d746-4edc-b282-5114de974cf1",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 119920.90500000119,
+      "visible": true
+    },
+    {
+      "id": "6fad2f95-0b23-4381-8193-8e6b7fd37e58",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 121837.48000000045,
+      "visible": true
+    },
+    {
+      "id": "045d3e10-bddf-489f-aee3-5d2114054d9f",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 126053.23000000045,
+      "visible": true
+    },
+    {
+      "id": "7c4d75e2-632c-4a0c-9192-59afa5b4f799",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 131220.99500000104,
+      "visible": true
+    },
+    {
+      "id": "0af16906-2590-4977-b0c2-f8412b21c781",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 133120.5150000006,
+      "visible": true
+    },
+    {
+      "id": "ec9f4b8c-8d9e-44aa-9f9a-c553abb690ab",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 135020.55000000075,
+      "visible": true
+    },
+    {
+      "id": "a149d2d4-89bd-4af3-89be-21ae446f56a6",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 137071.0300000012,
+      "visible": true
+    },
+    {
+      "id": "de6e5d3f-6aee-4886-9c9b-78da85768edd",
+      "source": "local",
+      "text": "节奏大约 128 BPM",
+      "at": 142504.2749999985,
+      "visible": true
+    },
+    {
+      "id": "6a8a9ef3-f705-445f-a105-c6e1e60cf9f9",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 144337.46499999985,
+      "visible": true
+    },
+    {
+      "id": "995ad92e-66c5-4cc5-998b-6bbacc95b671",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 146420.875,
+      "visible": true
+    },
+    {
+      "id": "b7247581-9d12-40e0-88d1-bf2231ce5d07",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 148070.4750000015,
+      "visible": true
+    },
+    {
+      "id": "4b386fcf-e3f3-4cf1-8097-8246cebbbea0",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 150803.78500000015,
+      "visible": true
+    },
+    {
+      "id": "81f6985c-b9f7-4978-a4e3-b43842f4f2db",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 155603.87000000104,
+      "visible": true
+    },
+    {
+      "id": "9b66607b-bbd7-49a6-8af2-8294588fb893",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 158403.7250000015,
+      "visible": true
+    },
+    {
+      "id": "bd46833a-e45a-4571-b436-7ca83b31a132",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 165869.6550000012,
+      "visible": true
+    },
+    {
+      "id": "3e0dac1e-5d91-4a14-9dcd-0b869db629e4",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 168703.81500000134,
+      "visible": true
+    }
+  ],
+  "metrics": {
+    "audioSessionId": "bf1bd492-e0af-4ee1-86df-924554f89414",
+    "observedSeconds": 165,
+    "visualSamples": 5243,
+    "visualP95Ms": 22,
+    "featureSamples": 7781,
+    "dspComputeP95Ms": 4,
+    "captureToFeatureP95Ms": 3,
+    "featureToDrawP95Ms": 20,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0.12121212121212122,
+    "mobileFpsPassRate": 0.6727272727272727,
+    "fpsMedian": 30,
+    "localFirstP95Ms": 2,
+    "aiFirstP95Ms": 7630
+  },
+  "errors": []
+}

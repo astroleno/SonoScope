@@ -1,0 +1,83 @@
+{
+  "preparedAt": "2026-10-21T08:01:03.061713+00:00",
+  "priorPianoFixture": {
+    "title": "The Entertainer",
+    "composer": "Scott Joplin",
+    "performer": "Kevin MacLeod",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:The_Entertainer_by_Kevin_MacLeod.ogg",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6b/The_Entertainer_by_Kevin_MacLeod.ogg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sha1": "45111a083a1d5ea88142e4813a6727320cca5d4f",
+    "sha256": "f19ed758e6579a416f42145230a97b1333f49b24684f40936c3d5a9e46e94e69",
+    "bytes": 4278460,
+    "changes": "None for browser input: original Ogg recording.",
+    "distributedAudio": false,
+    "purpose": "Local real-music classification and feedback validation; a single piano recording is not a genre/diversity benchmark."
+  },
+  "additionalPublicRecordings": [
+    {
+      "label": "funk",
+      "title": "Funkorama (MacLeod, Kevin) (ISRC USUAN1100474).oga",
+      "page": "https://commons.wikimedia.org/wiki/File:Funkorama_(MacLeod,_Kevin)_(ISRC_USUAN1100474).oga",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Funkorama_%28MacLeod%2C_Kevin%29_%28ISRC_USUAN1100474%29.oga",
+      "bytes": 5253596,
+      "sha1": "77ca54876fc023e87327fbdf1f5ca12efb426f19",
+      "license": "CC BY 3.0 us",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
+      "localFile": "funk.oga",
+      "author": "Kevin MacLeod"
+    },
+    {
+      "label": "rock",
+      "title": "Kevin MacLeod - Sax, Rock, and Roll.ogg",
+      "page": "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Sax,_Rock,_and_Roll.ogg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Kevin_MacLeod_-_Sax%2C_Rock%2C_and_Roll.ogg",
+      "bytes": 2072010,
+      "sha1": "fc9894de6772356c6b14d7557bcb815503e2005e",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "localFile": "rock.ogg",
+      "author": "Kevin MacLeod"
+    },
+    {
+      "label": "speech-real",
+      "title": "JFK inaugural address.ogg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/JFK_inaugural_address.ogg",
+      "page": "https://commons.wikimedia.org/wiki/File:JFK_inaugural_address.ogg",
+      "bytes": 5978784,
+      "sha1": "fb6807f19e7206a3db8c679811b9981d58a90193",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "localFile": "speech-real.ogg",
+      "author": "John F. Kennedy (official U.S. Government recording)"
+    },
+    {
+      "label": "orchestra",
+      "title": "Victor Concert Orchestra 1917 Beethoven 5th symphony fourth movement.oga",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Victor_Concert_Orchestra_1917_Beethoven_5th_symphony_fourth_movement.oga",
+      "page": "https://commons.wikimedia.org/wiki/File:Victor_Concert_Orchestra_1917_Beethoven_5th_symphony_fourth_movement.oga",
+      "bytes": 7656895,
+      "sha1": "c8335445a2e09875ec3365c7c12419fc894001e3",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "localFile": "orchestra.oga",
+      "author": "Ludwig van Beethoven; Victor Concert Orchestra, Josef Pasternack (1917 recording)"
+    }
+  ],
+  "syntheticControls": [
+    {
+      "file": "noise.wav",
+      "source": "FFmpeg anoisesrc white, amplitude=0.06, 44100Hz, 100s, seed=20261021; generated locally",
+      "sha256": "f62e9b6c5dac60c59ab9aba621c3aeeff39eb34c838785693b85a0752b2ec001",
+      "bytes": 8820078
+    },
+    {
+      "file": "silence.wav",
+      "source": "FFmpeg anullsrc mono, 44100Hz, 45s; generated locally",
+      "sha256": "6ce7e6e796d7d49acce28a5bdf2ac5db927661667a499b351b329ef6546cf3c5",
+      "bytes": 3969078
+    }
+  ],
+  "privacy": "Original recordings and generated PCM files are kept only in the ignored private test folder; no personal recordings were read. Only features and generated comments reach the authorized API. Audio is not included in code or release packages."
+}

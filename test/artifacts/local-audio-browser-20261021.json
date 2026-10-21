@@ -1,0 +1,371 @@
+{
+  "testedAt": "2026-10-21T07:26:43.298Z",
+  "scope": "Production AudioSession source transpiled for an isolated localhost lab. Native Web Audio generated MediaStream; permission and ended events injected. No physical microphone access.",
+  "denied": {
+    "state": {
+      "status": "error",
+      "audioSessionId": null,
+      "error": {
+        "code": "permission-denied",
+        "message": "麦克风未获授权。请在浏览器的网站设置中允许麦克风，再点重试。"
+      },
+      "capture": null,
+      "sourceType": "device"
+    },
+    "frames": 0,
+    "rms": 0,
+    "firstFrameMs": null,
+    "contextState": "closed",
+    "tracks": [],
+    "states": [
+      {
+        "status": "idle",
+        "audioSessionId": null,
+        "error": null,
+        "capture": null,
+        "at": 298418.40000000224
+      },
+      {
+        "status": "requesting",
+        "audioSessionId": "f9af9b21-84d4-4aaa-9dff-02d374b5061d",
+        "error": null,
+        "capture": null,
+        "sourceType": "device",
+        "at": 298420.80000000075
+      },
+      {
+        "status": "error",
+        "audioSessionId": null,
+        "error": {
+          "code": "permission-denied",
+          "message": "麦克风未获授权。请在浏览器的网站设置中允许麦克风，再点重试。"
+        },
+        "capture": null,
+        "sourceType": "device",
+        "at": 298421.40000000224
+      }
+    ],
+    "errors": [
+      {
+        "mode": "denied",
+        "name": "NotAllowedError"
+      }
+    ],
+    "runs": []
+  },
+  "cancelled": {
+    "state": {
+      "status": "idle",
+      "audioSessionId": null,
+      "error": null,
+      "capture": null
+    },
+    "frames": 0,
+    "rms": 0,
+    "firstFrameMs": null,
+    "contextState": "closed",
+    "tracks": [
+      {
+        "kind": "audio",
+        "state": "ended"
+      }
+    ],
+    "states": [
+      {
+        "status": "idle",
+        "audioSessionId": null,
+        "error": null,
+        "capture": null,
+        "at": 299474.40000000224
+      },
+      {
+        "status": "requesting",
+        "audioSessionId": "31727a99-039b-4d0e-aa89-79e3e6118c0b",
+        "error": null,
+        "capture": null,
+        "sourceType": "device",
+        "at": 299474.80000000075
+      },
+      {
+        "status": "idle",
+        "audioSessionId": null,
+        "error": null,
+        "capture": null,
+        "at": 300525.5
+      }
+    ],
+    "errors": [
+      {
+        "mode": "denied",
+        "name": "NotAllowedError"
+      },
+      {
+        "mode": "pending",
+        "name": "AbortError"
+      }
+    ],
+    "runs": []
+  },
+  "disconnected": {
+    "state": {
+      "status": "error",
+      "audioSessionId": null,
+      "error": {
+        "code": "device-ended",
+        "message": "音频输入已断开。连接设备后重试。"
+      },
+      "capture": null
+    },
+    "frames": 47,
+    "rms": 0.08457765764417219,
+    "firstFrameMs": 2023.199999999255,
+    "contextState": "closed",
+    "tracks": [
+      {
+        "kind": "audio",
+        "state": "ended"
+      }
+    ],
+    "states": [
+      {
+        "status": "idle",
+        "audioSessionId": null,
+        "error": null,
+        "capture": null,
+        "at": 302674.6000000015
+      },
+      {
+        "status": "requesting",
+        "audioSessionId": "3fe3f73a-252e-413e-86af-25271d2c6ebe",
+        "error": null,
+        "capture": null,
+        "sourceType": "device",
+        "at": 302675
+      },
+      {
+        "status": "running",
+        "audioSessionId": "3fe3f73a-252e-413e-86af-25271d2c6ebe",
+        "error": null,
+        "capture": "compatibility",
+        "sourceType": "device",
+        "at": 304677.80000000075
+      },
+      {
+        "status": "idle",
+        "audioSessionId": null,
+        "error": null,
+        "capture": null,
+        "at": 305687.6000000015
+      },
+      {
+        "status": "error",
+        "audioSessionId": null,
+        "error": {
+          "code": "device-ended",
+          "message": "音频输入已断开。连接设备后重试。"
+        },
+        "capture": null,
+        "at": 305687.700000003
+      }
+    ],
+    "errors": [
+      {
+        "mode": "denied",
+        "name": "NotAllowedError"
+      },
+      {
+        "mode": "pending",
+        "name": "AbortError"
+      }
+    ],
+    "runs": []
+  },
+  "repeatedBrowserStreamRuns": [
+    {
+      "index": 1,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2038.519999999553,
+      "stopped": true
+    },
+    {
+      "index": 2,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2019.6700000017881,
+      "stopped": true
+    },
+    {
+      "index": 3,
+      "capture": "compatibility",
+      "frames": 3,
+      "rms": 0.08451769297982985,
+      "firstFrameMs": 2023.214999999851,
+      "stopped": true
+    },
+    {
+      "index": 4,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2024.769999999553,
+      "stopped": true
+    },
+    {
+      "index": 5,
+      "capture": "compatibility",
+      "frames": 22,
+      "rms": 0.08465926317264154,
+      "firstFrameMs": 2023.7950000017881,
+      "stopped": true
+    },
+    {
+      "index": 6,
+      "capture": "compatibility",
+      "frames": 7,
+      "rms": 0.08475715407276532,
+      "firstFrameMs": 2024.304999999702,
+      "stopped": true
+    },
+    {
+      "index": 7,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2024.8699999973178,
+      "stopped": true
+    },
+    {
+      "index": 8,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2024.300000000745,
+      "stopped": true
+    },
+    {
+      "index": 9,
+      "capture": "compatibility",
+      "frames": 7,
+      "rms": 0.08475715407276532,
+      "firstFrameMs": 2023.570000000298,
+      "stopped": true
+    },
+    {
+      "index": 10,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2024.5,
+      "stopped": true
+    },
+    {
+      "index": 11,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2023.879999998957,
+      "stopped": true
+    },
+    {
+      "index": 12,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2024.7399999983609,
+      "stopped": true
+    },
+    {
+      "index": 13,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2025.730000000447,
+      "stopped": true
+    },
+    {
+      "index": 14,
+      "capture": "compatibility",
+      "frames": 6,
+      "rms": 0.08529323355995672,
+      "firstFrameMs": 2024.1699999980628,
+      "stopped": true
+    },
+    {
+      "index": 15,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2028.1499999985099,
+      "stopped": true
+    },
+    {
+      "index": 16,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2024.074999999255,
+      "stopped": true
+    },
+    {
+      "index": 17,
+      "capture": "compatibility",
+      "frames": 4,
+      "rms": 0.08447598777941931,
+      "firstFrameMs": 2028.184999998659,
+      "stopped": true
+    },
+    {
+      "index": 18,
+      "capture": "compatibility",
+      "frames": 3,
+      "rms": 0.08451769297982985,
+      "firstFrameMs": 2020.565000001341,
+      "stopped": true
+    },
+    {
+      "index": 19,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2024.7749999985099,
+      "stopped": true
+    },
+    {
+      "index": 20,
+      "capture": "compatibility",
+      "frames": 5,
+      "rms": 0.08507709277645892,
+      "firstFrameMs": 2023.7749999985099,
+      "stopped": true
+    }
+  ],
+  "repeatedBrowserScope": "Twenty actual native Web Audio generated MediaStreams via production AudioSession source, Ego Lite, same COOP/COEP as app. Capture mode recorded per run; physical microphone not accessed.",
+  "repeatedBrowserAccepted": true,
+  "nativeWorkletPilot": {
+    "scope": "Real AudioWorklet and generated MediaStream in Ego Lite native UI with production COOP/COEP. Not physical microphone capture.",
+    "capture": "worklet",
+    "frames": 4280,
+    "rms": 0.08453529339937545,
+    "firstFrameMs": 97.00500000268221,
+    "afterStop": {
+      "context": "closed",
+      "tracks": [
+        {
+          "kind": "audio",
+          "state": "ended"
+        }
+      ]
+    }
+  },
+  "rawCanvasPassive": {
+    "done": true,
+    "samples": 152,
+    "medianMs": 33.35000000000582,
+    "p95Ms": 66.67499999998836,
+    "focus": true,
+    "visibility": "visible"
+  }
+}

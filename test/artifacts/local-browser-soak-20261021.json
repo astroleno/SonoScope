@@ -1,0 +1,466 @@
+{
+  "testedAt": "2026-10-21T09:00:31.191Z",
+  "buildId": "A1jGlqilD07vsSaFGO1uv",
+  "scope": "Continuous full production app in Ego Lite, native AudioWorklet and generated MediaStream via the normal microphone UI flow. getUserMedia supplied generated audio; no physical microphone or permission grants. All five original presets retained.",
+  "environment": {
+    "browser": "Ego Lite",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M4",
+    "logicalCPUs": 10,
+    "totalMemoryBytes": 17179869184,
+    "acLowPowerModeDuringTest": 0,
+    "batteryLowPowerModeDuringTest": 0,
+    "viewport": [
+      1458,
+      796
+    ],
+    "visible": "visible",
+    "focus": false,
+    "rafMedianMs": 33.33499999996275
+  },
+  "startedAt": "2026-10-21T08:30:20.235Z",
+  "durationSeconds": 1810.956,
+  "finishReason": "30-minutes-reached",
+  "metrics": {
+    "audioSessionId": "f55e578b-724b-4184-8b42-7508046bd242",
+    "observedSeconds": 1810,
+    "visualSamples": 53627,
+    "visualP95Ms": 25,
+    "featureSamples": 84834,
+    "dspComputeP95Ms": 4,
+    "captureToFeatureP95Ms": 4,
+    "featureToDrawP95Ms": 23,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0.010497237569060774,
+    "mobileFpsPassRate": 0.5480662983425414,
+    "fpsMedian": 30,
+    "localFirstP95Ms": 5,
+    "aiFirstP95Ms": null
+  },
+  "realWorkerFrames": 84867,
+  "modelClassifications": 1804,
+  "captureModes": {
+    "worklet": 1,
+    "compatibility": 0
+  },
+  "workletLoads": [
+    {
+      "start": 24543.72999999672,
+      "url": "/SonoScope/audio/capture-worklet.js",
+      "end": 24558.179999999702
+    }
+  ],
+  "generatedInputEvents": [
+    {
+      "type": "generated-test-input",
+      "at": 24539.88999999687
+    }
+  ],
+  "modelStatus": "ready",
+  "requests": 0,
+  "errors": [],
+  "samples": 1811,
+  "resourceMax": {
+    "contexts": 1,
+    "workers": 2,
+    "liveTracks": 1,
+    "media": 0,
+    "canvases": 1,
+    "commentNodes": 1
+  },
+  "afterStop": {
+    "contexts": 0,
+    "workers": 0,
+    "media": 0,
+    "liveTracks": 0,
+    "commentNodes": 0,
+    "canvases": 1
+  },
+  "presets": [
+    {
+      "preset": "Wave",
+      "elapsedStartSeconds": 0,
+      "observedSeconds": 360,
+      "averageActualDrawFps": 29.53,
+      "sampledRafMedianMinMs": 33.325000000004366,
+      "sampledRafMedianMaxMs": 33.335000000020955,
+      "resourceMax": {
+        "contexts": 1,
+        "workers": 2,
+        "liveTracks": 1,
+        "canvases": 1
+      }
+    },
+    {
+      "preset": "Accretion",
+      "elapsedStartSeconds": 360.994,
+      "observedSeconds": 359,
+      "averageActualDrawFps": 29.47,
+      "sampledRafMedianMinMs": 33.32500000006985,
+      "sampledRafMedianMaxMs": 33.335000000020955,
+      "resourceMax": {
+        "contexts": 1,
+        "workers": 2,
+        "liveTracks": 1,
+        "canvases": 1
+      }
+    },
+    {
+      "preset": "Spiral",
+      "elapsedStartSeconds": 720.09,
+      "observedSeconds": 360,
+      "averageActualDrawFps": 29.76,
+      "sampledRafMedianMinMs": 16.670000000158325,
+      "sampledRafMedianMaxMs": 33.33499999996275,
+      "resourceMax": {
+        "contexts": 1,
+        "workers": 2,
+        "liveTracks": 1,
+        "canvases": 1
+      }
+    },
+    {
+      "preset": "Mosaic",
+      "elapsedStartSeconds": 1080.085,
+      "observedSeconds": 360,
+      "averageActualDrawFps": 29.48,
+      "sampledRafMedianMinMs": 33.325000000186265,
+      "sampledRafMedianMaxMs": 33.33499999996275,
+      "resourceMax": {
+        "contexts": 1,
+        "workers": 2,
+        "liveTracks": 1,
+        "canvases": 1
+      }
+    },
+    {
+      "preset": "Mochi",
+      "elapsedStartSeconds": 1440.083,
+      "observedSeconds": 371,
+      "averageActualDrawFps": 29.89,
+      "sampledRafMedianMinMs": 33.330000000074506,
+      "sampledRafMedianMaxMs": 33.33499999996275,
+      "resourceMax": {
+        "contexts": 1,
+        "workers": 2,
+        "liveTracks": 1,
+        "canvases": 1
+      }
+    }
+  ],
+  "heap": {
+    "scope": "Page JS heap only, sampled every 20 seconds starting partway through the run. Does not establish complete process, worker, GPU memory or listener counts.",
+    "measurementStartedAfterSessionSeconds": 388.77,
+    "sampledThroughElapsedSeconds": 1808.735,
+    "samples": 72,
+    "minBytes": 160199269,
+    "maxBytes": 211148933,
+    "values": [
+      {
+        "elapsedSeconds": 388.77,
+        "bytes": 167879305
+      },
+      {
+        "elapsedSeconds": 408.771,
+        "bytes": 174201859
+      },
+      {
+        "elapsedSeconds": 428.77,
+        "bytes": 162640229
+      },
+      {
+        "elapsedSeconds": 448.769,
+        "bytes": 169265528
+      },
+      {
+        "elapsedSeconds": 468.77,
+        "bytes": 175301032
+      },
+      {
+        "elapsedSeconds": 488.769,
+        "bytes": 164027855
+      },
+      {
+        "elapsedSeconds": 508.769,
+        "bytes": 170730893
+      },
+      {
+        "elapsedSeconds": 528.768,
+        "bytes": 176691713
+      },
+      {
+        "elapsedSeconds": 548.767,
+        "bytes": 165609974
+      },
+      {
+        "elapsedSeconds": 568.768,
+        "bytes": 172018018
+      },
+      {
+        "elapsedSeconds": 588.766,
+        "bytes": 178109865
+      },
+      {
+        "elapsedSeconds": 608.766,
+        "bytes": 166452142
+      },
+      {
+        "elapsedSeconds": 628.766,
+        "bytes": 172909162
+      },
+      {
+        "elapsedSeconds": 648.765,
+        "bytes": 179032930
+      },
+      {
+        "elapsedSeconds": 668.765,
+        "bytes": 167932468
+      },
+      {
+        "elapsedSeconds": 688.869,
+        "bytes": 173989244
+      },
+      {
+        "elapsedSeconds": 708.869,
+        "bytes": 162942780
+      },
+      {
+        "elapsedSeconds": 728.868,
+        "bytes": 162437033
+      },
+      {
+        "elapsedSeconds": 748.868,
+        "bytes": 168876609
+      },
+      {
+        "elapsedSeconds": 768.868,
+        "bytes": 174916670
+      },
+      {
+        "elapsedSeconds": 788.869,
+        "bytes": 163644079
+      },
+      {
+        "elapsedSeconds": 808.868,
+        "bytes": 169397731
+      },
+      {
+        "elapsedSeconds": 828.868,
+        "bytes": 175915886
+      },
+      {
+        "elapsedSeconds": 848.868,
+        "bytes": 164681791
+      },
+      {
+        "elapsedSeconds": 868.867,
+        "bytes": 170951085
+      },
+      {
+        "elapsedSeconds": 888.867,
+        "bytes": 177240424
+      },
+      {
+        "elapsedSeconds": 908.867,
+        "bytes": 166010901
+      },
+      {
+        "elapsedSeconds": 928.866,
+        "bytes": 172604034
+      },
+      {
+        "elapsedSeconds": 948.867,
+        "bytes": 179016470
+      },
+      {
+        "elapsedSeconds": 968.867,
+        "bytes": 167878262
+      },
+      {
+        "elapsedSeconds": 988.866,
+        "bytes": 174132906
+      },
+      {
+        "elapsedSeconds": 1008.865,
+        "bytes": 162765300
+      },
+      {
+        "elapsedSeconds": 1028.865,
+        "bytes": 168716073
+      },
+      {
+        "elapsedSeconds": 1048.866,
+        "bytes": 175444878
+      },
+      {
+        "elapsedSeconds": 1068.865,
+        "bytes": 164134456
+      },
+      {
+        "elapsedSeconds": 1088.867,
+        "bytes": 161215492
+      },
+      {
+        "elapsedSeconds": 1108.867,
+        "bytes": 165362721
+      },
+      {
+        "elapsedSeconds": 1128.864,
+        "bytes": 160199269
+      },
+      {
+        "elapsedSeconds": 1148.864,
+        "bytes": 179961779
+      },
+      {
+        "elapsedSeconds": 1168.869,
+        "bytes": 160521958
+      },
+      {
+        "elapsedSeconds": 1188.865,
+        "bytes": 172535557
+      },
+      {
+        "elapsedSeconds": 1208.863,
+        "bytes": 166207772
+      },
+      {
+        "elapsedSeconds": 1228.869,
+        "bytes": 178439292
+      },
+      {
+        "elapsedSeconds": 1248.862,
+        "bytes": 173058212
+      },
+      {
+        "elapsedSeconds": 1268.862,
+        "bytes": 162772375
+      },
+      {
+        "elapsedSeconds": 1288.884,
+        "bytes": 185449361
+      },
+      {
+        "elapsedSeconds": 1308.863,
+        "bytes": 181573403
+      },
+      {
+        "elapsedSeconds": 1328.862,
+        "bytes": 174625755
+      },
+      {
+        "elapsedSeconds": 1348.862,
+        "bytes": 183984301
+      },
+      {
+        "elapsedSeconds": 1368.861,
+        "bytes": 167253951
+      },
+      {
+        "elapsedSeconds": 1388.863,
+        "bytes": 183684132
+      },
+      {
+        "elapsedSeconds": 1408.861,
+        "bytes": 164174138
+      },
+      {
+        "elapsedSeconds": 1428.861,
+        "bytes": 162626041
+      },
+      {
+        "elapsedSeconds": 1448.86,
+        "bytes": 194312275
+      },
+      {
+        "elapsedSeconds": 1468.86,
+        "bytes": 211148933
+      },
+      {
+        "elapsedSeconds": 1488.86,
+        "bytes": 168231812
+      },
+      {
+        "elapsedSeconds": 1508.86,
+        "bytes": 168645216
+      },
+      {
+        "elapsedSeconds": 1528.86,
+        "bytes": 174623386
+      },
+      {
+        "elapsedSeconds": 1548.859,
+        "bytes": 163610095
+      },
+      {
+        "elapsedSeconds": 1568.86,
+        "bytes": 169649371
+      },
+      {
+        "elapsedSeconds": 1588.859,
+        "bytes": 176299555
+      },
+      {
+        "elapsedSeconds": 1608.859,
+        "bytes": 164534744
+      },
+      {
+        "elapsedSeconds": 1628.739,
+        "bytes": 170975020
+      },
+      {
+        "elapsedSeconds": 1648.738,
+        "bytes": 177226530
+      },
+      {
+        "elapsedSeconds": 1668.738,
+        "bytes": 166204501
+      },
+      {
+        "elapsedSeconds": 1688.738,
+        "bytes": 172542175
+      },
+      {
+        "elapsedSeconds": 1708.738,
+        "bytes": 178576090
+      },
+      {
+        "elapsedSeconds": 1728.737,
+        "bytes": 166855287
+      },
+      {
+        "elapsedSeconds": 1748.737,
+        "bytes": 173076494
+      },
+      {
+        "elapsedSeconds": 1768.736,
+        "bytes": 179705975
+      },
+      {
+        "elapsedSeconds": 1788.736,
+        "bytes": 167735152
+      },
+      {
+        "elapsedSeconds": 1808.735,
+        "bytes": 173936225
+      }
+    ]
+  },
+  "checks": {
+    "durationAtLeast30Minutes": true,
+    "nativeWorkletUsed": true,
+    "allFivePresets": true,
+    "resourceCountsBounded": true,
+    "afterStopReleased": true,
+    "callbackToDrawP95Within100ms": true,
+    "desktop45FpsWindowRateAtLeast95Percent": false
+  },
+  "limitations": [
+    "45 FPS remains an unpassed release gate; normal AC power and a native capture path did not establish it. A separate passive pure-canvas control was also near 30 FPS. Cause is not isolated.",
+    "The managed page remained visible but document.hasFocus was false for most samples, including after native window raising and preset clicks. This is not proof of foreground performance in other browsers.",
+    "Latency begins at captured audio timestamps and is not physical microphone-to-screen latency.",
+    "Internal generated audio and injected permission/device events do not certify physical device behavior.",
+    "AI was off throughout this soak. Real upstream tests and stream visibility are recorded separately."
+  ]
+}

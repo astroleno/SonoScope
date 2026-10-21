@@ -1,0 +1,1518 @@
+{
+  "testedAt": "2026-10-21T07:55:54.666Z",
+  "buildId": null,
+  "reportedNextVersion": "16.4.0",
+  "metadataCorrection": "The original probe read window.next.version, not BUILD_ID. This baseline is not final-build evidence.",
+  "model": "GLM-4-9B",
+  "exactProviderModelIdCaptured": false,
+  "observedEndReason": "Source recording ended before the five-request target; only the four recorded requests were completed.",
+  "scope": "Actual public piano recording, real browser features and real upstream calls; baseline before evidence tightening.",
+  "test": {
+    "name": "piano-valid-origin",
+    "startedAt": 1792569120849,
+    "baseRequest": 4,
+    "baseComment": 54,
+    "limit": 5,
+    "finished": false
+  },
+  "requests": [
+    {
+      "at": 370076.125,
+      "body": {
+        "version": "2",
+        "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+        "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+        "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+          "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+          "startAt": 1792569119080,
+          "endAt": 1792569121277,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.1370468105111649,
+            "rmsPeak": 0.396769103885618,
+            "centroidHzMean": 979.5126039817629,
+            "bandwidthHzMean": 1314.5835764484107,
+            "rolloffHzMean": 1927.734375,
+            "flatnessMean": 0.0028001719417876515,
+            "fluxMean": 0.10130507401595618,
+            "onsetRate": 3.1861629494765586,
+            "tempo": {
+              "bpm": 208.02514792899484,
+              "confidence": 0.8153846153845972
+            },
+            "hpss": {
+              "harmonic": 0.8249773719362183,
+              "percussive": 0.1750226280637818
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "valid",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569120425,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.9921875
+              },
+              {
+                "label": "Silence",
+                "score": 0.1484375
+              },
+              {
+                "label": "Video game music",
+                "score": 0.05859375
+              },
+              {
+                "label": "Background music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.03125
+              },
+              {
+                "label": "Soundtrack music",
+                "score": 0.01953125
+              },
+              {
+                "label": "Speech",
+                "score": 0.01953125
+              },
+              {
+                "label": "Happy music",
+                "score": 0.015625
+              },
+              {
+                "label": "Theme music",
+                "score": 0.015625
+              },
+              {
+                "label": "Piano",
+                "score": 0.0078125
+              },
+              {
+                "label": "Keyboard (musical)",
+                "score": 0.0078125
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.0078125
+              },
+              {
+                "label": "Plop",
+                "score": 0.0078125
+              },
+              {
+                "label": "Boing",
+                "score": 0.0078125
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.00390625
+              }
+            ],
+            "voiceProbability": 0.01953125,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "低频的声音更明显了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "低频的声音更明显了",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "低频的声音更明显了"
+        ]
+      },
+      "events": [
+        {
+          "at": 370191.6700000018,
+          "event": {
+            "type": "accepted",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6"
+          }
+        },
+        {
+          "at": 372732.7250000015,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_1",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "regular",
+              "text": "高频声音突然出现",
+              "createdAt": 1792569123935,
+              "expiresAt": 1792569133935
+            }
+          }
+        },
+        {
+          "at": 372822.8449999988,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_2",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "regular",
+              "text": "音量逐渐增强",
+              "createdAt": 1792569124026,
+              "expiresAt": 1792569134026
+            }
+          }
+        },
+        {
+          "at": 373026.9600000009,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_3",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "regular",
+              "text": "旋律变得更加清晰",
+              "createdAt": 1792569124230,
+              "expiresAt": 1792569134230
+            }
+          }
+        },
+        {
+          "at": 373266.3900000006,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_4",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "regular",
+              "text": "节奏感明显增强",
+              "createdAt": 1792569124470,
+              "expiresAt": 1792569134470
+            }
+          }
+        },
+        {
+          "at": 373789.3449999988,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_5",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "regular",
+              "text": "音乐层次丰富起来",
+              "createdAt": 1792569124993,
+              "expiresAt": 1792569134993
+            }
+          }
+        },
+        {
+          "at": 374449.9750000015,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_6",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "安静中带点旋律",
+              "createdAt": 1792569125654,
+              "expiresAt": 1792569135654
+            }
+          }
+        },
+        {
+          "at": 374639.95500000194,
+          "event": {
+            "type": "comment",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "comment": {
+              "commentId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_7",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7050",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "柔和的旋律伴随",
+              "createdAt": 1792569125844,
+              "expiresAt": 1792569135844
+            }
+          }
+        },
+        {
+          "at": 374693.1799999997,
+          "event": {
+            "type": "done",
+            "requestId": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6",
+            "status": "complete",
+            "count": 7,
+            "usage": {
+              "inputTokens": 891,
+              "outputTokens": 123
+            }
+          }
+        }
+      ],
+      "aborted": false,
+      "status": 200,
+      "eofAt": 374693.3999999985
+    },
+    {
+      "at": 382108.3900000006,
+      "body": {
+        "version": "2",
+        "requestId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7",
+        "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+        "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+          "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7614",
+          "startAt": 1792569131112,
+          "endAt": 1792569133310,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.10221232763051057,
+            "rmsPeak": 0.2572974589877055,
+            "centroidHzMean": 982.6293053177295,
+            "bandwidthHzMean": 1276.2893843865422,
+            "rolloffHzMean": 1841.6466346153845,
+            "flatnessMean": 0.002665037855964103,
+            "fluxMean": 0.10808325380351148,
+            "onsetRate": 4.094631483166515,
+            "tempo": {
+              "bpm": 208.64243323442207,
+              "confidence": 0.7851632047477959
+            },
+            "hpss": {
+              "harmonic": 0.9141408747864996,
+              "percussive": 0.08585912521350043
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "valid",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569132457,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.98828125
+              },
+              {
+                "label": "Silence",
+                "score": 0.1484375
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.04296875
+              },
+              {
+                "label": "Music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Piano",
+                "score": 0.03125
+              },
+              {
+                "label": "Keyboard (musical)",
+                "score": 0.01953125
+              },
+              {
+                "label": "Happy music",
+                "score": 0.015625
+              },
+              {
+                "label": "Video game music",
+                "score": 0.015625
+              },
+              {
+                "label": "Electric piano",
+                "score": 0.015625
+              },
+              {
+                "label": "Speech",
+                "score": 0.015625
+              },
+              {
+                "label": "Soundtrack music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Background music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Musical instrument",
+                "score": 0.01171875
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.01171875
+              },
+              {
+                "label": "Plop",
+                "score": 0.01171875
+              },
+              {
+                "label": "Boing",
+                "score": 0.01171875
+              }
+            ],
+            "voiceProbability": 0.015625,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "声音变得更有力了",
+          "低频的声音更明显了",
+          "声音刚刚有了新的变化",
+          "高频声音突然出现",
+          "声音轻了下来",
+          "音量逐渐增强",
+          "声音变得更有力了",
+          "旋律变得更加清晰",
+          "节奏感明显增强",
+          "音乐层次丰富起来",
+          "低频的声音更明显了",
+          "安静中带点旋律"
+        ]
+      },
+      "events": [
+        {
+          "at": 382138.5850000009,
+          "event": {
+            "type": "accepted",
+            "requestId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7"
+          }
+        },
+        {
+          "at": 383768.94999999925,
+          "event": {
+            "type": "comment",
+            "requestId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7",
+            "comment": {
+              "commentId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7_1",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7614",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "安静中带着旋律",
+              "createdAt": 1792569134972,
+              "expiresAt": 1792569144972
+            }
+          }
+        },
+        {
+          "at": 384052.19000000134,
+          "event": {
+            "type": "comment",
+            "requestId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7",
+            "comment": {
+              "commentId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7_2",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_7614",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "轻柔旋律相伴",
+              "createdAt": 1792569135256,
+              "expiresAt": 1792569145256
+            }
+          }
+        },
+        {
+          "at": 384281.83000000194,
+          "event": {
+            "type": "done",
+            "requestId": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7",
+            "status": "partial",
+            "count": 2,
+            "usage": {
+              "inputTokens": 897,
+              "outputTokens": 123
+            }
+          }
+        }
+      ],
+      "aborted": false,
+      "status": 200,
+      "eofAt": 384282.06500000134
+    },
+    {
+      "at": 394140.375,
+      "body": {
+        "version": "2",
+        "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+        "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+        "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+          "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+          "startAt": 1792569143145,
+          "endAt": 1792569145343,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.09646499180505605,
+            "rmsPeak": 0.21549292264191602,
+            "centroidHzMean": 1111.3065445985628,
+            "bandwidthHzMean": 1439.1036990252312,
+            "rolloffHzMean": 2079.627403846154,
+            "flatnessMean": 0.0032108162887650804,
+            "fluxMean": 0.11867502387334988,
+            "onsetRate": 5.45950864422202,
+            "tempo": {
+              "bpm": 208.0479452054796,
+              "confidence": 0.7463216641298542
+            },
+            "hpss": {
+              "harmonic": 0.8212296463194189,
+              "percussive": 0.17877035368058122
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "valid",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569144490,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.99609375
+              },
+              {
+                "label": "Silence",
+                "score": 0.08203125
+              },
+              {
+                "label": "Video game music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.03125
+              },
+              {
+                "label": "Speech",
+                "score": 0.015625
+              },
+              {
+                "label": "Soundtrack music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Background music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Happy music",
+                "score": 0.0078125
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.0078125
+              },
+              {
+                "label": "Theme music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Country",
+                "score": 0.00390625
+              },
+              {
+                "label": "Electric piano",
+                "score": 0.00390625
+              },
+              {
+                "label": "Piano",
+                "score": 0.00390625
+              },
+              {
+                "label": "Keyboard (musical)",
+                "score": 0.00390625
+              },
+              {
+                "label": "Musical instrument",
+                "score": 0.00390625
+              }
+            ],
+            "voiceProbability": 0.015625,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "节奏感明显增强",
+          "音乐层次丰富起来",
+          "低频的声音更明显了",
+          "安静中带点旋律",
+          "声音刚刚有了新的变化",
+          "柔和的旋律伴随",
+          "安静中带着旋律",
+          "声音轻了下来",
+          "声音变得更有力了",
+          "轻柔旋律相伴",
+          "低频的声音更明显了",
+          "声音刚刚有了新的变化"
+        ]
+      },
+      "events": [
+        {
+          "at": 394160.5300000012,
+          "event": {
+            "type": "accepted",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff"
+          }
+        },
+        {
+          "at": 395055.18499999866,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_1",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "regular",
+              "text": "旋律起伏明显",
+              "createdAt": 1792569146259,
+              "expiresAt": 1792569156259
+            }
+          }
+        },
+        {
+          "at": 395281.56500000134,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_2",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "regular",
+              "text": "音色清脆",
+              "createdAt": 1792569146486,
+              "expiresAt": 1792569156486
+            }
+          }
+        },
+        {
+          "at": 395454.73000000045,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_3",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "regular",
+              "text": "层次感丰富",
+              "createdAt": 1792569146659,
+              "expiresAt": 1792569156659
+            }
+          }
+        },
+        {
+          "at": 395630.32499999925,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_4",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "regular",
+              "text": "节奏稳定",
+              "createdAt": 1792569146834,
+              "expiresAt": 1792569156834
+            }
+          }
+        },
+        {
+          "at": 395826.62000000104,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_5",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "regular",
+              "text": "旋律流畅",
+              "createdAt": 1792569147031,
+              "expiresAt": 1792569157031
+            }
+          }
+        },
+        {
+          "at": 396090.12000000104,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_6",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "安静中带旋律",
+              "createdAt": 1792569147295,
+              "expiresAt": 1792569157295
+            }
+          }
+        },
+        {
+          "at": 396335.3200000003,
+          "event": {
+            "type": "comment",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "comment": {
+              "commentId": "287cd81a-2579-4f51-a627-b3fd75cea6ff_7",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8178",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "柔和旋律相伴",
+              "createdAt": 1792569147540,
+              "expiresAt": 1792569157540
+            }
+          }
+        },
+        {
+          "at": 396436.13500000164,
+          "event": {
+            "type": "done",
+            "requestId": "287cd81a-2579-4f51-a627-b3fd75cea6ff",
+            "status": "complete",
+            "count": 7,
+            "usage": {
+              "inputTokens": 902,
+              "outputTokens": 116
+            }
+          }
+        }
+      ],
+      "aborted": false,
+      "status": 200,
+      "eofAt": 396437.69999999925
+    },
+    {
+      "at": 406171.93499999866,
+      "body": {
+        "version": "2",
+        "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+        "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+        "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+        "snapshot": {
+          "version": "2",
+          "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+          "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+          "startAt": 1792569155178,
+          "endAt": 1792569157375,
+          "sampleRate": 48000,
+          "frames": 104,
+          "stats": {
+            "rmsMean": 0.14446140095257506,
+            "rmsPeak": 0.32457748883783183,
+            "centroidHzMean": 1118.761212084499,
+            "bandwidthHzMean": 1454.5777795528531,
+            "rolloffHzMean": 2137.7704326923076,
+            "flatnessMean": 0.003755332922236577,
+            "fluxMean": 0.11943180941429188,
+            "onsetRate": 5.006827492034592,
+            "tempo": {
+              "bpm": 208.7535296490491,
+              "confidence": 0.8128628303839356
+            },
+            "hpss": {
+              "harmonic": 0.9048634999749481,
+              "percussive": 0.0951365000250519
+            }
+          },
+          "validity": {
+            "rms": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "centroidHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "bandwidthHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "rolloffHz": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "Hz"
+            },
+            "flatness": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "flux": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "0..1"
+            },
+            "tempo": {
+              "state": "valid",
+              "source": "heuristic",
+              "unit": "BPM"
+            },
+            "hpss": {
+              "state": "valid",
+              "source": "dsp",
+              "unit": "ratio"
+            },
+            "classification": {
+              "state": "valid",
+              "source": "model",
+              "unit": "score"
+            }
+          },
+          "model": {
+            "version": "yamnet-float32-1",
+            "capturedAt": 1792569156522,
+            "categories": [
+              {
+                "label": "Music",
+                "score": 0.984375
+              },
+              {
+                "label": "Silence",
+                "score": 0.109375
+              },
+              {
+                "label": "Music",
+                "score": 0.05859375
+              },
+              {
+                "label": "Video game music",
+                "score": 0.04296875
+              },
+              {
+                "label": "Sound effect",
+                "score": 0.03125
+              },
+              {
+                "label": "Background music",
+                "score": 0.01953125
+              },
+              {
+                "label": "Speech",
+                "score": 0.015625
+              },
+              {
+                "label": "Happy music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Soundtrack music",
+                "score": 0.01171875
+              },
+              {
+                "label": "Theme music",
+                "score": 0.0078125
+              },
+              {
+                "label": "Whack, thwack",
+                "score": 0.0078125
+              },
+              {
+                "label": "Jingle, tinkle",
+                "score": 0.00390625
+              },
+              {
+                "label": "Exciting music",
+                "score": 0.00390625
+              },
+              {
+                "label": "Jingle (music)",
+                "score": 0.00390625
+              },
+              {
+                "label": "Music for children",
+                "score": 0.00390625
+              },
+              {
+                "label": "Country",
+                "score": 0.00390625
+              }
+            ],
+            "voiceProbability": 0.015625,
+            "instrument": null
+          },
+          "capabilities": [
+            "rms",
+            "spectrum.Hz",
+            "flux.normalized",
+            "mfcc",
+            "chroma",
+            "contrast.dB",
+            "tempo.heuristic",
+            "hpss.median",
+            "yamnet"
+          ]
+        },
+        "locale": "zh-CN",
+        "history": [
+          "声音轻了下来",
+          "旋律起伏明显",
+          "音色清脆",
+          "声音变得更有力了",
+          "层次感丰富",
+          "节奏稳定",
+          "旋律流畅",
+          "低频的声音更明显了",
+          "安静中带旋律",
+          "声音刚刚有了新的变化",
+          "声音轻了下来",
+          "柔和旋律相伴"
+        ]
+      },
+      "events": [
+        {
+          "at": 406205.44000000134,
+          "event": {
+            "type": "accepted",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf"
+          }
+        },
+        {
+          "at": 406807.8999999985,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_1",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "regular",
+              "text": "旋律清晰,音色明亮",
+              "createdAt": 1792569158012,
+              "expiresAt": 1792569168012
+            }
+          }
+        },
+        {
+          "at": 406834.12999999896,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_2",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "regular",
+              "text": "节奏稳定,音调偏高",
+              "createdAt": 1792569158039,
+              "expiresAt": 1792569168039
+            }
+          }
+        },
+        {
+          "at": 407013.06500000134,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_3",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "regular",
+              "text": "动态变化,音量渐强",
+              "createdAt": 1792569158218,
+              "expiresAt": 1792569168218
+            }
+          }
+        },
+        {
+          "at": 407173.99500000104,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_4",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "regular",
+              "text": "声音层次,打击乐突出",
+              "createdAt": 1792569158379,
+              "expiresAt": 1792569168379
+            }
+          }
+        },
+        {
+          "at": 407347.6700000018,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_5",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "regular",
+              "text": "旋律流畅,音色柔和",
+              "createdAt": 1792569158552,
+              "expiresAt": 1792569168552
+            }
+          }
+        },
+        {
+          "at": 407484.82499999925,
+          "event": {
+            "type": "comment",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "comment": {
+              "commentId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_6",
+              "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+              "danmuRunId": "1a14248e-82a1-4bd1-8cdf-3489a24089b1",
+              "snapshotId": "563ddc20-4e71-4f3a-a014-596743511330_8742",
+              "source": "ai",
+              "kind": "companionship",
+              "text": "安静中旋律隐约",
+              "createdAt": 1792569158689,
+              "expiresAt": 1792569168689
+            }
+          }
+        },
+        {
+          "at": 407871.8999999985,
+          "event": {
+            "type": "done",
+            "requestId": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf",
+            "status": "complete",
+            "count": 6,
+            "usage": {
+              "inputTokens": 895,
+              "outputTokens": 134
+            }
+          }
+        }
+      ],
+      "aborted": false,
+      "status": 200,
+      "eofAt": 407873.26999999955
+    }
+  ],
+  "comments": [
+    {
+      "id": "6138af48-a771-4268-96a6-eb6b7e2bbffe",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 369701.5850000009,
+      "visible": true
+    },
+    {
+      "id": "13cbad4a-0321-44db-8562-795e3b0db14b",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 371235.0549999997,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_1",
+      "source": "ai",
+      "text": "高频声音突然出现",
+      "at": 372751.9200000018,
+      "visible": true
+    },
+    {
+      "id": "80f2c74f-a1ed-4b38-b30f-523849764efb",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 373734.78500000015,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_2",
+      "source": "ai",
+      "text": "音量逐渐增强",
+      "at": 374684.2650000006,
+      "visible": true
+    },
+    {
+      "id": "0e777fc8-6058-4e99-a1d0-4eef0c6179a2",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 375635.2950000018,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_3",
+      "source": "ai",
+      "text": "旋律变得更加清晰",
+      "at": 376568.85500000045,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_4",
+      "source": "ai",
+      "text": "节奏感明显增强",
+      "at": 377768.21499999985,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_5",
+      "source": "ai",
+      "text": "音乐层次丰富起来",
+      "at": 379268.1499999985,
+      "visible": true
+    },
+    {
+      "id": "ce21442f-abed-42c8-bf1b-a5726a1e97ad",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 380235.0700000003,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_6",
+      "source": "ai",
+      "text": "安静中带点旋律",
+      "at": 381218.1550000012,
+      "visible": true
+    },
+    {
+      "id": "3fdcc13c-d7b1-41a8-9a09-e6410fd2658c",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 382185.1550000012,
+      "visible": true
+    },
+    {
+      "id": "fe85f6dd-59a7-4f43-80ad-04e29e5db0c6_7",
+      "source": "ai",
+      "text": "柔和的旋律伴随",
+      "at": 383135.30000000075,
+      "visible": true
+    },
+    {
+      "id": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7_1",
+      "source": "ai",
+      "text": "安静中带着旋律",
+      "at": 384085.28500000015,
+      "visible": true
+    },
+    {
+      "id": "ee7dfc0a-cc0f-4f77-a791-9e27f24708de",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 385034.96499999985,
+      "visible": true
+    },
+    {
+      "id": "49213eac-755d-40ea-809f-cb8a903fed33",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 386018.4200000018,
+      "visible": true
+    },
+    {
+      "id": "9e0f0d14-09dd-46e8-ae0a-eb82edd7faa7_2",
+      "source": "ai",
+      "text": "轻柔旋律相伴",
+      "at": 386968.4149999991,
+      "visible": true
+    },
+    {
+      "id": "1ed26c9b-7d9f-4aa3-bce6-83343e18d5b1",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 390601.7199999988,
+      "visible": true
+    },
+    {
+      "id": "03a6a500-4d1f-4b54-b02b-00f393440e0e",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 392268.26000000164,
+      "visible": true
+    },
+    {
+      "id": "1a31ebe7-2f7a-4050-b6c1-e004427d6094",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 394234.58999999985,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_1",
+      "source": "ai",
+      "text": "旋律起伏明显",
+      "at": 395218.1150000021,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_2",
+      "source": "ai",
+      "text": "音色清脆",
+      "at": 396168.125,
+      "visible": true
+    },
+    {
+      "id": "167a8c5d-3195-4a90-bcf1-75d108b6fa55",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 397184.93499999866,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_3",
+      "source": "ai",
+      "text": "层次感丰富",
+      "at": 398134.875,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_4",
+      "source": "ai",
+      "text": "节奏稳定",
+      "at": 399067.92500000075,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_5",
+      "source": "ai",
+      "text": "旋律流畅",
+      "at": 400767.91000000015,
+      "visible": true
+    },
+    {
+      "id": "5e6ac356-9960-4ffe-97a6-8a19b4c1c65d",
+      "source": "local",
+      "text": "低频的声音更明显了",
+      "at": 401735.14499999955,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_6",
+      "source": "ai",
+      "text": "安静中带旋律",
+      "at": 402801.33000000194,
+      "visible": true
+    },
+    {
+      "id": "c0a9b540-0fcc-430c-86fa-46e28dd65170",
+      "source": "local",
+      "text": "声音刚刚有了新的变化",
+      "at": 403718.08000000194,
+      "visible": true
+    },
+    {
+      "id": "9f87afba-c7f4-4957-9afd-468f845683b0",
+      "source": "local",
+      "text": "声音轻了下来",
+      "at": 404668.37000000104,
+      "visible": true
+    },
+    {
+      "id": "287cd81a-2579-4f51-a627-b3fd75cea6ff_7",
+      "source": "ai",
+      "text": "柔和旋律相伴",
+      "at": 405684.75499999896,
+      "visible": true
+    },
+    {
+      "id": "3db2b8ff-ffd5-4b05-b98e-f95554cc9c8c",
+      "source": "local",
+      "text": "声音变得更有力了",
+      "at": 406701.78500000015,
+      "visible": true
+    },
+    {
+      "id": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_1",
+      "source": "ai",
+      "text": "旋律清晰,音色明亮",
+      "at": 407684.67500000075,
+      "visible": true
+    },
+    {
+      "id": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_2",
+      "source": "ai",
+      "text": "节奏稳定,音调偏高",
+      "at": 409334.5700000003,
+      "visible": true
+    },
+    {
+      "id": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_3",
+      "source": "ai",
+      "text": "动态变化,音量渐强",
+      "at": 410284.69000000134,
+      "visible": true
+    },
+    {
+      "id": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_4",
+      "source": "ai",
+      "text": "声音层次,打击乐突出",
+      "at": 411217.6099999994,
+      "visible": true
+    },
+    {
+      "id": "2a7bf648-48ec-4e4a-bde1-193e30d76ddf_5",
+      "source": "ai",
+      "text": "旋律流畅,音色柔和",
+      "at": 412234.76999999955,
+      "visible": true
+    }
+  ],
+  "metrics": {
+    "audioSessionId": "563ddc20-4e71-4f3a-a014-596743511330",
+    "observedSeconds": 193,
+    "visualSamples": 5681,
+    "visualP95Ms": 23,
+    "featureSamples": 9064,
+    "dspComputeP95Ms": 3,
+    "captureToFeatureP95Ms": 3,
+    "featureToDrawP95Ms": 21,
+    "dspMode": "worker",
+    "desktopFpsPassRate": 0,
+    "mobileFpsPassRate": 0.47668393782383417,
+    "fpsMedian": 29,
+    "localFirstP95Ms": 3,
+    "aiFirstP95Ms": 2656
+  },
+  "errors": []
+}
