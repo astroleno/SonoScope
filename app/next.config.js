@@ -13,6 +13,11 @@ module.exports = {
       { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
       { key: 'X-Content-Type-Options', value: 'nosniff' },
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' }
+    ] }, { source: '/sonoscope-sw.js', headers: [
+      { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+      { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+      { key: 'Service-Worker-Allowed', value: basePath || '/' },
+      { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" }
     ] }, { source: '/vendor/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] }, { source: '/model/yamnet-1.tflite', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] }];
   }
 };

@@ -1,6 +1,6 @@
 {
-  "source": "Tencent Cloud Linux x64 standalone release",
-  "measuredAt": "2026-10-25T05:05:21.789Z",
+  "source": "local standalone release (same platform/architecture)",
+  "measuredAt": "2026-10-25T07:36:40.160Z",
   "basePath": "/SonoScope",
   "routes": [
     {
@@ -41,6 +41,10 @@
       "status": 200
     },
     {
+      "path": "/sonoscope-sw.js",
+      "status": 200
+    },
+    {
       "path": "/audio/capture-worklet.js",
       "status": 200
     },
@@ -54,9 +58,5 @@
     }
   ],
   "staticFiles": 47,
-  "providerKeyInPublicOutput": null,
-  "platform": "linux",
-  "arch": "x64",
-  "sourceCommit": "523495ce53e05fed0c775c80991783faf886e178",
-  "buildId": "O9nESlxcf7F0i4JpYfFu2"
+  "providerKeyInPublicOutput": null
 }

@@ -76,6 +76,7 @@ dist
 !public/model/yamnet.task
 app/.runtime/
 app/public/vendor/
+app/public/sonoscope-sw.js
 test/artifacts/private/
 
 # Storybook build outputs

@@ -31,12 +31,17 @@ try {
     assert(Date.now() < deadline, 'Standalone health did not become ready');
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-  const routes = [ ['', 200], ['/api/health', 200], ['/api/runtime-config', 200], ['/standalone-client', 307], ['/mochi', 200], ['/test', 404], ['/icon.png', 200], ['/apple-icon.png', 200], ['/manifest.webmanifest', 200], ['/audio/capture-worklet.js', 200], ['/model/yamnet-1.tflite', 200], ['/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm', 200] ];
+  const routes = [ ['', 200], ['/api/health', 200], ['/api/runtime-config', 200], ['/standalone-client', 307], ['/mochi', 200], ['/test', 404], ['/icon.png', 200], ['/apple-icon.png', 200], ['/manifest.webmanifest', 200], ['/sonoscope-sw.js', 200], ['/audio/capture-worklet.js', 200], ['/model/yamnet-1.tflite', 200], ['/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm', 200] ];
   for (const [path, expected] of routes) {
     const response = await get(path), bytes = new Uint8Array(await response.arrayBuffer());
     const body = new TextDecoder().decode(bytes), location = response.headers.get('location');
     assert(response.status === expected, `Unexpected status at ${path || basePath}: ${response.status}`);
     assert(!hasSecret(body), `Provider key in public response at ${path}`);
+    if (path === '/sonoscope-sw.js') {
+      assert(response.headers.get('service-worker-allowed') === (basePath || '/'), 'Offline worker does not cover the canonical entry without a trailing slash');
+      assert(response.headers.get('cache-control')?.includes('no-store'), 'Offline worker is HTTP-cached');
+      assert(body.includes('SONOSCOPE_PREPARE_OFFLINE') && body.includes('same-origin'), 'Missing offline worker or isolation policy');
+    }
     if (path === '/api/runtime-config') {
       const value = JSON.parse(body);
       assert(value.aiEnabled === false && Object.keys(value).every(key => ['version', 'aiEnabled', 'mode'].includes(key)), 'Public runtime config exposes unexpected fields');

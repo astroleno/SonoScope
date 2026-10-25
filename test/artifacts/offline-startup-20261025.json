@@ -1,0 +1,224 @@
+{
+  "date": "2026-10-25",
+  "testedAt": "2026-10-25T09:00:31.760743+00:00",
+  "status": "local-production-short-check-passed-unpublished",
+  "parentCommit": "5b0164b6c38e551d679c0261a8b6e33da714bcf9",
+  "sourceState": "uncommitted working tree",
+  "sourceSha256": {
+    "scripts/offline-worker.mjs": "3c2be56d28e68d53bbe0e2656ff5338df3bde863c5b2371ae9c212d1bb24f0ba",
+    "scripts/prepare-offline.mjs": "75310f2ae986e2fd55737b81505a5261ea929802df97bcb98d8e11c3d10b81b4",
+    "scripts/smoke-release.mjs": "dc11a8393c7af773e4003231ddf757ce6e91d6858fc862552eb3b316f9743dfb",
+    "app/components/offline-status.tsx": "3a9974fc950cbb26eed2619f84a5a8418415c9ba1c0ce0e68c12e92c658da709",
+    "app/components/sonoscope-experience.tsx": "954756c16149a770de937c205b7fbf789f46aae7d822e7e6757ef1a6318e4d73",
+    "app/next.config.js": "20212597a768349716935572a5ea9ab83fc16a3861bbcd09c72ae2c13a9947d6",
+    "app/app/manifest.ts": "b774fc3f393f5a3e623eea677757a9c91e252bc2e4aa777b36bb49cec990c4cb",
+    "app/package.json": "52381d15a7b6dea71bdbda652b5d190fc9bf19f3cbf25fe41fedc1ef581c0527"
+  },
+  "nodeVersion": "v22.22.0",
+  "build": {
+    "buildId": "B116fSz5KeENrl6CWbgWp",
+    "version": "4ca180133ead13ebd8f2a37f",
+    "basePath": "/SonoScope",
+    "scope": "/SonoScope",
+    "assetCount": 51,
+    "assets": [
+      "/SonoScope/_next/static/B116fSz5KeENrl6CWbgWp/_buildManifest.js",
+      "/SonoScope/_next/static/B116fSz5KeENrl6CWbgWp/_ssgManifest.js",
+      "/SonoScope/_next/static/chunks/141.ca90c64b2328e8fc.js",
+      "/SonoScope/_next/static/chunks/169.5ce20f0a140d5cb4.js",
+      "/SonoScope/_next/static/chunks/27.1411e028806e9c75.js",
+      "/SonoScope/_next/static/chunks/280.9f210e0010b933ea.js",
+      "/SonoScope/_next/static/chunks/283.0e0a98668cbc2325.js",
+      "/SonoScope/_next/static/chunks/2b532a61.c8b4c9bf0cd1dbbf.js",
+      "/SonoScope/_next/static/chunks/400.283b9f4b68716cb0.js",
+      "/SonoScope/_next/static/chunks/410-aaa373a821672085.js",
+      "/SonoScope/_next/static/chunks/412.e4b68348f4905142.js",
+      "/SonoScope/_next/static/chunks/417.2cc8c67179733d49.js",
+      "/SonoScope/_next/static/chunks/427.0d89294453bb68e3.js",
+      "/SonoScope/_next/static/chunks/555-cf22d816759e9e4c.js",
+      "/SonoScope/_next/static/chunks/611.7f8e1a464307d8ca.js",
+      "/SonoScope/_next/static/chunks/685.46c258acfd0e89a0.js",
+      "/SonoScope/_next/static/chunks/705.5c2f2bef0c27f5d9.js",
+      "/SonoScope/_next/static/chunks/712.630f2a254a0c1e96.js",
+      "/SonoScope/_next/static/chunks/849-8a98bcbe40e37235.js",
+      "/SonoScope/_next/static/chunks/869.8379aae3937ead73.js",
+      "/SonoScope/_next/static/chunks/936-cf692fd11befa33b.js",
+      "/SonoScope/_next/static/chunks/966.f8e2081a226b3fe9.js",
+      "/SonoScope/_next/static/chunks/a2a2839e-72656f315f5c0091.js",
+      "/SonoScope/_next/static/chunks/app/_global-error/page-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/_not-found/page-c733d623473313bc.js",
+      "/SonoScope/_next/static/chunks/app/api/analyze/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/api/danmu/stream/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/api/health/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/api/llm-danmu/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/api/runtime-config/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/layout-ac32177b6c156bab.js",
+      "/SonoScope/_next/static/chunks/app/manifest.webmanifest/route-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/mochi/page-282d25c098c0224e.js",
+      "/SonoScope/_next/static/chunks/app/page-e2af5584a304c1fa.js",
+      "/SonoScope/_next/static/chunks/app/standalone-client/page-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/app/test/page-75d693284bf93109.js",
+      "/SonoScope/_next/static/chunks/framework-d48202bd24ba9962.js",
+      "/SonoScope/_next/static/chunks/main-45704282b0a4adff.js",
+      "/SonoScope/_next/static/chunks/main-app-a023540b5396709a.js",
+      "/SonoScope/_next/static/chunks/next/dist/client/components/builtin/app-error-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/next/dist/client/components/builtin/forbidden-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/next/dist/client/components/builtin/global-error-4051cb5443a17fe6.js",
+      "/SonoScope/_next/static/chunks/next/dist/client/components/builtin/not-found-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/next/dist/client/components/builtin/unauthorized-5f7e2b07386c37e1.js",
+      "/SonoScope/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "/SonoScope/_next/static/chunks/webpack-6ead125e81b46ba0.js",
+      "/SonoScope/_next/static/css/c3364a2eab645679.css",
+      "/SonoScope/apple-icon.png",
+      "/SonoScope/audio/capture-worklet.js",
+      "/SonoScope/icon.png",
+      "/SonoScope/manifest.webmanifest"
+    ],
+    "pages": [
+      "/SonoScope",
+      "/SonoScope/mochi"
+    ],
+    "workerBytes": 46247
+  },
+  "workerSha256": "7a39f21034077ef41076530f1dbeff8ae131f82597a79621a0a07f05c634a3ce",
+  "tests": {
+    "passed": 28,
+    "files": 7,
+    "offlineWorker": 6,
+    "offlineBuild": 5,
+    "offlineStatus": 3,
+    "recordingControls": 4,
+    "acousticRuntime": 2,
+    "exposedInstrumentTraceRegression": 8,
+    "newIndependentInstrumentValidation": false
+  },
+  "checks": {
+    "lint": "passed for modified implementation and test files",
+    "appTypes": "passed",
+    "productionBuild": "passed",
+    "standaloneSmoke": {
+      "source": "local standalone release (same platform/architecture)",
+      "measuredAt": "2026-10-25T07:36:40.160Z",
+      "basePath": "/SonoScope",
+      "routes": [
+        {
+          "path": "/SonoScope",
+          "status": 200
+        },
+        {
+          "path": "/api/health",
+          "status": 200
+        },
+        {
+          "path": "/api/runtime-config",
+          "status": 200
+        },
+        {
+          "path": "/standalone-client",
+          "status": 307,
+          "location": "/SonoScope/"
+        },
+        {
+          "path": "/mochi",
+          "status": 200
+        },
+        {
+          "path": "/test",
+          "status": 404
+        },
+        {
+          "path": "/icon.png",
+          "status": 200
+        },
+        {
+          "path": "/apple-icon.png",
+          "status": 200
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "path": "/sonoscope-sw.js",
+          "status": 200
+        },
+        {
+          "path": "/audio/capture-worklet.js",
+          "status": 200
+        },
+        {
+          "path": "/model/yamnet-1.tflite",
+          "status": 200
+        },
+        {
+          "path": "/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+          "status": 200
+        }
+      ],
+      "staticFiles": 47,
+      "providerKeyInPublicOutput": null
+    },
+    "releaseWorkerMatchesBuild": true
+  },
+  "browser": {
+    "url": "http://127.0.0.1:43125/SonoScope",
+    "online": true,
+    "secure": true,
+    "isolated": true,
+    "controlled": true,
+    "ready": true,
+    "playback": {
+      "status": "paused",
+      "id": "8ac96889-a151-412d-b057-7254ec1d6d6c",
+      "title": "录播 2026/10/25 15:43:48",
+      "positionMs": 982.679,
+      "durationMs": 3092.958,
+      "rate": 1,
+      "message": null
+    },
+    "transcript": [
+      "声音里有短促而细密的起伏",
+      "声音刚刚有了新的变化"
+    ],
+    "uncachedHealthBlocked": true,
+    "modelOrCloudRequests": [],
+    "previousDocumentClosed": true,
+    "httpCacheDisabled": true,
+    "localServerStopped": true,
+    "offlineFilePlayback": {
+      "comments": "这段声音的高频比较明显",
+      "model": "unavailable",
+      "modelOrCloudRequests": []
+    },
+    "longTestsRun": false
+  },
+  "recordingSetup": {
+    "id": "8ac96889-a151-412d-b057-7254ec1d6d6c",
+    "durationMs": 3092.958,
+    "bytes": 23269,
+    "method": "Enabled DOM recording buttons; native pointer attempts were not counted as passed."
+  },
+  "instrumentDecision": {
+    "changed": false,
+    "accuracyPassed": false,
+    "decision": "Retain acoustic default under user best-effort allowance; no new model or threshold tuning."
+  },
+  "review": {
+    "kind": "main-thread correctness self-review",
+    "findings": [],
+    "residualRisks": [
+      "Browser may evict offline cache; first visit requires network and completed preparation.",
+      "Updates and business rollbacks must ship a matching worker; pre-worker release-directory rollback alone is insufficient."
+    ],
+    "testingGaps": [
+      "Public dual-domain offline checks await release authorization.",
+      "No full browser-process restart or OS-wide network disable.",
+      "Native pointer recording setup did not pass in this automation environment.",
+      "Existing mobile/Windows/Safari, physical microphone and long-duration gaps retained."
+    ]
+  },
+  "screenshot": "test/artifacts/private/offline-startup-20261025/cold-replay.png",
+  "longTestsRun": false,
+  "cloudCalls": 0,
+  "deploymentPerformed": false
+}

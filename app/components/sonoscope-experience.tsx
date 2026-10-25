@@ -11,6 +11,7 @@ import { RecordingControls } from './recording-controls';
 import { RecordingLibrary } from './recording-library';
 import { ReplayControls } from './replay-controls';
 import { recordingTime } from '../lib/recording-format';
+import { OfflineStatus } from './offline-status';
 
 const Visualizer = dynamic(() => import('./visualizer'), { ssr: false });
 const presets = [ { id: 'wave', label: 'Wave' }, { id: 'accretion', label: 'Accretion' }, { id: 'spiral', label: 'Spiral' }, { id: 'mosaic', label: 'Mosaic' }, { id: 'mochi', label: 'Mochi' } ];
@@ -95,6 +96,7 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
         </div>
         {!replaying && <RecordingControls state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => { void session.startRecording(); }} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
         <div className="footer-meta"><span>{replaying ? '同步读取原弹幕 · 不重新生成' : cloudLabel}{!replaying && !session.aiAvailable ? ' · AI 尚未开放' : ''}</span>{!replaying && <span className="keyboard-hint">1–5 切画面 · D 弹幕 · S 频谱</span>}</div>
+        <OfflineStatus />
         {session.recordingMessage && !showRecordings && <p className="recording-note" role="status">{session.recordingMessage}</p>}
         {running && (session.analysis.message || session.danmu?.message) && <p className="service-note">{session.danmu?.message || session.analysis.message}</p>}
       </footer>
