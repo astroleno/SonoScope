@@ -1,0 +1,458 @@
+{
+  "date": "2026-10-25",
+  "status": "deployed; both public origins passed bounded offline cold-start checks",
+  "sourceCommit": "bc9dd46720d0073752064a62f78e16c4ca8ed879",
+  "branch": "main",
+  "longTestsRun": false,
+  "instrumentRecognitionChanged": false,
+  "source": {
+    "archiveBytes": 38990390,
+    "archiveSha256": "7ab49e7e53376627e1e4712f6dd21c2d3eaeb42c0db6b7f977b84d52075d6543",
+    "verifiedBuildInputs": 244,
+    "inputManifestSha256": "592efa919c933906683d88a11e30605fd7dee9f8ca4f1b7238edcf1b6a656418"
+  },
+  "deployment": {
+    "deployedAt": "2026-10-25T10:51:12.059739+00:00",
+    "sourceCommit": "bc9dd46720d0073752064a62f78e16c4ca8ed879",
+    "previousRelease": "/srv/sonoscope/releases/20261025-523495c",
+    "release": "/srv/sonoscope/releases/20261025-bc9dd46",
+    "buildId": "tVVEMPi-eWwDcVx9mTbT6",
+    "offlineVersion": "6796bf1792b449e9f5aeaf46",
+    "offlineAssetCount": 51,
+    "workerSha256": "7037215b2549bbd617ee7a5b3e07eaeec5a892fa7e83e38cfff4a20303dbb0f7",
+    "workerBytes": 46247,
+    "health": {
+      "status": "ok",
+      "version": "2"
+    },
+    "runtime": {
+      "version": "2",
+      "aiEnabled": false,
+      "mode": "hybrid"
+    },
+    "active": "active",
+    "restarts": 0,
+    "backup": "/var/backups/sonoscope/20261025-offline-bc9dd46",
+    "externalSymlinks": 0
+  },
+  "build": {
+    "platform": {
+      "version": 1,
+      "platform": "linux",
+      "arch": "x64",
+      "nodeVersion": "22.23.4",
+      "builtAt": "2026-10-25T10:50:09.467Z"
+    },
+    "targetedOfflineTests": {
+      "passed": 14,
+      "failed": 0,
+      "durationSeconds": 1.77
+    },
+    "productionBuildPassed": true,
+    "typeCheckPassed": true,
+    "standaloneSmoke": {
+      "source": "local standalone release (same platform/architecture)",
+      "measuredAt": "2026-10-25T10:50:10.086Z",
+      "basePath": "/SonoScope",
+      "routes": [
+        {
+          "path": "/SonoScope",
+          "status": 200
+        },
+        {
+          "path": "/api/health",
+          "status": 200
+        },
+        {
+          "path": "/api/runtime-config",
+          "status": 200
+        },
+        {
+          "path": "/standalone-client",
+          "status": 307,
+          "location": "/SonoScope/"
+        },
+        {
+          "path": "/mochi",
+          "status": 200
+        },
+        {
+          "path": "/test",
+          "status": 404
+        },
+        {
+          "path": "/icon.png",
+          "status": 200
+        },
+        {
+          "path": "/apple-icon.png",
+          "status": 200
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "path": "/sonoscope-sw.js",
+          "status": 200
+        },
+        {
+          "path": "/audio/capture-worklet.js",
+          "status": 200
+        },
+        {
+          "path": "/model/yamnet-1.tflite",
+          "status": 200
+        },
+        {
+          "path": "/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+          "status": 200
+        }
+      ],
+      "staticFiles": 47,
+      "providerKeyInPublicOutput": null
+    }
+  },
+  "offlineCache": {
+    "buildId": "tVVEMPi-eWwDcVx9mTbT6",
+    "version": "6796bf1792b449e9f5aeaf46",
+    "basePath": "/SonoScope",
+    "scope": "/SonoScope",
+    "assetCount": 51,
+    "pages": [
+      "/SonoScope",
+      "/SonoScope/mochi"
+    ],
+    "workerBytes": 46247
+  },
+  "publicHttp": {
+    "checkCount": 26,
+    "checkedAt": "2026-10-25T10:52:53.579691+00:00",
+    "sourceCommit": "bc9dd46720d0073752064a62f78e16c4ca8ed879",
+    "passed": true,
+    "hosts": [
+      {
+        "host": "aitoshuu.me",
+        "passed": true,
+        "checks": [
+          {
+            "check": "page and retained domain",
+            "passed": true,
+            "status": 200,
+            "url": "https://aitoshuu.me/SonoScope"
+          },
+          {
+            "check": "isolation",
+            "passed": true
+          },
+          {
+            "check": "/api/health",
+            "status": 200,
+            "value": {
+              "status": "ok",
+              "version": "2"
+            },
+            "passed": true
+          },
+          {
+            "check": "/api/runtime-config",
+            "status": 200,
+            "value": {
+              "version": "2",
+              "aiEnabled": false,
+              "mode": "hybrid"
+            },
+            "passed": true
+          },
+          {
+            "check": "worker build and scope",
+            "status": 200,
+            "sha256": "7037215b2549bbd617ee7a5b3e07eaeec5a892fa7e83e38cfff4a20303dbb0f7",
+            "bytes": 46247,
+            "scope": "/SonoScope",
+            "cacheControl": "no-cache, no-store, must-revalidate",
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/_next/static/css/c3364a2eab645679.css",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/_next/static/chunks/webpack-6ead125e81b46ba0.js",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/audio/capture-worklet.js",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/test",
+            "status": 404,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/.env",
+            "status": 404,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://aitoshuu.me",
+            "site": "same-origin",
+            "status": 400,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://untrusted.invalid",
+            "site": "same-origin",
+            "status": 403,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://aitoshuu.me",
+            "site": "cross-site",
+            "status": 403,
+            "passed": true
+          }
+        ]
+      },
+      {
+        "host": "tongye.me",
+        "passed": true,
+        "checks": [
+          {
+            "check": "page and retained domain",
+            "passed": true,
+            "status": 200,
+            "url": "https://tongye.me/SonoScope"
+          },
+          {
+            "check": "isolation",
+            "passed": true
+          },
+          {
+            "check": "/api/health",
+            "status": 200,
+            "value": {
+              "status": "ok",
+              "version": "2"
+            },
+            "passed": true
+          },
+          {
+            "check": "/api/runtime-config",
+            "status": 200,
+            "value": {
+              "version": "2",
+              "aiEnabled": false,
+              "mode": "hybrid"
+            },
+            "passed": true
+          },
+          {
+            "check": "worker build and scope",
+            "status": 200,
+            "sha256": "7037215b2549bbd617ee7a5b3e07eaeec5a892fa7e83e38cfff4a20303dbb0f7",
+            "bytes": 46247,
+            "scope": "/SonoScope",
+            "cacheControl": "no-cache, no-store, must-revalidate",
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/_next/static/css/c3364a2eab645679.css",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/_next/static/chunks/webpack-6ead125e81b46ba0.js",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/audio/capture-worklet.js",
+            "status": 200,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/test",
+            "status": 404,
+            "passed": true
+          },
+          {
+            "check": "/SonoScope/.env",
+            "status": 404,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://tongye.me",
+            "site": "same-origin",
+            "status": 400,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://untrusted.invalid",
+            "site": "same-origin",
+            "status": 403,
+            "passed": true
+          },
+          {
+            "check": "request boundary",
+            "origin": "https://tongye.me",
+            "site": "cross-site",
+            "status": 403,
+            "passed": true
+          }
+        ]
+      }
+    ]
+  },
+  "browser": {
+    "method": "Warm each origin until ready, verify online health, close its old document, disable network and ordinary HTTP cache, then navigate a new document. Network emulation and negative controls ran in one CDP control invocation per origin.",
+    "results": [
+      {
+        "host": "aitoshuu.me",
+        "passed": true,
+        "onlineControlBefore": true,
+        "previousDocumentClosed": true,
+        "httpCacheDisabled": true,
+        "networkDisabledWithinSameSession": true,
+        "cold": {
+          "url": "https://aitoshuu.me/SonoScope",
+          "online": false,
+          "secure": true,
+          "isolated": true,
+          "controlled": true,
+          "ready": true,
+          "uncachedApiBlocked": true,
+          "navigation": [
+            {
+              "workerStart": 4.7000000001862645,
+              "transferSize": 0
+            }
+          ]
+        },
+        "replay": {
+          "state": {
+            "status": "paused",
+            "id": "ff57cd1e-4516-45e2-9bc8-acb5b7a7e003",
+            "title": "录播 2026/10/25 18:54:27",
+            "positionMs": 1028.151,
+            "durationMs": 3028.3540000000003,
+            "rate": 1,
+            "message": null
+          },
+          "transcript": [
+            "声音里有短促而细密的起伏",
+            "声音刚刚有了新的变化"
+          ],
+          "online": false,
+          "uncachedApiBlocked": true,
+          "modelOrCloudRequests": []
+        },
+        "recording": {
+          "status": "saved",
+          "id": "ff57cd1e-4516-45e2-9bc8-acb5b7a7e003",
+          "durationMs": 3028.3540000000003,
+          "bytes": 21842,
+          "pendingBytes": 0,
+          "message": null
+        },
+        "screenshot": "test/artifacts/private/offline-public-deploy-20261025/aitoshuu-offline-cold.png"
+      },
+      {
+        "host": "tongye.me",
+        "passed": true,
+        "onlineControlBefore": true,
+        "previousDocumentClosed": true,
+        "httpCacheDisabled": true,
+        "networkDisabledWithinSameSession": true,
+        "cold": {
+          "url": "https://tongye.me/SonoScope",
+          "online": false,
+          "secure": true,
+          "isolated": true,
+          "controlled": true,
+          "ready": true,
+          "uncachedApiBlocked": true,
+          "navigation": [
+            {
+              "workerStart": 1.525000000372529,
+              "transferSize": 0
+            }
+          ]
+        },
+        "library": {
+          "opened": true,
+          "itemCount": 0
+        },
+        "localFile": {
+          "comments": "这段声音的高频比较明显",
+          "online": false,
+          "uncachedApiBlocked": true,
+          "modelOrCloudRequests": []
+        },
+        "screenshot": "test/artifacts/private/offline-public-deploy-20261025/tongye-offline-cold.png"
+      }
+    ],
+    "screenshotsReviewed": true,
+    "testSpaceFinished": true,
+    "physicalMicrophoneUsed": false,
+    "modelInferenceOrCloudGenerationCalled": false,
+    "primaryRecordingSource": "Public licensed piano fixture; enabled DOM buttons for recording and pause, native UI playback.",
+    "secondaryInputSource": "Public licensed guiro fixture; offline local file playback."
+  },
+  "cleanup": {
+    "server": {
+      "cleanedAt": "2026-10-25T11:00:08.451864+00:00",
+      "deletedPaths": [
+        "/srv/sonoscope/builds/offline-bc9dd46",
+        "/var/lib/sonoscope/.local/share/pnpm/store",
+        "/tmp/sonoscope-offline-bc9dd46",
+        "/var/lib/sonoscope/offline-build-bc9dd46.log"
+      ],
+      "deduplicatedAllocatedKiB": 1409512,
+      "preservedRelease": "/srv/sonoscope/releases/20261025-bc9dd46",
+      "preservedPreviousRelease": "/srv/sonoscope/releases/20261025-523495c",
+      "preservedBackup": "/var/backups/sonoscope/20261025-offline-bc9dd46",
+      "health": {
+        "status": "ok",
+        "version": "2"
+      },
+      "active": "active",
+      "restarts": 0,
+      "workerSha256": "7037215b2549bbd617ee7a5b3e07eaeec5a892fa7e83e38cfff4a20303dbb0f7"
+    },
+    "local": {
+      "cleanedAt": "2026-10-25T11:04:19.760742+00:00",
+      "deletedPaths": [
+        "test/artifacts/private/offline-public-deploy-20261025/source-bc9dd46.tar.gz"
+      ],
+      "removedBytes": 38990390,
+      "sourceChecksumVerified": true
+    }
+  },
+  "limits": {
+    "offlinePrerequisite": "Previously visit the same origin online and wait for offline readiness; first visits and cleared or evicted browser storage require a connection.",
+    "knownUnresolved": [
+      "Named-instrument recognition accuracy remains below prior acceptance targets; acoustic descriptions stay the default."
+    ],
+    "notTestedThisRelease": [
+      "Full browser process exit and restart",
+      "Operating-system-level network disconnection",
+      "Mobile, Windows and Safari full workflows",
+      "Physical microphone permission and interruption flows",
+      "Cross-device recording codec compatibility",
+      "At least 30 starts per platform for first-response p95",
+      "Long recording, long replay, drift and full process/GPU resource acceptance"
+    ],
+    "originStorage": "The two public origins keep independent local recordings and caches.",
+    "rollback": "The prior server release is retained. A client rollback must include a matching service-worker build; no live rollback was exercised."
+  }
+}
