@@ -1,6 +1,13 @@
 import { cleanComment, textKey, type CommentCandidate } from '@sonoscope/core';
 
-export interface CommentSink { show(comment: CommentCandidate, options?: { priority?: boolean }): boolean; clear(): void; dispose?(): void }
+export type CommentPresentation = { type: 'show' | 'hide'; comment: CommentCandidate; durationMs: number; elapsedMs?: number };
+export interface CommentSink {
+  show(comment: CommentCandidate, options?: { priority?: boolean }): boolean;
+  clear(): void;
+  dispose?(): void;
+  subscribePresentation?(listener: (event: CommentPresentation) => void): () => void;
+  visibleComments?(): { comment: CommentCandidate; remainingMs: number; durationMs?: number }[];
+}
 /** Only entry to rendering. IDs and text keys cover queued and actually displayed comments. */
 export class CommentQueue {
   private items: CommentCandidate[] = [];
@@ -10,7 +17,20 @@ export class CommentQueue {
   private audioId: string | null = null;
   private runId: string | null = null;
   private lastShownAt = -Infinity;
-  constructor(private sink: CommentSink, private options: { capacity?: number; intervalMs?: number; dedupMs?: number; now?: () => number; onShown?: (c: CommentCandidate, at: number) => void } = {}) {}
+  private acknowledged = new Set<string>();
+  private unsubscribe?: () => void;
+  constructor(private sink: CommentSink, private options: { capacity?: number; intervalMs?: number; dedupMs?: number; now?: () => number; onShown?: (c: CommentCandidate, at: number) => void } = {}) {
+    this.unsubscribe = sink.subscribePresentation?.(event => {
+      const c = event.comment;
+      if (event.type !== 'show' || c.audioSessionId !== this.audioId || c.danmuRunId !== this.runId || this.acknowledged.has(c.commentId)) return;
+      this.acknowledged.add(c.commentId); if (this.acknowledged.size > 100) this.acknowledged.delete(this.acknowledged.values().next().value!);
+      const now = this.now();
+      this.lastShownAt = Math.max(this.lastShownAt, now);
+      this.ids.set(c.commentId, now + (this.options.dedupMs ?? 60000));
+      this.texts.set(textKey(c.text), now + (this.options.dedupMs ?? (c.source === 'local' ? 10000 : 60000)));
+      this.options.onShown?.(c, now);
+    });
+  }
   private now() { return (this.options.now ?? Date.now)(); }
   start(audioId: string, runId: string) { this.stop(); this.audioId = audioId; this.runId = runId; }
   enqueue(candidate: CommentCandidate) {
@@ -39,9 +59,11 @@ export class CommentQueue {
     const candidate = this.items[index];
     if (!this.sink.show(candidate, { priority: firstAI >= 0 || candidate.source === 'local' })) return;
     if (candidate.source === 'ai') this.boostedAI.set(candidate.snapshotId, now + 60000);
-    this.items.splice(index, 1); this.lastShownAt = now; this.options.onShown?.(candidate, now);
+    this.items.splice(index, 1); this.lastShownAt = now;
+    if (!this.sink.subscribePresentation) this.options.onShown?.(candidate, now);
   }
-  stop() { this.audioId = null; this.runId = null; this.items = []; this.ids.clear(); this.texts.clear(); this.boostedAI.clear(); this.lastShownAt = -Infinity; this.sink.clear(); }
+  stop() { this.audioId = null; this.runId = null; this.items = []; this.ids.clear(); this.texts.clear(); this.boostedAI.clear(); this.acknowledged.clear(); this.lastShownAt = -Infinity; this.sink.clear(); }
+  dispose() { this.stop(); this.unsubscribe?.(); this.unsubscribe = undefined; }
   discardAI() {
     for (const c of this.items) if (c.source === 'ai') { this.ids.delete(c.commentId); this.texts.delete(textKey(c.text)); }
     this.items = this.items.filter(c => c.source !== 'ai');

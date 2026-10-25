@@ -1,12 +1,27 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeFrame } from '@sonoscope/core';
-import { CommentQueue } from '../../packages/danmu-pipeline/comment-queue';
+import { CommentQueue, type CommentPresentation } from '../../packages/danmu-pipeline/comment-queue';
 import { DanmuController } from '../../packages/danmu-pipeline/controller';
 import { streamingClient } from '../../packages/danmu-pipeline/client';
 import { frame, request, comment, deferred } from './fixtures';
 
 afterEach(() => vi.useRealTimers());
 describe('single bounded comment path', () => {
+  it('keeps the local deduplication and display interval from actual presentation after a delayed frame', () => {
+    let now = 1000, acknowledge!: (event: CommentPresentation) => void;
+    const show = vi.fn().mockReturnValue(true), shown = vi.fn();
+    const queue = new CommentQueue({ show, clear() {}, subscribePresentation(listener) { acknowledge = listener; return () => {}; } }, { now: () => now, onShown: shown });
+    queue.start('audio-1', 'run-1');
+    const first = comment({ commentId: 'delayed', text: '高频的声音更明显了', source: 'local', createdAt: now, expiresAt: 30000 });
+    queue.enqueue(first); queue.tick(); expect(shown).not.toHaveBeenCalled();
+    now = 1600; acknowledge({ type: 'show', comment: first, durationMs: 6500 });
+    now = 2100; queue.enqueue(comment({ commentId: 'next', text: '声音轻了下来', source: 'local', createdAt: now, expiresAt: 30000 })); queue.tick();
+    expect(show).toHaveBeenCalledTimes(1);
+    now = 2550; queue.tick(); expect(show).toHaveBeenCalledTimes(2);
+    now = 11000; expect(queue.enqueue({ ...first, commentId: 'repeat' })).toBe(false);
+    now = 11600; expect(queue.enqueue({ ...first, commentId: 'repeat' })).toBe(true);
+    queue.dispose();
+  });
   it('same ID/text renders once and count records actual display acknowledgement', () => {
     const show = vi.fn().mockReturnValue(true), queue = new CommentQueue({ show, clear() {} }); queue.start('audio-1', 'run-1');
     expect(queue.enqueue(comment())).toBe(true); queue.tick();

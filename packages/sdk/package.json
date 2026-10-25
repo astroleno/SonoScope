@@ -11,7 +11,16 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./runtime": { "types": "./dist/runtime.d.ts", "import": "./dist/runtime.mjs", "require": "./dist/runtime.js" }
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.mjs",
+      "require": "./dist/runtime.js"
+    },
+    "./recording-archive": {
+      "types": "./dist/recording-archive.d.ts",
+      "import": "./dist/recording-archive.mjs",
+      "require": "./dist/recording-archive.js"
+    }
   },
   "files": [
     "dist"
@@ -24,9 +33,10 @@
   "dependencies": {
     "@sonoscope/core": "workspace:*",
     "@sonoscope/danmu-pipeline": "workspace:*",
+    "@sonoscope/shared": "workspace:*",
     "@sonoscope/visuals-basic": "workspace:*",
     "@sonoscope/visuals-trap": "workspace:*",
-    "@sonoscope/shared": "workspace:*"
+    "fflate": "0.8.3"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

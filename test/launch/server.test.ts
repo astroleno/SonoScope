@@ -11,7 +11,7 @@ import { request, deferred } from './fixtures';
 
 const stores: FileQuotaStore[] = [], paths: string[] = [];
 async function quota(limits = { dailyCalls: 10, dailyTokens: 100000, concurrency: 2 }) { const path = await mkdtemp(join(tmpdir(), 'sono-test-')); paths.push(path); const store = new FileQuotaStore(join(path, 'quota.json'), limits); stores.push(store); return store; }
-afterEach(async () => { vi.restoreAllMocks(); for (const s of stores.splice(0)) await s.close(); for (const p of paths.splice(0)) await rm(p, { recursive: true, force: true }); });
+afterEach(async () => { vi.restoreAllMocks(); vi.unstubAllEnvs(); for (const s of stores.splice(0)) await s.close(); for (const p of paths.splice(0)) await rm(p, { recursive: true, force: true }); });
 const config = () => readLlmConfig({ GLM_API_KEY: 'test-only', AI_ENABLED: '1', AI_DAILY_CALLS: '10', AI_DAILY_TOKENS: '100000', AI_MAX_CONCURRENCY: '2' });
 describe('durable server guards', () => {
   it('no explicit deployment quota means cloud stays off, even when key is present', () => {
@@ -46,6 +46,24 @@ describe('durable server guards', () => {
     expect((await handleGeneration(make(JSON.stringify({ ...request(), needDanmu: 100000 })), service)).status).toBe(400);
     expect((await handleGeneration(make(' '.repeat(13000)), service)).status).toBe(413);
     expect(generate).not.toHaveBeenCalled();
+  });
+  it('accepts only the exact configured public origins behind a shared upstream', async () => {
+    vi.stubEnv('APP_ORIGIN', 'https://legacy.test');
+    vi.stubEnv('APP_ORIGINS', 'https://aitoshuu.me, https://tongye.me');
+    const generate = vi.fn(), service = new LlmService(config(), await quota(), { generate });
+    const make = (origin: string, site = 'same-origin') => new Request('http://127.0.0.1:3100/SonoScope/api/danmu/stream', { method: 'POST', headers: { origin, 'sec-fetch-site': site, 'content-type': 'application/json' }, body: '{}' });
+    for (const origin of ['https://aitoshuu.me', 'https://tongye.me']) expect((await handleGeneration(make(origin), service)).status).toBe(400);
+    for (const origin of ['https://legacy.test', 'https://tongye.me.attacker.test', 'http://tongye.me', 'null']) expect((await handleGeneration(make(origin), service)).status).toBe(403);
+    expect((await handleGeneration(make('https://tongye.me', 'cross-site'), service)).status).toBe(403);
+    expect(generate).not.toHaveBeenCalled();
+  });
+  it('retains the single-origin deployment guard when no allowlist is configured', async () => {
+    vi.stubEnv('APP_ORIGINS', undefined);
+    vi.stubEnv('APP_ORIGIN', 'https://single.test');
+    const service = new LlmService(config(), await quota(), { generate: vi.fn() });
+    const make = (origin: string) => new Request('http://127.0.0.1:3100/SonoScope/api/danmu/stream', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: '{}' });
+    expect((await handleGeneration(make('https://single.test'), service)).status).toBe(400);
+    expect((await handleGeneration(make('http://127.0.0.1:3100'), service)).status).toBe(403);
   });
   it('a comment reaches HTTP stream while the model batch is still in progress', async () => {
     const finish = deferred<void>(); const service = new LlmService(config(), await quota(), { async generate(_r, _s, emit) { emit('这一段声音轻轻展开', 'regular'); await finish.promise; return { inputTokens: 20, outputTokens: 10 }; } });

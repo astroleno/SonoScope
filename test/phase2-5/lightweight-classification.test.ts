@@ -23,18 +23,21 @@ describe('model join and provenance', () => {
   it('joins a real-format model response by session and exposes unknown when inference fails', () => {
     const worker = () => ({ onmessage: null, onerror: null, postMessage: vi.fn(), terminate: vi.fn() }) as FeatureWorker;
     const dsp = worker(), model = worker(), onFrame = vi.fn();
-    const pipeline = new FeaturePipeline({ workerFactory: () => dsp, modelWorkerFactory: () => model, workerAssets: { modelUrl: '/model', wasmUrl: '/wasm', modelVersion: 'test-model' } });
-    pipeline.onFrame(onFrame); pipeline.start('session'); const now = Date.now();
+    const now = Date.now();
+    const pipeline = new FeaturePipeline({ now: () => now, workerFactory: () => dsp, modelWorkerFactory: () => model, workerAssets: { modelUrl: '/model', wasmUrl: '/wasm', modelVersion: 'yamnet-float32-1' } });
+    pipeline.onFrame(onFrame); pipeline.start('session');
     dsp.onmessage!({ data: { type: 'dsp-ready', audioSessionId: 'session' } } as MessageEvent); model.onmessage!({ data: { type: 'model-loading', audioSessionId: 'session' } } as MessageEvent); model.onmessage!({ data: { type: 'model-ready', audioSessionId: 'session' } } as MessageEvent);
-    const result = { version: 'yamnet-float32-1', capturedAt: now, categories: [{ label: 'Speech', score: .8 }], voiceProbability: .8, instrument: null };
-    model.onmessage!({ data: { type: 'model-result', audioSessionId: 'session', result } } as MessageEvent);
-    const values = new FeatureExtractor().extract(new Float32Array(1024).fill(.1), 44100, 0);
-    pipeline.feed(new Float32Array(1024).fill(.1), 44100, 0, 'session');
-    dsp.onmessage!({ data: { type: 'frame', audioSessionId: 'session', seq: 0, capturedAt: now, audioTime: 0, sampleRate: 44100, values } } as MessageEvent);
+    // A real response must correspond to a complete, actually issued request.
+    pipeline.feed(new Float32Array(15600).fill(.1), 16000, .975, 'session');
+    const sent = (model.postMessage as ReturnType<typeof vi.fn>).mock.calls.find(([msg]) => msg.type === 'classify')![0];
+    const result = { version: 'yamnet-float32-1', capturedAt: sent.capturedAt, categories: [{ label: 'Speech', score: .8 }], voiceProbability: .8, instrument: null };
+    model.onmessage!({ data: { type: 'model-result', audioSessionId: 'session', requestId: sent.requestId, sourceEpoch: sent.sourceEpoch, result } } as MessageEvent);
+    const values = new FeatureExtractor().extract(new Float32Array(1024).fill(.1), 16000, .975);
+    dsp.onmessage!({ data: { type: 'frame', audioSessionId: 'session', seq: 0, capturedAt: now, audioTime: .975, sampleRate: 16000, values } } as MessageEvent);
     expect(onFrame.mock.calls.at(-1)![0].model).toEqual(result); expect(onFrame.mock.calls.at(-1)![0].validity.classification.source).toBe('model');
     model.onmessage!({ data: { type: 'model-error', audioSessionId: 'session' } } as MessageEvent);
-    pipeline.feed(new Float32Array(1024).fill(.1), 44100, 1, 'session');
-    dsp.onmessage!({ data: { type: 'frame', audioSessionId: 'session', seq: 1, capturedAt: now, audioTime: 1, sampleRate: 44100, values } } as MessageEvent);
+    pipeline.feed(new Float32Array(1024).fill(.1), 16000, 1.039, 'session');
+    dsp.onmessage!({ data: { type: 'frame', audioSessionId: 'session', seq: 1, capturedAt: now, audioTime: 1.039, sampleRate: 16000, values } } as MessageEvent);
     expect(onFrame.mock.calls.at(-1)![0].model).toBeNull(); expect(onFrame.mock.calls.at(-1)![0].validity.classification.state).toBe('unknown'); pipeline.dispose();
   });
   it('DSP backpressure does not cut holes in the separate model PCM window', () => {

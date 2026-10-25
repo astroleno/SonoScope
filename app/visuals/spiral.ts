@@ -270,9 +270,10 @@ export function applySpiralUniforms(
     theme?: 'default' | 'warm' | 'cool' | 'neon' | 'pastel';
     dominantInstrument?: string;
     percussiveRatio?: number;
-  }
+  },
+  mediaSeconds?: number
 ) {
-  shader.setUniform('uTime', p.millis() / 1000.0);
+  shader.setUniform('uTime', mediaSeconds ?? p.millis() / 1000.0);
   shader.setUniform('uResolution', [p.width, p.height]);
   shader.setUniform('uMove', [0, 0]);
   shader.setUniform('uPointerCount', 0);

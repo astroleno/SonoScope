@@ -14,6 +14,81 @@ function environment() {
   return { env, permission, stream, track, context, capture };
 }
 describe('audio lifecycle', () => {
+  it('releases the microphone immediately while an encoder finishes its detached recording branch', async () => {
+    const e = environment(), completion = deferred<void>();
+    const recordedTrack = { stop: vi.fn() }, destination = { channelCount: 1, stream: { getTracks: () => [recordedTrack] }, disconnect: vi.fn() };
+    Object.assign(e.context, { createMediaStreamDestination: () => destination });
+    Object.assign(e.stream, { getAudioTracks: () => [{ getSettings: () => ({ channelCount: 1 }) }] });
+    const session = new AudioSession(e.env), starting = session.start(); e.permission.resolve(e.stream); await starting;
+    const tap = session.createRecordingTap(); tap.finalizeAfter!(completion.promise); session.stop();
+    expect(e.track.stop).toHaveBeenCalledOnce(); expect(e.capture.dispose).toHaveBeenCalledOnce(); expect(recordedTrack.stop).not.toHaveBeenCalled(); expect(e.context.close).not.toHaveBeenCalled();
+    completion.resolve(); await vi.waitFor(() => expect(e.context.close).toHaveBeenCalledOnce());
+    expect(recordedTrack.stop).toHaveBeenCalledOnce(); tap.dispose(); session.dispose(); expect(e.context.close).toHaveBeenCalledOnce();
+  });
+  it('bounds encoder finalization when its completion never arrives', async () => {
+    vi.useFakeTimers();
+    try {
+      const e = environment(), recordedTrack = { stop: vi.fn() };
+      Object.assign(e.context, { createMediaStreamDestination: () => ({ channelCount: 1, stream: { getTracks: () => [recordedTrack] }, disconnect: vi.fn() }) });
+      Object.assign(e.stream, { getAudioTracks: () => [{ getSettings: () => ({ channelCount: 1 }) }] });
+      const session = new AudioSession(e.env), starting = session.start(); e.permission.resolve(e.stream); await starting;
+      session.createRecordingTap().finalizeAfter!(new Promise(() => {})); session.stop();
+      expect(e.track.stop).toHaveBeenCalledOnce(); await vi.advanceTimersByTimeAsync(10000);
+      expect(recordedTrack.stop).toHaveBeenCalledOnce(); expect(e.context.close).toHaveBeenCalledOnce(); expect(vi.getTimerCount()).toBe(0); session.dispose();
+    } finally { vi.useRealTimers(); }
+  });
+  it('records from the existing source and releases its tap without taking microphone ownership', async () => {
+    const e = environment(), input = { channelCount: 1, connect: vi.fn(), disconnect: vi.fn() };
+    (e.context.createMediaStreamSource as ReturnType<typeof vi.fn>).mockReturnValue(input);
+    const recordedTrack = { stop: vi.fn() }, destination = { channelCount: 2, stream: { getTracks: () => [recordedTrack] }, disconnect: vi.fn() };
+    Object.assign(e.context, { createMediaStreamDestination: () => destination, currentTime: 12 });
+    Object.assign(e.stream, { getAudioTracks: () => [{ getSettings: () => ({ channelCount: 1 }) }] });
+    const session = new AudioSession(e.env), pending = session.start(); e.permission.resolve(e.stream); await pending;
+    const tap = session.createRecordingTap(); expect(e.env.getUserMedia).toHaveBeenCalledOnce(); expect(tap.channels).toBe(1); expect(tap.sourceSeconds()).toBe(12);
+    tap.dispose(); tap.dispose(); expect(recordedTrack.stop).toHaveBeenCalledOnce(); expect(e.track.stop).not.toHaveBeenCalled(); expect(e.capture.dispose).not.toHaveBeenCalled();
+    const before = vi.fn(() => expect(e.track.stop).not.toHaveBeenCalled()); session.beforeStop(before); session.stop('test-interruption');
+    expect(before).toHaveBeenCalledWith('test-interruption'); expect(e.track.stop).toHaveBeenCalledOnce(); session.dispose();
+  });
+  it('releases capture on system audio suspension and announces its interruption before releasing tracks', async () => {
+    const e = environment(); let changed: (() => void) | undefined;
+    Object.assign(e.context, { addEventListener: (_type: string, listener: () => void) => { changed = listener; }, removeEventListener: vi.fn() });
+    const session = new AudioSession(e.env), before = vi.fn(() => expect(e.track.stop).not.toHaveBeenCalled()); session.beforeStop(before);
+    const starting = session.start(); e.permission.resolve(e.stream); await starting;
+    Object.defineProperty(e.context, 'state', { value: 'suspended' }); changed?.();
+    expect(before).toHaveBeenCalledWith('audio-interrupted'); expect(session.current.error?.code).toBe('audio-interrupted'); expect(e.track.stop).toHaveBeenCalledOnce();
+    expect(e.context.removeEventListener).toHaveBeenCalledOnce(); session.dispose();
+  });
+  it('waits for device startup before the worklet loader and cancels a pending resume on stop', async () => {
+    const e = environment(), resumed = deferred<void>(); (e.context.resume as ReturnType<typeof vi.fn>).mockReturnValue(resumed.promise);
+    const session = new AudioSession(e.env), pending = session.start(); e.permission.resolve(e.stream);
+    await vi.waitFor(() => expect(e.context.createMediaStreamSource).toHaveBeenCalledOnce());
+    expect(e.env.capture).not.toHaveBeenCalled(); session.stop();
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' }); expect(e.context.close).toHaveBeenCalledOnce(); expect(e.env.capture).not.toHaveBeenCalled();
+    resumed.resolve(); session.dispose();
+  });
+  it('delivers the first file PCM while the media play promise is still pending', async () => {
+    const e = environment(), playing = deferred<void>(); let receive!: (pcm: Float32Array, time: number) => void;
+    e.env.openFile = async () => ({ input: { connect: vi.fn(), disconnect: vi.fn() } as unknown as AudioNode, play: () => playing.promise, dispose: vi.fn() });
+    e.env.capture = async (_context, _input, callback) => { receive = callback; return e.capture; };
+    const session = new AudioSession(e.env), listener = vi.fn(); session.onPCM(listener);
+    try {
+      const pending = session.start({ type: 'file', file: { size: 1000 } as File });
+      await vi.waitFor(() => expect(session.current.status).toBe('running'));
+      receive(new Float32Array([.1, .2]), .1); expect(listener).toHaveBeenCalledOnce();
+      playing.resolve(); await pending;
+    } finally { session.dispose(); }
+  });
+  it('maps source capture time through the AudioContext clock instead of hiding delayed callbacks', async () => {
+    const e = environment(); let receive!: (pcm: Float32Array, time: number) => void;
+    e.env.capture = async (_context, _input, callback) => { receive = callback; return e.capture; };
+    Object.defineProperty(e.context, 'currentTime', { value: 12.5, configurable: true });
+    const session = new AudioSession(e.env, () => 20000), captured = vi.fn(); session.onPCM(captured);
+    try {
+      const pending = session.start(); e.permission.resolve(e.stream); await pending;
+      receive(new Float32Array(1024), 12); expect(captured.mock.calls[0][4]).toBe(19500);
+      receive(new Float32Array(1024), 12.6); expect(captured.mock.calls[1][4]).toBe(20000);
+    } finally { session.dispose(); }
+  });
   it('duplicate start shares one permission promise and one resource owner', async () => {
     const e = environment(), session = new AudioSession(e.env); const a = session.start(), b = session.start(); expect(a).toBe(b);
     e.permission.resolve(e.stream); await a; expect(e.env.getUserMedia).toHaveBeenCalledTimes(1); expect(session.current.status).toBe('running');

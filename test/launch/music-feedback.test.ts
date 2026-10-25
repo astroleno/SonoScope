@@ -1,12 +1,37 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { makeFrame, type FeatureSnapshot } from '@sonoscope/core';
+import { FeatureExtractor, makeFrame, type FeatureSnapshot } from '@sonoscope/core';
 import { DanmuController } from '../../packages/danmu-pipeline/controller';
 import { feedbackEvidence, isGroundedComment, promptFor } from '../../app/lib/server/provider';
 import { frame, request } from './fixtures';
 afterEach(() => vi.useRealTimers());
 const realExamples = JSON.parse(readFileSync(new URL('../artifacts/music-ai-grounding-examples-20261021.json', import.meta.url), 'utf8')) as { cases: { name: string; snapshot: FeatureSnapshot; comments: string[] }[] };
 describe('specific musical feedback', () => {
+  it('tiered local feedback waits for measured sound, avoids unsupported music and instrument claims, and makes no AI call', () => {
+    vi.useFakeTimers();
+    const show = vi.fn().mockReturnValue(true), generate = vi.fn();
+    const controller = new DanmuController({ show, clear() {} }, { feedbackMode: 'tiered', generate });
+    const extractor = new FeatureExtractor();
+    try {
+      controller.setCloudEnabled(true);
+      expect(controller.current.cloud).toBe('off');
+      controller.start('audio-1');
+      for (let seq = 0; seq < 10; seq++) {
+        const pcm = Float32Array.from({ length: 1024 }, (_, i) => .2 * Math.sin(2 * Math.PI * 440 * (seq * 1024 + i) / 44100));
+        const values = extractor.extract(pcm, 44100, seq * 1024 / 44100);
+        controller.feedFrame(makeFrame('audio-1', seq, seq * 1024 / 44100, Date.now(), 44100, values));
+        vi.advanceTimersByTime(50);
+      }
+      expect(show).toHaveBeenCalled();
+      expect(show.mock.calls[0][0].text).not.toBe('声音进来了，开始听这一段');
+      expect(show.mock.calls[0][0].text).toMatch(/声音/);
+      vi.advanceTimersByTime(1500);
+      const base = frame('audio-1', 11), model = { version: 'yamnet', capturedAt: Date.now(), categories: [{ label: 'Speech', score: .95 }], voiceProbability: .95, instrument: { label: 'Piano', confidence: .99 } };
+      controller.feedFrame(makeFrame('audio-1', 11, 1, Date.now(), 44100, { ...base.values, tempo: { bpm: 120, confidence: .99 } }, model));
+      expect(show.mock.calls.map(([c]) => c.text).join(' ')).not.toMatch(/钢琴|节拍|音乐/);
+      expect(generate).not.toHaveBeenCalled();
+    } finally { controller.dispose(); expect(vi.getTimerCount()).toBe(0); }
+  });
   it.each(realExamples.cases)('$name retains the grounded comments from the bounded real-provider run', example => {
     for (const text of example.comments) expect(isGroundedComment(example.snapshot, text)).toBe(true);
   });

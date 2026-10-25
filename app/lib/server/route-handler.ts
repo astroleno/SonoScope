@@ -19,8 +19,10 @@ async function limitedJSON(request: Request) {
 }
 export async function handleGeneration(request: Request, service = getLlmService()) {
   try {
-    const expectedOrigin = process.env.APP_ORIGIN || new URL(request.url).origin;
-    if (request.headers.get('origin') !== expectedOrigin || request.headers.get('sec-fetch-site') === 'cross-site') throw new ServiceError('origin-denied', 403, '请求来源不受支持。');
+    const configuredOrigins = process.env.APP_ORIGINS?.trim() || process.env.APP_ORIGIN;
+    const expectedOrigins = configuredOrigins ? configuredOrigins.split(',').map(origin => origin.trim()).filter(Boolean) : [new URL(request.url).origin];
+    const origin = request.headers.get('origin');
+    if (!origin || !expectedOrigins.includes(origin) || request.headers.get('sec-fetch-site') === 'cross-site') throw new ServiceError('origin-denied', 403, '请求来源不受支持。');
     const body = await limitedJSON(request);
     if (!validateGenerationRequest(body)) throw new ServiceError('invalid-request', 400, '声音特征或会话信息无效。');
     const peer = process.env.TRUST_PROXY === '1' ? request.headers.get('x-real-ip')?.slice(0, 80) || 'unknown-peer' : 'direct-peer';

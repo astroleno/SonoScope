@@ -42,6 +42,8 @@ interface AudioWeights {
 
 interface VisualizerProps {
   liveFrame?: React.RefObject<FeatureFrame | null>;
+  playbackClock?: React.RefObject<import('@sonoscope/sdk').ReplayRenderClock | null>;
+  playbackRevision?: number;
   onRendered?: (frame: FeatureFrame | null, at: number) => void;
   reducedMotion?: boolean;
   audioLevel: number; // 0 ~ 1
@@ -74,6 +76,8 @@ interface VisualizerProps {
 
 export default function Visualizer({
   liveFrame,
+  playbackClock,
+  playbackRevision = 0,
   onRendered,
   reducedMotion = false,
   audioLevel,
@@ -89,9 +93,12 @@ export default function Visualizer({
   const [renderError, setRenderError] = useState(false);
   const motionRef = useRef(reducedMotion);
   const liveFrameRef = useRef(liveFrame);
+  const playbackClockRef = useRef(playbackClock);
   const renderedRef = useRef(onRendered);
   useEffect(() => { renderedRef.current = onRendered; }, [onRendered]);
   useEffect(() => { liveFrameRef.current = liveFrame; }, [liveFrame]);
+  useEffect(() => { playbackClockRef.current = playbackClock; }, [playbackClock]);
+  useEffect(() => { if (motionRef.current) p5InstanceRef.current?.redraw(); }, [playbackRevision]);
   useEffect(() => { motionRef.current = reducedMotion; const p = p5InstanceRef.current; if (p) { if (reducedMotion) { p.noLoop(); p.redraw(); } else p.loop(); } }, [reducedMotion]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const p5InstanceRef = useRef<any | null>(null);
@@ -191,6 +198,7 @@ export default function Visualizer({
           let waveProgram: any | null = null;
           let mochiProgram: any | null = null;
           let mosaicVisual: any | null = null;
+          let playbackEpoch = -1;
           const particles: Particle[] = [];
           // 移动端采用更少的粒子，降低首屏成本
           const maxParticles = isMobile ? 45 : 90;
@@ -243,18 +251,20 @@ export default function Visualizer({
             const mode = presetRef.current;
             const renderer =
               mode === 'accretion' || mode === 'spiral' || mode === 'wave' || mode === 'mochi' ? p.WEBGL : p.P2D;
+            // Configure density before allocation, avoiding a full Retina buffer
+            // allocation followed immediately by a second, smaller canvas.
+            p.pixelDensity(1);
             const canvas = p.createCanvas(
               p.windowWidth,
               p.windowHeight,
               renderer
             );
             canvas.parent(containerRef.current!);
-            p.pixelDensity(1);
             // 降低移动端帧率，优先保证交互流畅
             p.frameRate(isMobile ? 45 : 60);
             if (motionRef.current) p.noLoop();
             // 某些布局在首帧后才稳定，延迟一次 resize 保证满屏
-            const resizeTimer = setTimeout(() => { if (!isCancelled) p.resizeCanvas(p.windowWidth, p.windowHeight); }, 50);
+            const resizeTimer = setTimeout(() => { if (!isCancelled && (p.width !== p.windowWidth || p.height !== p.windowHeight)) p.resizeCanvas(p.windowWidth, p.windowHeight); }, 50);
             scheduled.push(() => clearTimeout(resizeTimer));
 
             if (mode === 'accretion') {
@@ -343,6 +353,14 @@ export default function Visualizer({
           p.draw = () => {
             try {
             const mode = presetRef.current;
+            const replay = playbackClockRef.current?.current;
+            const replaySeconds = replay ? replay.positionMs / 1000 : undefined;
+            if (replay && replay.epoch !== playbackEpoch) {
+              playbackEpoch = replay.epoch;
+              for (const key of Object.keys(audioModel)) audioModel[key] = 0;
+              p.__waveAmp = undefined;
+              mosaicVisual?.seekPlayback(replay.positionMs, replay.warmup);
+            }
             const current = liveFrameRef.current?.current;
             const rawLvl = current?.values.rms ?? levelRef.current;
             const f = current ? {
@@ -513,7 +531,7 @@ export default function Visualizer({
                     : Math.max(0.7, Math.min(1.6, (c?.overallBoost ?? 1.0) * (0.95 + 0.3 * audioModel.bandLow))),
                 }
               );
-              accretionMod.drawAccretion(p, shaderProgram);
+              accretionMod.drawAccretion(p, shaderProgram, replaySeconds);
             } else if (mode === 'spiral' && spiralProgram && spiralMod) {
               // 频谱优先：Spiral 简化为 bandHigh→扰动、bandLow→体规模、fluxPulse→高光
               let spiralLevel = audioModel.level;
@@ -554,7 +572,9 @@ export default function Visualizer({
                 p,
                 spiralProgram,
                 spiralAudio,
-                spiralSensitivity
+                spiralSensitivity,
+                undefined,
+                replaySeconds
               );
               spiralMod.drawSpiral(p, spiralProgram);
             } else if (mode === 'mosaic' && mosaicVisual && mosaicMod) {
@@ -612,9 +632,10 @@ export default function Visualizer({
                 controls?.colorScheme ?? 0,
                 controls?.colorFlowSpeed ?? 0.01,
                 controls?.alpha ?? 0.7,
+                30, 8, 1, 1, true, true, 1, .02,
                 columns
               );
-              mosaicMod.drawMosaic(p, mosaicVisual);
+              mosaicMod.drawMosaic(p, mosaicVisual, replay?.positionMs);
             } else if (mode === 'wave' && waveProgram && waveMod) {
               const levelInstant = Math.max(0, Math.min(1, rawLvl));
               const fluxInstant = Math.max(0, Math.min(1, fluxRaw));
@@ -750,7 +771,8 @@ export default function Visualizer({
                   thickness: 0.022,
                   glowStrength: 0.6,
                   rgbSeparation: 1.0,
-                }
+                },
+                replaySeconds
               );
               waveMod.drawWave(p, waveProgram);
             } else if (mode === 'mochi' && mochiProgram && mochiMod) {
@@ -795,7 +817,8 @@ export default function Visualizer({
                   lightStrength: 1.4,
                   grainStrength: 0.18,
                   grainScale: 4.0,
-                }
+                },
+                replaySeconds
               );
               mochiMod.drawMochi(p, mochiProgram);
             } else {
@@ -845,7 +868,12 @@ export default function Visualizer({
       for (const cancel of scheduled) cancel();
       try {
         if (p5InstanceRef.current) {
-          p5InstanceRef.current.remove();
+          const instance = p5InstanceRef.current;
+          const gl = instance.drawingContext as WebGLRenderingContext | CanvasRenderingContext2D | undefined;
+          instance.remove();
+          // p5 removes the DOM canvas but leaves the GPU context to GC. Release
+          // our detached context now so repeated preset switches remain bounded.
+          if (gl && 'getExtension' in gl) gl.getExtension('WEBGL_lose_context')?.loseContext();
           p5InstanceRef.current = null;
         }
       } catch (e) {

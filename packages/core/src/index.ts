@@ -33,3 +33,8 @@ export const VERSION = '1.0.0';
 export * from './contracts';
 export * from './dsp';
 export * from './audio-classification';
+export * from './sound-observation';
+export * from './audio-model-profiles';
+export * from './audio-model-input';
+export * from './streaming-resampler';
+export * from './recording-contracts';

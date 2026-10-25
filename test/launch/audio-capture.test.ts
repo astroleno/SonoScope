@@ -30,8 +30,8 @@ describe('browser capture fallback', () => {
       for (const playbackTime of [1, 1 + duration, 1 + 3 * duration, 1 + 3 * duration, 1 + 4 * duration, 4, 2]) {
         e.compatible.onaudioprocess!({ playbackTime, inputBuffer: { getChannelData: () => samples } } as unknown as AudioProcessingEvent);
       }
-      for (let i = 0; i < 5; i++) expect(onPCM.mock.calls[i][1]).toBeCloseTo(1 + i * duration, 8);
-      expect(onPCM.mock.calls[5][1]).toBe(4); expect(onPCM.mock.calls[6][1]).toBe(2);
+      for (let i = 0; i < 5; i++) expect(onPCM.mock.calls[i][1]).toBeCloseTo(1 + (i + 1) * duration, 8);
+      expect(onPCM.mock.calls[5][1]).toBeCloseTo(4 + duration, 8); expect(onPCM.mock.calls[6][1]).toBeCloseTo(2 + duration, 8);
       samples[0] = 1; expect(onPCM.mock.calls[0][0][0]).toBeCloseTo(.2);
     } finally { capture.dispose(); }
   });

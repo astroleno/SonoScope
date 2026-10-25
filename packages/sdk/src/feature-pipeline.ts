@@ -1,4 +1,5 @@
-import { FeatureExtractor, makeFrame, summarizeFrames, AUDIO_MODEL_SAMPLE_RATE, AUDIO_MODEL_SAMPLES, AUDIO_MODEL_HOP_SAMPLES, type FeatureFrame, type FeatureSnapshot, type ModelResult, type AudioValues } from '@sonoscope/core';
+import { FeatureExtractor, makeFrame, summarizeFrames, audioModelProfile, type AudioModelProfile, type FeatureFrame, type FeatureSnapshot, type ModelResult, type AudioValues, type ModelInputMode } from '@sonoscope/core';
+import { ModelPcmBuffer } from './model-pcm-buffer';
 
 export interface FeatureWorker {
   postMessage(message: unknown, transfer?: Transferable[]): void;
@@ -8,6 +9,7 @@ export interface FeatureWorker {
 }
 export type FeatureStatus = { dsp: 'worker' | 'local'; model: 'loading' | 'ready' | 'unavailable'; message: string | null };
 export interface FeatureTiming { audioSessionId: string; seq: number; capturedAt: number; readyAt: number; dspComputeMs: number | null; source: 'worker' | 'local' }
+export interface ModelTiming { audioSessionId: string; requestId: number; sourceEpoch: number; capturedAt: number; readyAt: number; processingMs: number | null; roundTripMs: number; retainedPcmBytes: number; accepted: boolean; inputMode: ModelInputMode | null }
 export interface FeaturePipelineOptions { workerFactory?: () => FeatureWorker; modelWorkerFactory?: () => FeatureWorker; workerAssets?: { wasmUrl: string; modelUrl: string; modelVersion: string }; now?: () => number }
 export class FeaturePipeline {
   private worker: FeatureWorker | null = null;
@@ -25,6 +27,12 @@ export class FeaturePipeline {
   private modelSamples = 0;
   private modelSampleRate = 0;
   private modelBusy = false;
+  private readonly modelProfile: AudioModelProfile;
+  private modelBuffer: ModelPcmBuffer | null = null;
+  private modelSourceStartedAt = 0;
+  private modelEpoch = 0;
+  private modelRequestSeq = 0;
+  private modelRequest: { id: number; epoch: number; capturedAt: number; startedAt: number; pcmBytes: number } | null = null;
   private status: FeatureStatus = { dsp: 'local', model: 'unavailable', message: null };
   private initTimer: ReturnType<typeof setTimeout> | null = null;
   private dspBootTimer: ReturnType<typeof setTimeout> | null = null;
@@ -34,12 +42,18 @@ export class FeaturePipeline {
   private snapshotListeners = new Set<(snapshot: FeatureSnapshot) => void>();
   private statusListeners = new Set<(status: FeatureStatus) => void>();
   private timingListeners = new Set<(timing: FeatureTiming) => void>();
+  private modelTimingListeners = new Set<(timing: ModelTiming) => void>();
   private now: () => number;
-  constructor(private options: FeaturePipelineOptions = {}) { this.now = options.now ?? Date.now; }
+  constructor(private options: FeaturePipelineOptions = {}) { this.now = options.now ?? Date.now; this.modelProfile = audioModelProfile(options.workerAssets?.modelVersion); }
   onFrame(fn: (f: FeatureFrame) => void) { this.frameListeners.add(fn); return () => { this.frameListeners.delete(fn); }; }
   onSnapshot(fn: (f: FeatureSnapshot) => void) { this.snapshotListeners.add(fn); return () => { this.snapshotListeners.delete(fn); }; }
   onStatus(fn: (s: FeatureStatus) => void) { this.statusListeners.add(fn); fn(this.status); return () => { this.statusListeners.delete(fn); }; }
   onTiming(fn: (timing: FeatureTiming) => void) { this.timingListeners.add(fn); return () => { this.timingListeners.delete(fn); }; }
+  onModelTiming(fn: (timing: ModelTiming) => void) { this.modelTimingListeners.add(fn); return () => { this.modelTimingListeners.delete(fn); }; }
+  get modelDiagnostics() {
+    return { sourceEpoch: this.modelEpoch, inFlight: Number(this.modelBusy), bufferedSamples: this.modelBuffer?.bufferedSamples ?? this.modelSamples,
+      retainedPcmBytes: (this.modelBuffer?.retainedPcmBytes ?? this.modelPCM.reduce((sum, pcm) => sum + pcm.byteLength, 0)) + (this.modelRequest?.pcmBytes ?? 0) };
+  }
   private setStatus(status: FeatureStatus) { this.status = status; for (const fn of this.statusListeners) fn(status); }
   private failDsp(worker: FeatureWorker) {
     if (this.worker !== worker) return;
@@ -58,7 +72,7 @@ export class FeaturePipeline {
     if (this.modelWorker !== worker) return;
     if (this.initTimer) clearTimeout(this.initTimer); this.initTimer = null;
     if (this.modelTimer) clearTimeout(this.modelTimer); this.modelTimer = null;
-    worker.terminate(); this.modelWorker = null; this.modelStage = null; this.modelBusy = false; this.model = null; this.modelPCM = []; this.modelSamples = 0;
+    worker.terminate(); this.modelWorker = null; this.modelStage = null; this.modelBusy = false; this.modelRequest = null; this.model = null; this.modelPCM = []; this.modelSamples = 0; this.modelBuffer = null; this.modelSampleRate = 0;
     this.setStatus({ ...this.status, model: 'unavailable', message: '声音分类暂不可用；基础音频分析继续工作。' });
   }
   start(audioSessionId: string) {
@@ -97,7 +111,19 @@ export class FeaturePipeline {
           }
           if (msg.type === 'model-ready' && this.modelStage === 'loading') { if (this.initTimer) clearTimeout(this.initTimer); this.initTimer = null; this.modelStage = 'ready'; this.setStatus({ ...this.status, model: 'ready', message: null }); }
           if (msg.type === 'model-error') this.failModel(worker);
-          if (msg.type === 'model-result') { if (this.modelTimer) clearTimeout(this.modelTimer); this.modelTimer = null; this.modelBusy = false; if (this.now() - msg.result.capturedAt <= 3000) this.model = msg.result; }
+          if (msg.type === 'model-result') {
+            const request = this.modelRequest;
+            if (!request || msg.requestId !== request.id || msg.sourceEpoch !== request.epoch) return;
+            const readyAt = this.now(), retainedPcmBytes = this.modelDiagnostics.retainedPcmBytes;
+            if (this.modelTimer) clearTimeout(this.modelTimer); this.modelTimer = null; this.modelBusy = false; this.modelRequest = null;
+            const age = readyAt - request.capturedAt;
+            const accepted = request.epoch === this.modelEpoch && msg.result?.capturedAt === request.capturedAt && msg.result?.version === this.options.workerAssets?.modelVersion && age >= 0 && age <= 3000;
+            if (accepted) this.model = msg.result;
+            const processingMs = typeof msg.processingMs === 'number' && Number.isFinite(msg.processingMs) && msg.processingMs >= 0 && msg.processingMs <= 5000 ? msg.processingMs : null;
+            const inputMode = msg.inputMode === 'raw' || msg.inputMode === 'lowpass-3k' ? msg.inputMode as ModelInputMode : null;
+            const timing: ModelTiming = { audioSessionId, requestId: request.id, sourceEpoch: request.epoch, capturedAt: request.capturedAt, readyAt, processingMs, roundTripMs: readyAt - request.startedAt, retainedPcmBytes, accepted, inputMode };
+            for (const fn of this.modelTimingListeners) fn(timing);
+          }
         };
         worker.onerror = () => this.failModel(worker);
         this.initTimer = setTimeout(() => { if (this.id === audioSessionId && this.status.model === 'loading') this.failModel(worker); }, 15000);
@@ -105,13 +131,35 @@ export class FeaturePipeline {
       } catch { if (this.modelWorker) this.failModel(this.modelWorker); else this.setStatus({ ...this.status, model: 'unavailable', message: '声音分类暂不可用；基础音频分析继续工作。' }); }
     }
   }
-  feed(pcm: Float32Array, sampleRate: number, audioTime: number, audioSessionId: string) {
-    if (audioSessionId !== this.id || !this.id) return;
-    const capturedAt = this.now(), seq = this.seq++;
+  feed(pcm: Float32Array, sampleRate: number, audioTime: number, audioSessionId: string, captureTime?: number) {
+    if (audioSessionId !== this.id || !this.id || !pcm.length || !Number.isFinite(sampleRate) || sampleRate <= 0) return;
+    const capturedAt = typeof captureTime === 'number' && Number.isFinite(captureTime) ? captureTime : this.now(), seq = this.seq++;
+    // Capture normally supplies1024 samples. Oversized/irregular adapters must
+    // not throw in the FFT or monopolize the main thread. Classification below
+    // still receives all genuine source samples on its continuous timeline.
+    const dspSize = 2 ** Math.floor(Math.log2(Math.min(4096, pcm.length)));
+    const dspPCM = pcm.length === dspSize ? pcm : pcm.subarray(pcm.length - dspSize);
+    if (this.modelWorker && pcm.length && sampleRate !== this.modelSampleRate) {
+      try {
+        if (this.modelSampleRate) {
+          this.frames = []; this.lastSnapshotAt = 0; this.extractor = new FeatureExtractor(); this.pending.clear();
+          if (this.dspTimer) clearTimeout(this.dspTimer); this.dspTimer = null;
+          if (this.worker && this.dspReady) {
+            try { this.worker.postMessage({ type: 'reset', audioSessionId }); } catch { this.failDsp(this.worker); }
+          }
+        }
+        this.modelPCM = []; this.modelSamples = 0; this.modelSampleRate = sampleRate; this.model = null; ++this.modelEpoch;
+        this.modelSourceStartedAt = capturedAt - pcm.length / sampleRate * 1000;
+        this.modelBuffer = this.modelProfile.id === 'mn10-v6' ? new ModelPcmBuffer(sampleRate, this.modelProfile) : null;
+        this.modelWorker.postMessage({ type: 'reset-model-evidence', audioSessionId, sourceEpoch: this.modelEpoch });
+      } catch { if (this.modelWorker) this.failModel(this.modelWorker); }
+    }
     if (this.worker && this.dspReady) {
       // Backpressure bounds the worker mailbox. Dropped capture frames remain explicit in seq.
       if (this.pending.size < 3) {
-        const data = pcm.slice(); this.pending.set(seq, capturedAt);
+        // Worker liveness starts at dispatch. Late capture delivery must not
+        // consume its service deadline; publish still rejects stale source data.
+        const data = dspPCM.slice(); this.pending.set(seq, this.now());
         if (!this.dspTimer) this.watchDsp(this.worker);
         const worker = this.worker;
         try { worker.postMessage({ type: 'pcm', audioSessionId, seq, capturedAt, sampleRate, audioTime, pcm: data }, [data.buffer]); }
@@ -119,15 +167,27 @@ export class FeaturePipeline {
       }
     }
     if (!this.worker || !this.dspReady) {
-      const started = performance.now(), values = this.extractor.extract(pcm, sampleRate, audioTime);
+      const started = performance.now(), values = this.extractor.extract(dspPCM, sampleRate, audioTime);
       this.publish(seq, audioTime, capturedAt, sampleRate, values, performance.now() - started, 'local');
     }
-    if (this.modelWorker) {
-        if (sampleRate !== this.modelSampleRate) { this.modelPCM = []; this.modelSamples = 0; this.modelSampleRate = sampleRate; }
-        this.modelPCM.push(pcm); this.modelSamples += pcm.length;
-        const target = Math.ceil(sampleRate * AUDIO_MODEL_SAMPLES / AUDIO_MODEL_SAMPLE_RATE);
+    if (this.modelWorker && pcm.length) {
+      try {
+        if (this.modelBuffer) {
+          this.modelBuffer.append(pcm);
+          if (this.status.model === 'ready' && !this.modelBusy) {
+            const window = this.modelBuffer.take();
+            if (window) this.classify(window.pcm, window.sampleRate, this.modelSourceStartedAt + window.sourceEndTime * 1000, audioSessionId);
+          }
+          return;
+        }
+        this.modelPCM.push(pcm.slice()); this.modelSamples += pcm.length;
+        const target = Math.ceil(sampleRate * this.modelProfile.windowSamples / this.modelProfile.sampleRate);
         // Continue collecting during inference, bounding the history to two windows.
-        while (this.modelSamples > target * 2 && this.modelPCM.length > 1) this.modelSamples -= this.modelPCM.shift()!.length;
+        while (this.modelSamples > target * 2) {
+          const chunk = this.modelPCM.shift()!, take = Math.min(chunk.length, this.modelSamples - target * 2);
+          this.modelSamples -= take;
+          if (take < chunk.length) this.modelPCM.unshift(chunk.slice(take));
+        }
         if (this.status.model === 'ready' && !this.modelBusy && this.modelSamples >= target) {
           const samples = new Float32Array(target); let offset = 0;
           const windowEndAt = capturedAt - (this.modelSamples - target) / sampleRate * 1000;
@@ -135,23 +195,30 @@ export class FeaturePipeline {
             const take = Math.min(chunk.length, target - offset); samples.set(chunk.subarray(0, take), offset); offset += take;
             if (offset === target) break;
           }
-          // YAMNet's 0.48s hop preserves context between 0.975s waveform windows.
-          let consume = Math.round(sampleRate * AUDIO_MODEL_HOP_SAMPLES / AUDIO_MODEL_SAMPLE_RATE);
+          // Probe every 0.24s to catch short attacks; keep the full 0.975s context.
+          let consume = Math.round(sampleRate * this.modelProfile.hopSamples / this.modelProfile.sampleRate);
           while (consume > 0) {
             const chunk = this.modelPCM.shift()!, take = Math.min(chunk.length, consume);
             consume -= take; this.modelSamples -= take;
-            if (take < chunk.length) this.modelPCM.unshift(chunk.subarray(take));
+            if (take < chunk.length) this.modelPCM.unshift(chunk.slice(take));
           }
-          this.modelBusy = true;
-          const worker = this.modelWorker; this.modelTimer = setTimeout(() => this.failModel(worker), 5000);
-          try { worker.postMessage({ type: 'classify', audioSessionId, sampleRate, capturedAt: windowEndAt, pcm: samples }, [samples.buffer]); }
-          catch { this.failModel(worker); }
+          this.classify(samples, sampleRate, windowEndAt, audioSessionId);
         }
-      }
+      } catch { if (this.modelWorker) this.failModel(this.modelWorker); }
+    }
+  }
+  private classify(pcm: Float32Array, sampleRate: number, capturedAt: number, audioSessionId: string) {
+    const worker = this.modelWorker;
+    if (!worker || this.modelBusy) return;
+    const request = { id: ++this.modelRequestSeq, epoch: this.modelEpoch, capturedAt, startedAt: this.now(), pcmBytes: pcm.byteLength };
+    this.modelRequest = request; this.modelBusy = true;
+    this.modelTimer = setTimeout(() => this.failModel(worker), 5000);
+    try { worker.postMessage({ type: 'classify', audioSessionId, requestId: request.id, sourceEpoch: request.epoch, sampleRate, capturedAt, pcm }, [pcm.buffer]); }
+    catch { this.failModel(worker); }
   }
   private publish(seq: number, audioTime: number, capturedAt: number, sampleRate: number, values: AudioValues, processingMs?: number, source: 'worker' | 'local' = 'local') {
     if (!this.id || this.now() - capturedAt > 1000 || (this.frames.length && seq <= this.frames[this.frames.length - 1].seq)) return;
-    const model = this.model && capturedAt - this.model.capturedAt < 3000 ? this.model : null;
+    const model = this.model && capturedAt >= this.model.capturedAt && capturedAt - this.model.capturedAt < 3000 ? this.model : null;
     const frame = makeFrame(this.id, seq, audioTime, capturedAt, sampleRate, values, model);
     this.frames.push(frame); this.frames = this.frames.filter(f => capturedAt - f.capturedAt <= 2200).slice(-120);
     const timing: FeatureTiming = { audioSessionId: this.id, seq, capturedAt, readyAt: this.now(), dspComputeMs: typeof processingMs === 'number' && Number.isFinite(processingMs) && processingMs >= 0 && processingMs <= 2000 ? processingMs : null, source };
@@ -163,6 +230,6 @@ export class FeaturePipeline {
       if (snapshot) for (const fn of this.snapshotListeners) fn(snapshot);
     }
   }
-  stop() { this.id = null; for (const timer of [this.initTimer, this.dspBootTimer, this.dspTimer, this.modelTimer]) if (timer) clearTimeout(timer); this.initTimer = this.dspBootTimer = this.dspTimer = this.modelTimer = null; this.worker?.terminate(); this.worker = null; this.dspReady = false; this.modelWorker?.terminate(); this.modelWorker = null; this.modelStage = null; this.pending.clear(); this.frames = []; this.model = null; this.modelBusy = false; this.modelSamples = 0; this.modelPCM = []; }
-  dispose() { this.stop(); this.frameListeners.clear(); this.snapshotListeners.clear(); this.statusListeners.clear(); this.timingListeners.clear(); }
+  stop() { this.id = null; for (const timer of [this.initTimer, this.dspBootTimer, this.dspTimer, this.modelTimer]) if (timer) clearTimeout(timer); this.initTimer = this.dspBootTimer = this.dspTimer = this.modelTimer = null; this.worker?.terminate(); this.worker = null; this.dspReady = false; this.modelWorker?.terminate(); this.modelWorker = null; this.modelStage = null; this.pending.clear(); this.frames = []; this.model = null; this.modelBusy = false; this.modelRequest = null; this.modelRequestSeq = 0; this.modelEpoch = 0; this.modelSamples = 0; this.modelPCM = []; this.modelBuffer = null; this.modelSampleRate = 0; }
+  dispose() { this.stop(); this.frameListeners.clear(); this.snapshotListeners.clear(); this.statusListeners.clear(); this.timingListeners.clear(); this.modelTimingListeners.clear(); }
 }

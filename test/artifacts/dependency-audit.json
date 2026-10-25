@@ -1,7 +1,8 @@
 {
-  "testedAt": "2026-10-15T07:11:53.996150+00:00",
+  "testedAt": "2026-10-23T04:00:41.527236+00:00",
   "registry": "https://registry.npmjs.org",
   "scope": "production",
+  "next": "16.4.2",
   "metadata": {
     "vulnerabilities": {
       "info": 0,

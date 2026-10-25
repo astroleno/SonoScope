@@ -4,6 +4,7 @@ let extractor = new FeatureExtractor();
 globalThis.onmessage = (e: MessageEvent) => {
   const msg = e.data;
   if (msg.type === 'init') { id = msg.audioSessionId; extractor = new FeatureExtractor(); globalThis.postMessage({ type: 'dsp-ready', audioSessionId: id }); return; }
+  if (msg.type === 'reset' && msg.audioSessionId === id) { extractor = new FeatureExtractor(); return; }
   if (msg.type === 'pcm' && msg.audioSessionId === id) {
     const started = performance.now();
     const values = extractor.extract(msg.pcm, msg.sampleRate, msg.audioTime);

@@ -1,0 +1,1801 @@
+{
+  "testedAt": "2026-10-21T18:36:41.223816+00:00",
+  "status": "mn04_as, mn05_as and mn10_as rejected for app integration; necessary quality gates not met",
+  "scope": "Authorized local models only, fixed EfficientAT source a425fdce92572e602a1d5634799bd9f1f2efa806. No upstream AI, new frontend runtime, deployment or production model replacement.",
+  "clockWarning": "mn05 numbers below are offline native MediaPipe source-window screening. First delay uses source PCM RMS onset and source window end; it is NOT real-time capture/SDK/visible-comment latency. These stages do not establish full application acceptance.",
+  "coveragePolicy": "All observations after source second 3; unknown, pauses and wrong instruments count as failure. wrong is the number of incorrect specific instrument labels in eligible windows; instrumentPredictions includes all times.",
+  "mn04": {
+    "runtime": "Original local PyTorch float model; no converted/browser candidate",
+    "weightsSha256": "899a8c6217063f6941793102a2780b3dd788ab11fce468d9cf5f0577c453321c",
+    "twoSecondRegression": [
+      {
+        "id": "guitar-jazz",
+        "expected": "Guitar",
+        "coverage": 0.8113207547169812,
+        "firstSeconds": 4.4,
+        "wrong": [],
+        "instrumentPredictions": 43
+      },
+      {
+        "id": "drums-cadence-a",
+        "expected": "Percussion",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 74
+      },
+      {
+        "id": "drums-cadence-b",
+        "expected": "Percussion",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "piano-pitman",
+        "expected": "Piano",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "piano-isaac",
+        "expected": "Piano",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "guitar-barrios",
+        "expected": "Guitar",
+        "coverage": 0.7945205479452054,
+        "firstSeconds": 8,
+        "wrong": [],
+        "instrumentPredictions": 58
+      },
+      {
+        "id": "04_SS1-100-C#_comp",
+        "expected": "Guitar",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 67
+      },
+      {
+        "id": "02_BN2-131-B_comp",
+        "expected": "Guitar",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 68
+      },
+      {
+        "id": "05_Rock1-90-C#_comp",
+        "expected": "Guitar",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      }
+    ],
+    "threePointTwoSecondRegression": [
+      {
+        "id": "guitar-jazz",
+        "expected": "Guitar",
+        "coverage": 0.8867924528301887,
+        "firstSeconds": 4.8,
+        "wrong": []
+      },
+      {
+        "id": "drums-cadence-a",
+        "expected": "Percussion",
+        "coverage": 0.9861111111111112,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "drums-cadence-b",
+        "expected": "Percussion",
+        "coverage": 0.9863013698630136,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "piano-pitman",
+        "expected": "Piano",
+        "coverage": 0.9863013698630136,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "piano-isaac",
+        "expected": "Piano",
+        "coverage": 0.9863013698630136,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "guitar-barrios",
+        "expected": "Guitar",
+        "coverage": 0.8082191780821918,
+        "firstSeconds": 8.4,
+        "wrong": []
+      },
+      {
+        "id": "04_SS1-100-C#_comp",
+        "expected": "Guitar",
+        "coverage": 0.9846153846153847,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "02_BN2-131-B_comp",
+        "expected": "Guitar",
+        "coverage": 0.9848484848484849,
+        "firstSeconds": 3.6,
+        "wrong": []
+      },
+      {
+        "id": "05_Rock1-90-C#_comp",
+        "expected": "Guitar",
+        "coverage": 0.9863013698630136,
+        "firstSeconds": 3.6,
+        "wrong": []
+      }
+    ],
+    "firstFrozenSix": [
+      {
+        "id": "guitar-habanera",
+        "expected": "Guitar",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "guitar-capricho",
+        "expected": "Guitar",
+        "coverage": 0.9452054794520548,
+        "firstSeconds": 4.4,
+        "wrong": [],
+        "instrumentPredictions": 69
+      },
+      {
+        "id": "piano-italian",
+        "expected": "Piano",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "piano-busoni",
+        "expected": "Piano",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 74
+      },
+      {
+        "id": "drums-imakepitart",
+        "expected": "Percussion",
+        "coverage": 1,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 75
+      },
+      {
+        "id": "drums-jazz",
+        "expected": "Percussion",
+        "coverage": 0.8787878787878788,
+        "firstSeconds": 2.4,
+        "wrong": [],
+        "instrumentPredictions": 31
+      }
+    ],
+    "sourceClockCaution": "firstSeconds in legacy local replay is source playback position, not delay from onset and not wall clock. Historical Romanza first position 8.0 s at 2 s and 8.4 s at 3.2 s fails <=5 s from its approximately 0.064 s onset.",
+    "decision": "Rejected: historical guitar 79.45% / first at 8.0 s with 2 s window; longer context did not fix response. Old 15 are regression for later selection."
+  },
+  "mn05": {
+    "asset": {
+      "file": "efficientat-mn05-as-2s-v1.tflite",
+      "bytes": 6025427,
+      "sha256": "5d9f03f6509ccccfbbfa1379cc3b07d233c8cc0e3147eae471abe20670a34b4d",
+      "sampleRate": 32000,
+      "windowSamples": 64000,
+      "hopSamples": 12800,
+      "sourceCommit": "a425fdce92572e602a1d5634799bd9f1f2efa806",
+      "modelWeightsSha256": "97f00bb717ce957dbdf60c26d4de8b161dd7c2593fbe6424859fad7e5569fd7f",
+      "runtime": "Verified native MediaPipe tasks-audio 1.1.0 wasm; no added frontend runtime",
+      "status": "Private candidate rejected for integration, production unchanged"
+    },
+    "conversion": {
+      "sourceCommit": "a425fdce92572e602a1d5634799bd9f1f2efa806",
+      "sourceWeightsSha256": "97f00bb717ce957dbdf60c26d4de8b161dd7c2593fbe6424859fad7e5569fd7f",
+      "sampleRate": 32000,
+      "windowSamples": 64000,
+      "hopSamples": 12800,
+      "runtime": "Existing MediaPipe tasks-audio 1.1.0, TFLITE_BUILTINS only",
+      "nativeParity": {
+        "failure": null,
+        "readyMs": 528.3949999958277,
+        "rows": [
+          {
+            "name": "guitar-barrios",
+            "maxScoreAbs": 8.940696716308594e-07,
+            "processingMs": 64.67499999701977,
+            "categories": 527,
+            "labels": [
+              "Music",
+              "Guitar",
+              "Plucked string instrument"
+            ]
+          },
+          {
+            "name": "guitar-jazz",
+            "maxScoreAbs": 3.2782554626464844e-07,
+            "processingMs": 10.640000000596046,
+            "categories": 527,
+            "labels": [
+              "Music",
+              "Guitar",
+              "Plucked string instrument"
+            ]
+          },
+          {
+            "name": "piano-pitman",
+            "maxScoreAbs": 1.1324882507324219e-06,
+            "processingMs": 9.989999994635582,
+            "categories": 527,
+            "labels": [
+              "Music",
+              "Piano",
+              "Electric piano"
+            ]
+          },
+          {
+            "name": "percussion",
+            "maxScoreAbs": 3.2782554626464844e-07,
+            "processingMs": 9.770000003278255,
+            "categories": 527,
+            "labels": [
+              "Drum",
+              "Percussion",
+              "Drum roll"
+            ]
+          },
+          {
+            "name": "speech",
+            "maxScoreAbs": 2.86102294921875e-06,
+            "processingMs": 10.675000004470348,
+            "categories": 527,
+            "labels": [
+              "Speech synthesizer",
+              "Speech",
+              "Conversation"
+            ]
+          },
+          {
+            "name": "noise",
+            "maxScoreAbs": 6.556510925292969e-07,
+            "processingMs": 11.054999999701977,
+            "categories": 527,
+            "labels": [
+              "Static",
+              "White noise",
+              "Rustle"
+            ]
+          },
+          {
+            "name": "silence",
+            "maxScoreAbs": 1.4007091522216797e-06,
+            "processingMs": 10.890000000596046,
+            "categories": 527,
+            "labels": [
+              "Silence",
+              "Sound effect",
+              "Music"
+            ]
+          }
+        ],
+        "wasmMemoryBytes": [],
+        "errors": []
+      },
+      "all527ClassesMaxAbs": 2.86102294921875e-06,
+      "metadataFix": "Initial compressed associated-label ZIP rejected by MediaPipe. ZIP_STORED fixed compatibility; original flatbuffer model prefix unchanged. Failure retained privately."
+    },
+    "firstSix": {
+      "manifest": "p0-mn05-holdout-20261022.json",
+      "manifestSha256": "96891f56e9bb32d963d6c4fd0a6416e4d3e232649117fa27d2f0dd1890acca2d",
+      "frozenCandidate": {
+        "frozenAt": "2026-10-21T18:12:07.351626+00:00",
+        "model": "mn05_as",
+        "runtime": "MediaPipe tasks-audio 1.1.0 native wasm",
+        "windowSamples": 64000,
+        "sampleRate": 32000,
+        "hopSamples": 12800,
+        "scoreParityReport": "native-parity.json",
+        "filesSha256": {
+          "test/artifacts/private/p0-20261021/efficientat-mn05/candidate-tracker.mjs": "010e439047479b744c254f7eca98fbd89c9c945023a7e99a75c2578a81aa7ea5",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/efficientat-mn05-as-2s-v1.tflite": "5d9f03f6509ccccfbbfa1379cc3b07d233c8cc0e3147eae471abe20670a34b4d",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/native-lab.html": "6618f0a331281cdb93f78660e9b9215d226df1b3897e838835ee218d9c822a86",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/native-lab.mjs": "9f9e19dbc73d21171e13d1b89d9a6c07e33cf93c98ed5812dabc10e55ec93673",
+          "packages/core/src/dsp.ts": "6729036b12e8c1af6e36802aa081387d74fdba716e9ee7efce596794e75b787b",
+          "test/artifacts/p0-mn05-holdout-20261022.json": "96891f56e9bb32d963d6c4fd0a6416e4d3e232649117fa27d2f0dd1890acca2d"
+        },
+        "policy": "No post-holdout tuning or removal of failures; use current core interval-integration resampling"
+      },
+      "rawSha256": "59fddd8d9c020de5fa284e9638ad3fa37485efa818d52262a1672e0857862cf0",
+      "errors": [],
+      "recordings": [
+        {
+          "id": "guitar-sarita",
+          "expectedInstrument": "Guitar",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 75,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.06965986394557823,
+          "firstAfterSourceOnsetMs": 2330.3401360544217,
+          "processingP95Ms": 8.024999998509884,
+          "wasmMemoryBytes": []
+        },
+        {
+          "id": "01_Rock2-142-D_solo",
+          "expectedInstrument": "Guitar",
+          "sourceSampleRate": 44100,
+          "eligible": 60,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 61,
+          "firstSourceSeconds": 2.8,
+          "sourceRmsOnsetSeconds": 0.13931972789115646,
+          "firstAfterSourceOnsetMs": 2660.6802721088434,
+          "processingP95Ms": 7.425000004470348,
+          "wasmMemoryBytes": []
+        },
+        {
+          "id": "piano-chopin",
+          "expectedInstrument": "Piano",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 75,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.4876190476190476,
+          "firstAfterSourceOnsetMs": 1912.3809523809523,
+          "processingP95Ms": 7.78999999910593,
+          "wasmMemoryBytes": []
+        },
+        {
+          "id": "piano-presto",
+          "expectedInstrument": "Piano",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 0.821917808219178,
+          "wrong": 0,
+          "instrumentPredictions": 62,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.9984580498866213,
+          "firstAfterSourceOnsetMs": 1401.5419501133786,
+          "processingP95Ms": 7.380000002682209,
+          "wasmMemoryBytes": []
+        },
+        {
+          "id": "percussion-bodhran",
+          "expectedInstrument": "Percussion",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 0.7534246575342466,
+          "wrong": 0,
+          "instrumentPredictions": 57,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.626938775510204,
+          "firstAfterSourceOnsetMs": 1773.061224489796,
+          "processingP95Ms": 7.524999998509884,
+          "wasmMemoryBytes": []
+        },
+        {
+          "id": "percussion-djembe",
+          "expectedInstrument": "Percussion",
+          "sourceSampleRate": 44100,
+          "eligible": 72,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 74,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.13931972789115646,
+          "firstAfterSourceOnsetMs": 2260.6802721088434,
+          "processingP95Ms": 7.4000000059604645,
+          "wasmMemoryBytes": []
+        }
+      ],
+      "positivePasses": 5,
+      "positives": 6,
+      "decision": "5/6 passed. Bodhran 75.34% failed; all six subsequently exposed and retained as regression for the continuation correction."
+    },
+    "continuationCorrection": {
+      "scope": "Private EfficientAT profile only. App YAMNet unchanged. Independent temporal counterexample verifies qualifying current >=.12 and >=1.1 every rival renews an established label. Bootstrap admission remains unchanged; stronger rivals, weak support, nonmusic, voice, gaps and reversed clocks cannot renew it.",
+      "independentChecks": 8,
+      "originalMissingInLeaderCounterexample": 12,
+      "correctedMissing": 0,
+      "proofSha256": "ae539cdf2e936ad1abccfa7246a8c5a7d8bdfb9f5f2726c269e6f3ee5e6b8f8e",
+      "nativeExposedRegression": {
+        "rawSha256": "d68b1f3d132d7c5495c21cfff3383a9b5f5086a2323d3618a7777505ae4ff72e",
+        "errors": [],
+        "recordings": [
+          {
+            "id": "guitar-jazz",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 53,
+            "correctCoverage": 0.7169811320754716,
+            "wrong": 0,
+            "instrumentPredictions": 38,
+            "firstSourceSeconds": 4.4,
+            "sourceRmsOnsetSeconds": 3.4597732426303853,
+            "firstAfterSourceOnsetMs": 940.226757369615,
+            "processingP95Ms": 15.685000002384186,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-cadence-a",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.4179591836734694,
+            "firstAfterSourceOnsetMs": 1982.0408163265304,
+            "processingP95Ms": 12.825000002980232,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-cadence-b",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.3947392290249433,
+            "firstAfterSourceOnsetMs": 2005.2607709750564,
+            "processingP95Ms": 12.115000002086163,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-pitman",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.301859410430839,
+            "firstAfterSourceOnsetMs": 2098.140589569161,
+            "processingP95Ms": 10.655000001192093,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-isaac",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 2753.5600907029475,
+            "processingP95Ms": 10.33500000089407,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-barrios",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9726027397260274,
+            "wrong": 0,
+            "instrumentPredictions": 73,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 2353.5600907029475,
+            "processingP95Ms": 10.695000000298023,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "04_SS1-100-C#_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 65,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 67,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 10.255000002682209,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "02_BN2-131-B_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 66,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 68,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 10.009999997913837,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "05_Rock1-90-C#_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9863013698630136,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 10.685000002384186,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-habanera",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9726027397260274,
+            "wrong": 0,
+            "instrumentPredictions": 71,
+            "firstSourceSeconds": 3.6,
+            "sourceRmsOnsetSeconds": 0.023219954648526078,
+            "firstAfterSourceOnsetMs": 3576.780045351474,
+            "processingP95Ms": 10.42000000178814,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-capricho",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.958904109589041,
+            "wrong": 0,
+            "instrumentPredictions": 70,
+            "firstSourceSeconds": 3.2,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 3153.560090702948,
+            "processingP95Ms": 10.32999999821186,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-italian",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9178082191780822,
+            "wrong": 0,
+            "instrumentPredictions": 69,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.8126984126984127,
+            "firstAfterSourceOnsetMs": 1587.3015873015872,
+            "processingP95Ms": 10.504999995231628,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-busoni",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 73,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.25541950113378686,
+            "firstAfterSourceOnsetMs": 2544.580498866213,
+            "processingP95Ms": 10.449999995529652,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-imakepitart",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.4876190476190476,
+            "firstAfterSourceOnsetMs": 2312.380952380952,
+            "processingP95Ms": 12.184999994933605,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-jazz",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 33,
+            "correctCoverage": 0.8181818181818182,
+            "wrong": 0,
+            "instrumentPredictions": 28,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2800,
+            "processingP95Ms": 10.79500000178814,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "speech",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 25,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 10.715000003576279,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "noise",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 10.314999997615814,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "silence",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": null,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 11.274999998509884,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-sarita",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.06965986394557823,
+            "firstAfterSourceOnsetMs": 2330.3401360544217,
+            "processingP95Ms": 10.854999996721745,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "01_Rock2-142-D_solo",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 60,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 61,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.13931972789115646,
+            "firstAfterSourceOnsetMs": 2660.6802721088434,
+            "processingP95Ms": 10.950000002980232,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-chopin",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.4876190476190476,
+            "firstAfterSourceOnsetMs": 1912.3809523809523,
+            "processingP95Ms": 13.399999998509884,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-presto",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9041095890410958,
+            "wrong": 0,
+            "instrumentPredictions": 68,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.9984580498866213,
+            "firstAfterSourceOnsetMs": 1401.5419501133786,
+            "processingP95Ms": 12.179999999701977,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "percussion-bodhran",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.958904109589041,
+            "wrong": 0,
+            "instrumentPredictions": 72,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.626938775510204,
+            "firstAfterSourceOnsetMs": 1773.061224489796,
+            "processingP95Ms": 12.230000004172325,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "percussion-djembe",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.13931972789115646,
+            "firstAfterSourceOnsetMs": 2260.6802721088434,
+            "processingP95Ms": 10.259999997913837,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          }
+        ],
+        "positivePasses": 20,
+        "positives": 21
+      },
+      "decision": "Bodhran improved to 95.89%, but old jazz guitar 71.70% exposed a separate sample-rate conversion difference. Still ineligible."
+    },
+    "resamplingCorrection": {
+      "scope": "Private Hann-windowed bandlimited sinc, 16 zero crossings, rolloff .99, no normalization/filtering of source fixtures. Replaces the model-input box-interval rate conversion only inside the experiment. Does not modify production core DSP.",
+      "sources": [
+        "https://docs.pytorch.org/audio/stable/generated/torchaudio.functional.resample.html"
+      ],
+      "implementationSha256": "1d5c94c7a9e8b55acc721c4ca0717797e3df7e0480b64708a1a57793c7909ec5",
+      "signalChecksSha256": "620b87e2e130fc26f2eaf2dc4199a1db49e54b040fd2e0226c779f8e2863d3fe",
+      "signalChecks": "1 kHz passband RMS within .002 of 1/sqrt(2); 18 kHz alias RMS <.01 when downsampling 44.1/48/96/192 kHz to 32 kHz. Synthetic checks are not music accuracy.",
+      "nativeExposedRegression": {
+        "rawSha256": "aba1db56e5379e898b43d66b4cca64e4d2829f4cb6f30db87d5f2212b5b5084c",
+        "errors": [],
+        "recordings": [
+          {
+            "id": "guitar-jazz",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 53,
+            "correctCoverage": 0.8301886792452831,
+            "wrong": 0,
+            "instrumentPredictions": 44,
+            "firstSourceSeconds": 4.4,
+            "sourceRmsOnsetSeconds": 3.4597732426303853,
+            "firstAfterSourceOnsetMs": 940.226757369615,
+            "processingP95Ms": 8.825000002980232,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-cadence-a",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.4179591836734694,
+            "firstAfterSourceOnsetMs": 1982.0408163265304,
+            "processingP95Ms": 8.034999996423721,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-cadence-b",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.3947392290249433,
+            "firstAfterSourceOnsetMs": 2005.2607709750564,
+            "processingP95Ms": 7.755000002682209,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-pitman",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.301859410430839,
+            "firstAfterSourceOnsetMs": 2498.140589569161,
+            "processingP95Ms": 7.804999999701977,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-isaac",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 2353.5600907029475,
+            "processingP95Ms": 7.884999997913837,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-barrios",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 2353.5600907029475,
+            "processingP95Ms": 7.945000000298023,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "04_SS1-100-C#_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 65,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 67,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 7.759999997913837,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "02_BN2-131-B_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 66,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 68,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 7.695000000298023,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "05_Rock1-90-C#_comp",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9863013698630136,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2400,
+            "processingP95Ms": 7.784999996423721,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-habanera",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9863013698630136,
+            "wrong": 0,
+            "instrumentPredictions": 72,
+            "firstSourceSeconds": 3.2,
+            "sourceRmsOnsetSeconds": 0.023219954648526078,
+            "firstAfterSourceOnsetMs": 3176.780045351474,
+            "processingP95Ms": 12.54500000178814,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-capricho",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9863013698630136,
+            "wrong": 0,
+            "instrumentPredictions": 73,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.046439909297052155,
+            "firstAfterSourceOnsetMs": 2753.5600907029475,
+            "processingP95Ms": 13.375,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-italian",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9863013698630136,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.8126984126984127,
+            "firstAfterSourceOnsetMs": 1587.3015873015872,
+            "processingP95Ms": 13.395000003278255,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-busoni",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 73,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.25541950113378686,
+            "firstAfterSourceOnsetMs": 2544.580498866213,
+            "processingP95Ms": 11.79500000178814,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-imakepitart",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.4876190476190476,
+            "firstAfterSourceOnsetMs": 2312.380952380952,
+            "processingP95Ms": 11.160000003874302,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "drums-jazz",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 33,
+            "correctCoverage": 0.8181818181818182,
+            "wrong": 0,
+            "instrumentPredictions": 28,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": 2800,
+            "processingP95Ms": 10.240000002086163,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "speech",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 25,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 12.655000001192093,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "noise",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": 0,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 11.535000003874302,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "silence",
+            "expectedInstrument": null,
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": null,
+            "wrong": 0,
+            "instrumentPredictions": 0,
+            "firstSourceSeconds": null,
+            "sourceRmsOnsetSeconds": null,
+            "firstAfterSourceOnsetMs": null,
+            "processingP95Ms": 12.95499999821186,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "guitar-sarita",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.06965986394557823,
+            "firstAfterSourceOnsetMs": 2330.3401360544217,
+            "processingP95Ms": 10.45499999821186,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "01_Rock2-142-D_solo",
+            "expectedInstrument": "Guitar",
+            "sourceSampleRate": 44100,
+            "eligible": 60,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 61,
+            "firstSourceSeconds": 2.8,
+            "sourceRmsOnsetSeconds": 0.13931972789115646,
+            "firstAfterSourceOnsetMs": 2660.6802721088434,
+            "processingP95Ms": 11.109999999403954,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-chopin",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 75,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.4876190476190476,
+            "firstAfterSourceOnsetMs": 1912.3809523809523,
+            "processingP95Ms": 12.815000005066395,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "piano-presto",
+            "expectedInstrument": "Piano",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.9452054794520548,
+            "wrong": 0,
+            "instrumentPredictions": 71,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.9984580498866213,
+            "firstAfterSourceOnsetMs": 1401.5419501133786,
+            "processingP95Ms": 13.020000003278255,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "percussion-bodhran",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 73,
+            "correctCoverage": 0.863013698630137,
+            "wrong": 0,
+            "instrumentPredictions": 65,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.626938775510204,
+            "firstAfterSourceOnsetMs": 1773.061224489796,
+            "processingP95Ms": 11.135000005364418,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          },
+          {
+            "id": "percussion-djembe",
+            "expectedInstrument": "Percussion",
+            "sourceSampleRate": 44100,
+            "eligible": 72,
+            "correctCoverage": 1,
+            "wrong": 0,
+            "instrumentPredictions": 74,
+            "firstSourceSeconds": 2.4,
+            "sourceRmsOnsetSeconds": 0.13931972789115646,
+            "firstAfterSourceOnsetMs": 2260.6802721088434,
+            "processingP95Ms": 4.225000001490116,
+            "wasmMemoryBytes": [
+              21168128
+            ]
+          }
+        ],
+        "positivePasses": 21,
+        "positives": 21
+      },
+      "powerCaution": "Regression started with AC low power enabled, later disabled; do not use mixed-power compute values as a normal-power performance benchmark. All quality scores unaffected by clock mode."
+    },
+    "newSix": {
+      "manifest": "p0-mn05-v2-holdout-20261022.json",
+      "manifestSha256": "5eee5d540ef057fe4fcc7881017088bbf1524f98649e9dbf176cfe39f4244874",
+      "frozenCandidate": {
+        "frozenAt": "2026-10-21T18:29:53.268842+00:00",
+        "model": "mn05_as",
+        "profile": "temporal-v2 / sinc-hann-16-rolloff-0.99",
+        "filesSha256": {
+          "test/artifacts/private/p0-20261021/efficientat-mn05/candidate-tracker-v2.mjs": "d2d4098efb1db05f2555a8522e210cf70fb15507c6e24743918b56f0cf6da6ce",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/candidate-resample-v1.mjs": "1d5c94c7a9e8b55acc721c4ca0717797e3df7e0480b64708a1a57793c7909ec5",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/efficientat-mn05-as-2s-v1.tflite": "5d9f03f6509ccccfbbfa1379cc3b07d233c8cc0e3147eae471abe20670a34b4d",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/native-lab-v3.html": "2e4c4b526907ee4adf37f74f154aa34873b96928906887ced2ab7b90f67a08e1",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/native-lab-v3.mjs": "f7424235fed89f697fa7e1b2b164fd1c51b31355d1bd4f8a63c5928eaffd373a",
+          "test/artifacts/private/p0-20261021/efficientat-mn05/holdout-v2-downloads.json": "a6004a2fda884a789ca29f5896e3dad934900e52f758d37a42cbdbaf8b78ccd4"
+        },
+        "manifestSha256": "5eee5d540ef057fe4fcc7881017088bbf1524f98649e9dbf176cfe39f4244874",
+        "scope": "Native offline windows; not full SDK capture/queue or wall-clock latency. No app integration.",
+        "gates": {
+          "coverage": 0.8,
+          "firstAfterSourceOnsetMs": 5000,
+          "negativesZeroInstrument": true
+        },
+        "old21Regression": "All passed native-v3-regression.json, three negatives zero. First half at AC low power 1, later at 0; no normal-power performance claim for mixed run.",
+        "power": "Battery Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         5\n womp                 1\n networkoversleep     0\n sleep                0\n lessbright           1\n tcpkeepalive         1\n disksleep            0\nAC Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         10\n womp                 1\n networkoversleep     0\n sleep                0\n tcpkeepalive         1\n disksleep            0\n"
+      },
+      "pcmSha256": [
+        {
+          "id": "guitar-minuet",
+          "sourceSha256": "b2b019ed0f11c01c825da8fafe1478b303d817d17b90b3b53dc1c25c4701c7e4",
+          "excerptSha256": "fa98a7af8351d21ad6ef1b8b978689dfb41b556d82b0d19670575d703c0f0982",
+          "durationSeconds": 32.0,
+          "file": "guitar-minuet.wav"
+        },
+        {
+          "id": "01_Rock3-117-Bb_solo",
+          "sourceSha256": "40c9a226f326c603970b68ee85c795d91a2bc276f780fa5a0b85f57920492b68",
+          "excerptSha256": "e516195bd9567470e4ffa999cb2e4958dcf66fb29de549f56c53a46ba73d196e",
+          "durationSeconds": 32.0,
+          "file": "01_Rock3-117-Bb_solo_mic.wav"
+        },
+        {
+          "id": "piano-english-suite",
+          "sourceSha256": "53ceecfd96b46de6508dd85b71fe7d15f1cc4d02f9dcea4e38a09d2b7443d7ed",
+          "excerptSha256": "b14095519017cc97f4ba6ea9224f861559f06b3a5d6e89d1e0f2b05841935565",
+          "durationSeconds": 32.0,
+          "file": "piano-english-suite.wav"
+        },
+        {
+          "id": "piano-mazurka",
+          "sourceSha256": "c1350d46beef0fe8092ce2a56647dc987dd1a000ea884fcce6d70669b11f5fbc",
+          "excerptSha256": "309c312240028baf502797110859b24b952476366199af8e328018d1aec73a88",
+          "durationSeconds": 31.997098,
+          "file": "piano-mazurka.wav"
+        },
+        {
+          "id": "percussion-kit",
+          "sourceSha256": "b889f17b89d62f106c13be1f155a70c793fc9ea17259aca60085ffb486ad4edb",
+          "excerptSha256": "50c74afd6107bcc0c24fa023255e6e2ce7f49871df945269f92d60a90a2c1fc7",
+          "durationSeconds": 8.781429,
+          "file": "percussion-kit.wav"
+        },
+        {
+          "id": "percussion-accompaniment",
+          "sourceSha256": "ab96dafbf7e6bd43072d514730331007f4fb591668f1e8af30404ecb8a1f0e14",
+          "excerptSha256": "57d412a203aaf7dc819a1303667ca4dd8b11435fd4e263c9a8b69be2dc2cd128",
+          "durationSeconds": 12.596916,
+          "file": "percussion-accompaniment.wav"
+        }
+      ],
+      "rawSha256": "2f6a138bc05d6e1c26931890e0b3191dbbff833d39e14bded76569a92d18ff10",
+      "errors": [],
+      "recordings": [
+        {
+          "id": "guitar-minuet",
+          "expectedInstrument": "Guitar",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 0.6712328767123288,
+          "wrong": 13,
+          "instrumentPredictions": 63,
+          "firstSourceSeconds": 10,
+          "sourceRmsOnsetSeconds": 0.023219954648526078,
+          "firstAfterSourceOnsetMs": 9976.780045351474,
+          "processingP95Ms": 4.2650000005960464,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        },
+        {
+          "id": "01_Rock3-117-Bb_solo",
+          "expectedInstrument": "Guitar",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 0.9863013698630136,
+          "wrong": 0,
+          "instrumentPredictions": 74,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.023219954648526078,
+          "firstAfterSourceOnsetMs": 2376.7800453514737,
+          "processingP95Ms": 4.155000001192093,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        },
+        {
+          "id": "piano-english-suite",
+          "expectedInstrument": "Piano",
+          "sourceSampleRate": 44100,
+          "eligible": 73,
+          "correctCoverage": 0.7534246575342466,
+          "wrong": 0,
+          "instrumentPredictions": 57,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.16253968253968254,
+          "firstAfterSourceOnsetMs": 2237.460317460317,
+          "processingP95Ms": 4.16499999910593,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        },
+        {
+          "id": "piano-mazurka",
+          "expectedInstrument": "Piano",
+          "sourceSampleRate": 44100,
+          "eligible": 72,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 74,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.6501587301587302,
+          "firstAfterSourceOnsetMs": 1749.8412698412696,
+          "processingP95Ms": 4.130000002682209,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        },
+        {
+          "id": "percussion-kit",
+          "expectedInstrument": "Percussion",
+          "sourceSampleRate": 44100,
+          "eligible": 14,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 16,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.2089795918367347,
+          "firstAfterSourceOnsetMs": 2191.0204081632655,
+          "processingP95Ms": 4.115000002086163,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        },
+        {
+          "id": "percussion-accompaniment",
+          "expectedInstrument": "Percussion",
+          "sourceSampleRate": 44100,
+          "eligible": 24,
+          "correctCoverage": 1,
+          "wrong": 0,
+          "instrumentPredictions": 26,
+          "firstSourceSeconds": 2.4,
+          "sourceRmsOnsetSeconds": 0.16253968253968254,
+          "firstAfterSourceOnsetMs": 2237.460317460317,
+          "processingP95Ms": 4.16499999910593,
+          "wasmMemoryBytes": [
+            21168128
+          ]
+        }
+      ],
+      "positivePasses": 4,
+      "positives": 6,
+      "decision": "4/6 passed; historical Minuet guitar 67.12%, first after onset 9.977 s, 13 eligible wrong Ukulele windows (14 including initial period). English Suite piano 75.34%. No candidate changes after viewing this six. Do not integrate."
+    },
+    "resources": {
+      "modelBytes": 6025427,
+      "modelGateBytes": 8388608,
+      "wasmLinearMemoryBytes": 21168128,
+      "totalWorkerProcessGpuMemory": "not measured; linear memory is not total memory",
+      "pcmQueueColdStartSwitchTeardownFullApp": "not tested for this rejected candidate; no SDK/app model replacement made",
+      "privateConversionEnvironment": "Removed 1.3 GiB of this round own reproducible TensorFlow dependencies after conversion/native parity completed; package versions, scripts, weights, artifact and results retained.",
+      "earlyParityMemoryHook": "Empty memory arrays in the earlier parity report mean unavailable instrumentation. Later owned classifier module HEAPU8.buffer measured 21,168,128 bytes. Neither is total process/Worker/GPU memory."
+    }
+  },
+  "rendering": {
+    "condition": "Ego Lite managed page in background, same existing task space; AC low power disabled under prior approval; no other browser or global browser settings. Document hasFocus/visibility are virtual page signals, not proof of native foreground.",
+    "controlScriptSha256": "cd115d1ccebd328bd607b5a6adf2897ab6e05d1e9e437c042a7b71b7aee4e557",
+    "results": [
+      {
+        "mode": "empty",
+        "started": 13173.19999999553,
+        "ended": 21185,
+        "attributes": null,
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 481,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60
+        ],
+        "medianFrames": 60,
+        "pass45": 1,
+        "rafMedianMs": 16.700000000000728,
+        "rafP95Ms": 17.200000000000728,
+        "drawP95Ms": 0
+      },
+      {
+        "mode": "canvas-static",
+        "started": 21189.89999999851,
+        "ended": 29302,
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": false,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        },
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 9,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "medianFrames": 1,
+        "pass45": 0,
+        "rafMedianMs": 1016.0999999999985,
+        "rafP95Ms": 1016.7000000000007,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "2d-1px",
+        "started": 29302.60000000149,
+        "ended": 37335,
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": false,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        },
+        "canvasWidth": 1,
+        "canvasHeight": 1,
+        "frames": 238,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          30,
+          29,
+          30,
+          30,
+          29,
+          30,
+          29
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.19999999999709,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "2d-full",
+        "started": 37336.29999999702,
+        "ended": 45351.5,
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": false,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        },
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 237,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          30,
+          29,
+          30,
+          29,
+          30,
+          29,
+          30
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.200000000004366,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "2d-desynchronized",
+        "started": 45352.10000000149,
+        "ended": 53383.89999999851,
+        "attributes": {
+          "alpha": true,
+          "colorSpace": "srgb",
+          "colorType": "unorm8",
+          "desynchronized": true,
+          "toneMapping": {
+            "mode": "standard"
+          },
+          "willReadFrequently": false
+        },
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 238,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          29,
+          30,
+          29,
+          30,
+          30,
+          29,
+          30
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.30000000000291,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "webgl-full",
+        "started": 53398.29999999702,
+        "ended": 61418.29999999702,
+        "attributes": {
+          "alpha": false,
+          "antialias": true,
+          "depth": true,
+          "desynchronized": false,
+          "failIfMajorPerformanceCaveat": false,
+          "powerPreference": "default",
+          "premultipliedAlpha": true,
+          "preserveDrawingBuffer": false,
+          "stencil": false,
+          "xrCompatible": false
+        },
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 210,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          19,
+          30,
+          29,
+          30,
+          29,
+          30,
+          30
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.19999999999709,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "webgl-desynchronized",
+        "started": 61429.60000000149,
+        "ended": 69434.89999999851,
+        "attributes": {
+          "alpha": false,
+          "antialias": true,
+          "depth": true,
+          "desynchronized": false,
+          "failIfMajorPerformanceCaveat": false,
+          "powerPreference": "default",
+          "premultipliedAlpha": true,
+          "preserveDrawingBuffer": false,
+          "stencil": false,
+          "xrCompatible": false
+        },
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 237,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          30,
+          30,
+          29,
+          30,
+          29,
+          30,
+          30
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.30000000000291,
+        "drawP95Ms": 0.10000000149011612
+      },
+      {
+        "mode": "css-compositor",
+        "started": 69444.39999999851,
+        "ended": 77468.10000000149,
+        "attributes": null,
+        "canvasWidth": 1450,
+        "canvasHeight": 713,
+        "frames": 238,
+        "unfocused": 0,
+        "hidden": 0,
+        "completeSeconds": 7,
+        "seconds": [
+          30,
+          29,
+          30,
+          30,
+          29,
+          30,
+          30
+        ],
+        "medianFrames": 30,
+        "pass45": 0,
+        "rafMedianMs": 33.30000000000291,
+        "rafP95Ms": 34.30000000000291,
+        "drawP95Ms": 0
+      }
+    ],
+    "interpretation": "Even a 1x1 draw and CSS animation produce around 30 rAF callbacks/second while empty page is 60. Draw p95 about 0.1 ms. Desynchronized 2D context was accepted but did not improve; WebGL did not report that attribute enabled. This implicates presentation/scheduling beyond the app; it does not establish a universal Ego Lite hard cap or real presented CSS FPS. The 45 FPS/95%/30-minute requirement is still not passed.",
+    "powerRestored": true,
+    "afterMn10Retry": {
+      "condition": "Ego Lite same task space 16, normal AC (low power 0), background as requested. Page flags are virtual signals, not proof of OS foreground. No app audio/model/danmu/shaders loaded.",
+      "rows": [
+        {
+          "kind": "empty",
+          "seconds": 8,
+          "bins": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "medianFps": 1,
+          "atLeast45Fraction": 0,
+          "frameIntervalP95Ms": 1017.3000000000002,
+          "drawCallP95Ms": 0.10000000894069672,
+          "visibility": "visible",
+          "hasFocus": true
+        },
+        {
+          "kind": "2d-tiny",
+          "seconds": 8,
+          "bins": [
+            30,
+            29,
+            29,
+            29,
+            29,
+            29,
+            29,
+            29
+          ],
+          "medianFps": 29,
+          "atLeast45Fraction": 0,
+          "frameIntervalP95Ms": 49.89999999999782,
+          "drawCallP95Ms": 0.10000000894069672,
+          "visibility": "visible",
+          "hasFocus": true
+        },
+        {
+          "kind": "2d-full",
+          "seconds": 7,
+          "bins": [
+            29,
+            30,
+            28,
+            30,
+            29,
+            29,
+            29
+          ],
+          "medianFps": 29,
+          "atLeast45Fraction": 0,
+          "frameIntervalP95Ms": 50,
+          "drawCallP95Ms": 0.10000000894069672,
+          "visibility": "visible",
+          "hasFocus": true
+        },
+        {
+          "kind": "webgl-tiny",
+          "seconds": 7,
+          "bins": [
+            29,
+            29,
+            29,
+            30,
+            29,
+            29,
+            28
+          ],
+          "medianFps": 29,
+          "atLeast45Fraction": 0,
+          "frameIntervalP95Ms": 50,
+          "drawCallP95Ms": 0.10000000894069672,
+          "visibility": "visible",
+          "hasFocus": true,
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+          "contextLost": true
+        }
+      ],
+      "errors": [],
+      "desktop45Fps95PercentFor30MinutesPassed": false,
+      "interpretation": "Empty rAF here idled at 1 FPS; tiny and full 2D and tiny WebGL were about 29 FPS, unlike the earlier empty-page 60 FPS control. Preserve both measurements. Tiny draw calls around .1ms do not establish a shader bottleneck or a universal browser cap. No repeat soak substituted for failed isolated controls."
+    }
+  },
+  "production": {
+    "model": "yamnet-1.tflite unchanged",
+    "modelSha256": "4d8b4a53282dc83ef04e3e7dbc4fbc98082e34e44ed798e16c3a0cdd4c584faf",
+    "addedUpstreamCalls": 0,
+    "ledgerSha256": "f143a94f5666a41ddfb9ab6d89b6751c986cc9462eab461c8a5d67ef0b8b599b",
+    "commitPush": "not performed; necessary P0 acceptance still fails",
+    "deployed": false
+  },
+  "sources": {
+    "modelTable": "https://github.com/fschmid56/EfficientAT/blob/a425fdce92572e602a1d5634799bd9f1f2efa806/README.md#pre-trained-models",
+    "recordingSources": "Published source URLs, licenses and hashes in each frozen manifest; recordings remain private ignored fixtures."
+  },
+  "latestUpdateAt": "2026-10-22T04:36:30.730466+00:00",
+  "mn10": {
+    "status": "rejected-not-integrated",
+    "artifact": "p0-mn10-comparison-20261022.json",
+    "independentPassed": 5,
+    "independentTotal": 6,
+    "failedId": "guitar-matilde",
+    "appDefaultChanged": false
+  },
+  "latestRepairEvidence": {
+    "updatedAt": "2026-10-23T04:09:52.438131+00:00",
+    "report": "p0-mn10-repair-comparison-20261022.json",
+    "candidateStatus": "mn10-C1 failed frozen annotations; no integration. Same-weight input probes rejected.",
+    "defaultRenderingStatus": "YAMNet30min controlled-background full main-page pass:99.6716% complete seconds>=45FPS,64 real-file sessions. Not mn10 qualification.",
+    "productionDefault": "YAMNet",
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  }
+}

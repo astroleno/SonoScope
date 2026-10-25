@@ -1,0 +1,1891 @@
+{
+  "updatedAt": "2026-10-23T04:09:46.444619+00:00",
+  "status": "Blocked: mn10 C1 failed independent quality under frozen annotations. Default-YAMNet rendering is separately reported. No commit/push/deployment.",
+  "model": {
+    "weights": "mn10_as_mAP_471",
+    "artifactSha256": "9615c79cd974e876309409a8e7a941dddc21644e825e33134cb3536e16b04b3d",
+    "bytes": 8270415,
+    "productionDefault": "YAMNet",
+    "candidatePolicy": "efficientat-mn10-as-pad10-2s-mixed3-v1-alp3k1-temporal-6",
+    "realWindowSeconds": 2,
+    "internalPaddingSeconds": 10,
+    "hopSeconds": 0.4
+  },
+  "independent": {
+    "manifest": "p0-mn10-repair-v6-holdout-20261022.json",
+    "manifestSha256": "8e7b85211d0fefed02e3f29b7ce508f481e849a625beeac55344a22c73192fa8",
+    "positives": 7,
+    "positiveWindowGatePassed": 2,
+    "nonmusic": 2,
+    "nonmusicInstrumentPredictions": 0,
+    "sameInputQuantMaxAbs": 0.017729640007019043,
+    "rows": [
+      {
+        "id": "02_Jazz2-187-F#_solo",
+        "expectedInstrument": "Guitar",
+        "correctCoverage": 1,
+        "firstAfterSourceOnsetMs": 2778.6666666666665,
+        "wrong": 0,
+        "instrumentPredictions": 45,
+        "scoreMaxAbsVsFloat": 0.010807633399963379,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 1,
+        "windowGatePass": true
+      },
+      {
+        "id": "control-chain-tumbling",
+        "expectedInstrument": null,
+        "correctCoverage": null,
+        "firstAfterSourceOnsetMs": null,
+        "wrong": 0,
+        "instrumentPredictions": 0,
+        "scoreMaxAbsVsFloat": 0.008420512080192566,
+        "quantizationCoverageDrop": null,
+        "floatCoverage": null,
+        "windowGatePass": false
+      },
+      {
+        "id": "control-rolling-toy-rattle",
+        "expectedInstrument": null,
+        "correctCoverage": null,
+        "firstAfterSourceOnsetMs": null,
+        "wrong": 0,
+        "instrumentPredictions": 0,
+        "scoreMaxAbsVsFloat": 0.006556771695613861,
+        "quantizationCoverageDrop": null,
+        "floatCoverage": null,
+        "windowGatePass": false
+      },
+      {
+        "id": "guitar-honolulu-bay",
+        "expectedInstrument": "Guitar",
+        "correctCoverage": 0,
+        "firstAfterSourceOnsetMs": null,
+        "wrong": 0,
+        "instrumentPredictions": 0,
+        "scoreMaxAbsVsFloat": 0.005862116813659668,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 0,
+        "windowGatePass": false
+      },
+      {
+        "id": "guitar-southern-blues",
+        "expectedInstrument": "Guitar",
+        "correctCoverage": 0,
+        "firstAfterSourceOnsetMs": null,
+        "wrong": 0,
+        "instrumentPredictions": 0,
+        "scoreMaxAbsVsFloat": 0.008459404110908508,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 0,
+        "windowGatePass": false
+      },
+      {
+        "id": "percussion-drum-solo-perny",
+        "expectedInstrument": "Percussion",
+        "correctCoverage": 0.8194444444444444,
+        "firstAfterSourceOnsetMs": 2757.333333333333,
+        "wrong": 0,
+        "instrumentPredictions": 60,
+        "scoreMaxAbsVsFloat": 0.017729640007019043,
+        "quantizationCoverageDrop": -0.01388888888888884,
+        "floatCoverage": 0.8055555555555556,
+        "windowGatePass": true
+      },
+      {
+        "id": "percussion-maracas-murphy",
+        "expectedInstrument": "Percussion",
+        "correctCoverage": 0.0410958904109589,
+        "firstAfterSourceOnsetMs": 24357.333333333332,
+        "wrong": 0,
+        "instrumentPredictions": 3,
+        "scoreMaxAbsVsFloat": 0.009410440921783447,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 0.0410958904109589,
+        "windowGatePass": false
+      },
+      {
+        "id": "piano-cramer-mo",
+        "expectedInstrument": "Piano",
+        "correctCoverage": 0.6301369863013698,
+        "firstAfterSourceOnsetMs": 3808,
+        "wrong": 5,
+        "instrumentPredictions": 51,
+        "scoreMaxAbsVsFloat": 0.016061067581176758,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 0.6301369863013698,
+        "windowGatePass": false
+      },
+      {
+        "id": "piano-minute-waltz-rachmaninoff",
+        "expectedInstrument": "Piano",
+        "correctCoverage": 0.410958904109589,
+        "firstAfterSourceOnsetMs": 7215.999999999999,
+        "wrong": 0,
+        "instrumentPredictions": 30,
+        "scoreMaxAbsVsFloat": 0.01463267207145691,
+        "quantizationCoverageDrop": 0,
+        "floatCoverage": 0.410958904109589,
+        "windowGatePass": false
+      }
+    ],
+    "annotationLimitations": [
+      "Maracas demonstration has uncertain speech/performance boundaries. No auditory input was available to the agent. Its failure remains, with no post-prediction trimming/exclusion. Historical lead-in/noise boundaries also warrant review; these are results under the original frozen whole-excerpt annotations."
+    ]
+  },
+  "exposedLiveRegression": {
+    "scope": "Eight already exposed recordings, actual SDK/Worklet/Workers/visibleDOM in the standalone SDK harness; not the main p5 page or blind acceptance.",
+    "rows": [
+      {
+        "id": "02_Jazz2-110-Bb_solo",
+        "summary": {
+          "correctCoverage": 0.9863013698630136,
+          "eligible": 73,
+          "unknown": 1,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 2800,
+          "firstVisibleSpecificMs": 2923.333251953125,
+          "nonmusicInstrumentPredictions": 73,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 151.47499999403954,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "guitar-matilde",
+        "summary": {
+          "correctCoverage": 0.9315068493150684,
+          "eligible": 73,
+          "unknown": 5,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 4212,
+          "firstVisibleSpecificMs": 4467.333251953125,
+          "nonmusicInstrumentPredictions": 68,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 135,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "guitar-souvenir-1928",
+        "summary": {
+          "correctCoverage": 0.9315068493150684,
+          "eligible": 73,
+          "unknown": 5,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 3051,
+          "firstVisibleSpecificMs": 3244.333251953125,
+          "nonmusicInstrumentPredictions": 68,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 143.72499999403954,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "percussion-headless-tambourine",
+        "summary": {
+          "correctCoverage": 0.9642857142857143,
+          "eligible": 28,
+          "unknown": 1,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 2737,
+          "firstVisibleSpecificMs": 2889.333251953125,
+          "nonmusicInstrumentPredictions": 28,
+          "acceptedModelResults": 31
+        },
+        "computeP95Ms": 139.3049999922514,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "percussion-tambourine-pattern",
+        "summary": {
+          "correctCoverage": 0.9696969696969697,
+          "eligible": 33,
+          "unknown": 1,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 2757,
+          "firstVisibleSpecificMs": 2865.333251953125,
+          "nonmusicInstrumentPredictions": 33,
+          "acceptedModelResults": 35
+        },
+        "computeP95Ms": 117.71499998867512,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "piano-chopin-hughes",
+        "summary": {
+          "correctCoverage": 0.9863013698630136,
+          "eligible": 73,
+          "unknown": 1,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 2118,
+          "firstVisibleSpecificMs": 2626.333251953125,
+          "nonmusicInstrumentPredictions": 73,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 151.7099999934435,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "piano-chopin-neeman",
+        "summary": {
+          "correctCoverage": 0.9863013698630136,
+          "eligible": 73,
+          "unknown": 1,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 2010,
+          "firstVisibleSpecificMs": 2581.333251953125,
+          "nonmusicInstrumentPredictions": 73,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 144.10999999940395,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      },
+      {
+        "id": "piano-satie-gnossienne",
+        "summary": {
+          "correctCoverage": 0.8356164383561644,
+          "eligible": 73,
+          "unknown": 12,
+          "wrong": 0,
+          "firstCorrectSourceAfterOnsetMs": 3936,
+          "firstVisibleSpecificMs": 4588.333251953125,
+          "nonmusicInstrumentPredictions": 61,
+          "acceptedModelResults": 75
+        },
+        "computeP95Ms": 176.15000000596046,
+        "maxPcmBytes": 768200,
+        "maxInFlight": 1,
+        "afterStop": {
+          "contexts": 0,
+          "workers": 0,
+          "media": 0,
+          "comments": 0
+        }
+      }
+    ],
+    "computeGate": "Failed under high system load. Faster subsequent runs do not overwrite this failure."
+  },
+  "inputResearch": [
+    {
+      "adapter": "repeat5",
+      "status": "Rejected at exposed first8s triage; not independent/full-clip qualification",
+      "errors": [],
+      "rows": [
+        {
+          "id": "guitar-minuet",
+          "coverage": 0.07692307692307693,
+          "firstCorrectSourceSeconds": 8,
+          "wrong": 4,
+          "instrumentPredictions": 5
+        },
+        {
+          "id": "guitar-matilde",
+          "coverage": 0.7692307692307693,
+          "firstCorrectSourceSeconds": 3.2,
+          "wrong": 0,
+          "instrumentPredictions": 10
+        },
+        {
+          "id": "speech",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-cramer-mo",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "coverage": 0.07692307692307693,
+          "firstCorrectSourceSeconds": 8,
+          "wrong": 0,
+          "instrumentPredictions": 1
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "coverage": 0.15384615384615385,
+          "firstCorrectSourceSeconds": 6,
+          "wrong": 0,
+          "instrumentPredictions": 2
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        }
+      ]
+    },
+    {
+      "adapter": "pad32",
+      "status": "Rejected at exposed first8s triage; not independent/full-clip qualification",
+      "errors": [],
+      "rows": [
+        {
+          "id": "guitar-minuet",
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 4,
+          "wrong": 0,
+          "instrumentPredictions": 8
+        },
+        {
+          "id": "guitar-matilde",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 4,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "piano-cramer-mo",
+          "coverage": 0.07692307692307693,
+          "firstCorrectSourceSeconds": 8,
+          "wrong": 0,
+          "instrumentPredictions": 1
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 4,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        }
+      ]
+    },
+    {
+      "adapter": "noise-and-quiet-gain",
+      "status": "Rejected exposed first8s development. Four raw/gain/lowpass combinations did not recover either historical guitar; percussive/other regressions retained. Not independent qualification.",
+      "errors": [],
+      "rows": [
+        {
+          "id": "guitar-minuet",
+          "condition": "raw",
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-minuet",
+          "condition": "quiet-gain",
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-minuet",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0.7692307692307693,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "guitar-minuet",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 12
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "raw",
+          "coverage": 0.6923076923076923,
+          "firstCorrectSourceSeconds": 4.4,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "quiet-gain",
+          "coverage": 0.6923076923076923,
+          "firstCorrectSourceSeconds": 4.4,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0.7692307692307693,
+          "firstCorrectSourceSeconds": 4.4,
+          "wrong": 0,
+          "instrumentPredictions": 10
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "lp3k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "lp2k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "lp3k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "lp2k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "lp3k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "lp2k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "raw",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "raw",
+          "coverage": 0.7692307692307693,
+          "firstCorrectSourceSeconds": 3.2,
+          "wrong": 0,
+          "instrumentPredictions": 10
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "quiet-gain",
+          "coverage": 0.7692307692307693,
+          "firstCorrectSourceSeconds": 3.2,
+          "wrong": 0,
+          "instrumentPredictions": 10
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 3.2,
+          "wrong": 0,
+          "instrumentPredictions": 13
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "raw",
+          "coverage": 0.15384615384615385,
+          "firstCorrectSourceSeconds": 7.6,
+          "wrong": 0,
+          "instrumentPredictions": 2
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "quiet-gain",
+          "coverage": 0.15384615384615385,
+          "firstCorrectSourceSeconds": 7.6,
+          "wrong": 0,
+          "instrumentPredictions": 2
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0.07692307692307693,
+          "firstCorrectSourceSeconds": 8,
+          "wrong": 0,
+          "instrumentPredictions": 1
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0.15384615384615385,
+          "firstCorrectSourceSeconds": 7.6,
+          "wrong": 0,
+          "instrumentPredictions": 2
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "raw",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "quiet-gain",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "lp3k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "lp2k-quiet-gain",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "lp3k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "lp2k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "lp3k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "lp2k-quiet-gain",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        }
+      ]
+    },
+    {
+      "adapter": "growing2to4s",
+      "status": "Rejected: no historical guitar or Matilde in first8s, despite local piano improvement. Exposed diagnostic only; never app integration or independent qualification.",
+      "prefixParity": [
+        {
+          "id": "guitar-matilde",
+          "maxAbs": 0
+        },
+        {
+          "id": "piano-cramer-mo",
+          "maxAbs": 0
+        },
+        {
+          "id": "noise",
+          "maxAbs": 0
+        }
+      ],
+      "errors": [],
+      "rows": [
+        {
+          "id": "guitar-minuet",
+          "condition": "raw",
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 3.6,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "guitar-minuet",
+          "condition": "adaptive",
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 3.6,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-matilde",
+          "condition": "adaptive",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "condition": "adaptive",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "condition": "adaptive",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "condition": "adaptive",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "condition": "adaptive",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "condition": "adaptive",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "raw",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "condition": "adaptive",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "raw",
+          "coverage": 0.3076923076923077,
+          "firstCorrectSourceSeconds": 6.8,
+          "wrong": 0,
+          "instrumentPredictions": 4
+        },
+        {
+          "id": "piano-cramer-mo",
+          "condition": "adaptive",
+          "coverage": 0.6923076923076923,
+          "firstCorrectSourceSeconds": 4.4,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "raw",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "condition": "adaptive",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "raw",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "condition": "adaptive",
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "raw",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "condition": "adaptive",
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "condition": "adaptive",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "raw",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "condition": "adaptive",
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        }
+      ]
+    },
+    {
+      "adapter": "spectral-subtraction",
+      "status": "Rejected: neither historical guitar recovered; Matilde and Minuet regressions retained. Exposed first8s only; no app integration or independent qualification.",
+      "dryReconstructionMaxAbs": 3.527568332405558e-19,
+      "errors": [],
+      "rows": [
+        {
+          "id": "guitar-minuet",
+          "alpha": 0,
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-minuet",
+          "alpha": 2,
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 9
+        },
+        {
+          "id": "guitar-minuet",
+          "alpha": 4,
+          "coverage": 0.07692307692307693,
+          "firstCorrectSourceSeconds": 8,
+          "wrong": 2,
+          "instrumentPredictions": 3
+        },
+        {
+          "id": "guitar-matilde",
+          "alpha": 0,
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 4.4,
+          "wrong": 0,
+          "instrumentPredictions": 8
+        },
+        {
+          "id": "guitar-matilde",
+          "alpha": 2,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-matilde",
+          "alpha": 4,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "alpha": 0,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "alpha": 2,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "speech",
+          "alpha": 4,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "alpha": 0,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "alpha": 2,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "noise",
+          "alpha": 4,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "alpha": 0,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "alpha": 2,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "silence",
+          "alpha": 4,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "alpha": 0,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "alpha": 2,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-southern-blues",
+          "alpha": 4,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "alpha": 0,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "alpha": 2,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "guitar-honolulu-bay",
+          "alpha": 4,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "alpha": 0,
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "alpha": 2,
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "02_Jazz2-187-F#_solo",
+          "alpha": 4,
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "piano-cramer-mo",
+          "alpha": 0,
+          "coverage": 0.6153846153846154,
+          "firstCorrectSourceSeconds": 4,
+          "wrong": 0,
+          "instrumentPredictions": 8
+        },
+        {
+          "id": "piano-cramer-mo",
+          "alpha": 2,
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 12
+        },
+        {
+          "id": "piano-cramer-mo",
+          "alpha": 4,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "alpha": 0,
+          "coverage": 0.15384615384615385,
+          "firstCorrectSourceSeconds": 7.6,
+          "wrong": 0,
+          "instrumentPredictions": 2
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "alpha": 2,
+          "coverage": 0.46153846153846156,
+          "firstCorrectSourceSeconds": 6,
+          "wrong": 0,
+          "instrumentPredictions": 6
+        },
+        {
+          "id": "piano-minute-waltz-rachmaninoff",
+          "alpha": 4,
+          "coverage": 0.3076923076923077,
+          "firstCorrectSourceSeconds": 6.8,
+          "wrong": 0,
+          "instrumentPredictions": 4
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "alpha": 0,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "alpha": 2,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-maracas-murphy",
+          "alpha": 4,
+          "coverage": 0,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "alpha": 0,
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 2.8,
+          "wrong": 0,
+          "instrumentPredictions": 14
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "alpha": 2,
+          "coverage": 1,
+          "firstCorrectSourceSeconds": 3.2,
+          "wrong": 0,
+          "instrumentPredictions": 13
+        },
+        {
+          "id": "percussion-drum-solo-perny",
+          "alpha": 4,
+          "coverage": 0.8461538461538461,
+          "firstCorrectSourceSeconds": 4,
+          "wrong": 0,
+          "instrumentPredictions": 11
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "alpha": 0,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "alpha": 2,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-rolling-toy-rattle",
+          "alpha": 4,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "alpha": 0,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "alpha": 2,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        },
+        {
+          "id": "control-chain-tumbling",
+          "alpha": 4,
+          "coverage": null,
+          "firstCorrectSourceSeconds": null,
+          "wrong": 0,
+          "instrumentPredictions": 0
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "approvedProtocol": "EgoLite background with controlled1px capture. Ordinary background~30FPS remains a limitation.",
+    "firstMainPageRun": {
+      "durationMs": 791821,
+      "completeSeconds": 791,
+      "failedSeconds": 187,
+      "passRate": 0.7635903919089759,
+      "status": "Failed partial; ended after exceeding the planned30min failure budget. Not a completed soak."
+    },
+    "repair": {
+      "module": "app/visuals/mosaic.ts",
+      "originalSha256": "65da06d60241999f5cfa7abfb0afe663c038825b759629b01ccef56734ea1c87",
+      "pixelFrames": 160,
+      "maxPixelChannelDifference": 0,
+      "behaviorFrames": 160,
+      "attribution": "Do not attribute all improvements to code: EgoLite restarted, viewport and system load changed. Exact pixel/behavior parity and lower Mosaic draw cost are demonstrated.",
+      "totalMemory": "Native page+related-agent memory measurement did not return; unavailable. No main-JS-heap substitution."
+    },
+    "repairedShortPhases": [
+      {
+        "mode": "full",
+        "preset": "Accretion",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.2150000035762787,
+        "gpuDrawP95Ms": 12.644749,
+        "modelComputeP95Ms": 50.76000000536442,
+        "longTasks": 0
+      },
+      {
+        "mode": "full",
+        "preset": "Mochi",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.25,
+        "gpuDrawP95Ms": 9.512166,
+        "modelComputeP95Ms": 50.50999999046326,
+        "longTasks": 0
+      },
+      {
+        "mode": "full",
+        "preset": "Mosaic",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 4.030000001192093,
+        "gpuDrawP95Ms": null,
+        "modelComputeP95Ms": 38.34499999880791,
+        "longTasks": 0
+      },
+      {
+        "mode": "full",
+        "preset": "Spiral",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.18000000715255737,
+        "gpuDrawP95Ms": 12.696999,
+        "modelComputeP95Ms": 51.695000007748604,
+        "longTasks": 0
+      },
+      {
+        "mode": "full",
+        "preset": "Wave",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.3199999928474426,
+        "gpuDrawP95Ms": 6.306958,
+        "modelComputeP95Ms": 50.63000001013279,
+        "longTasks": 0
+      },
+      {
+        "mode": "idle",
+        "preset": "Accretion",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.3800000101327896,
+        "gpuDrawP95Ms": 11.386124,
+        "modelComputeP95Ms": null,
+        "longTasks": 0
+      },
+      {
+        "mode": "idle",
+        "preset": "Mochi",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.3700000047683716,
+        "gpuDrawP95Ms": 6.370333,
+        "modelComputeP95Ms": null,
+        "longTasks": 0
+      },
+      {
+        "mode": "idle",
+        "preset": "Mosaic",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 4.965000003576279,
+        "gpuDrawP95Ms": null,
+        "modelComputeP95Ms": null,
+        "longTasks": 0
+      },
+      {
+        "mode": "idle",
+        "preset": "Spiral",
+        "completeSeconds": 19,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.48499999940395355,
+        "gpuDrawP95Ms": 11.044124,
+        "modelComputeP95Ms": null,
+        "longTasks": 0
+      },
+      {
+        "mode": "idle",
+        "preset": "Wave",
+        "completeSeconds": 20,
+        "passRate": 1.0,
+        "drawCallbackP95Ms": 0.3799999952316284,
+        "gpuDrawP95Ms": 5.330916,
+        "modelComputeP95Ms": null,
+        "longTasks": 0
+      }
+    ],
+    "repairedLongSoak": {
+      "scope": "Actual packaged main page, real files through Worklet/SDK/Workers/p5/visibleDOM, controlledbackground1pxcapture. Model quality remains independently required.",
+      "durationMs": 1827932,
+      "viewport": {
+        "width": 1458,
+        "height": 796,
+        "devicePixelRatio": 2
+      },
+      "overall": {
+        "seconds": 1827,
+        "passRate": 0.9967159277504105,
+        "p05Fps": 60,
+        "medianFps": 60,
+        "failedSeconds": 6
+      },
+      "perPreset": {
+        "wave": {
+          "seconds": 387,
+          "passRate": 0.9948320413436692,
+          "p05Fps": 60,
+          "medianFps": 60,
+          "failedSeconds": 2
+        },
+        "accretion": {
+          "seconds": 359,
+          "passRate": 1.0,
+          "p05Fps": 60,
+          "medianFps": 60,
+          "failedSeconds": 0
+        },
+        "spiral": {
+          "seconds": 361,
+          "passRate": 1.0,
+          "p05Fps": 60,
+          "medianFps": 60,
+          "failedSeconds": 0
+        },
+        "mosaic": {
+          "seconds": 360,
+          "passRate": 0.9944444444444445,
+          "p05Fps": 59,
+          "medianFps": 60,
+          "failedSeconds": 2
+        },
+        "mochi": {
+          "seconds": 360,
+          "passRate": 0.9944444444444445,
+          "p05Fps": 60,
+          "medianFps": 60,
+          "failedSeconds": 2
+        }
+      },
+      "missingSeconds": 0,
+      "audioActiveSecondsAtLeast45Draws": 1799,
+      "frameGatePass": true,
+      "sourceCount": 64,
+      "interruption": null,
+      "driverCompleted": true,
+      "fullAnalysisPipelineStable": true,
+      "modelP95GatePass": true,
+      "worstSourceModelComputeP95Ms": 12.560000002384186,
+      "maxPcmBytes": 339776,
+      "maxInFlight": 1,
+      "cleanSourceStops": true,
+      "apiCalls": 0,
+      "errors": [],
+      "modelUrls": [
+        "http://127.0.0.1:3100/SonoScope/model/yamnet-1.tflite"
+      ],
+      "perPresetAttribution": "Original observed preset retained; every absent whole-second bin assigned by the preset-change timeline (midpoint). No missing bin discarded. Mixed transition seconds remain counted.",
+      "model": "YAMNet production default; does not qualify mn10"
+    },
+    "previousRuns": [
+      {
+        "run": "v6-r1",
+        "model": "mn10-C1",
+        "status": "Failed/interrupted, not a completed qualified run",
+        "durationMs": 791821,
+        "overall": {
+          "seconds": 791,
+          "passRate": 0.7635903919089759,
+          "p05Fps": 20,
+          "medianFps": 58,
+          "failedSeconds": 187
+        },
+        "missingSeconds": 17,
+        "frameGatePass": false,
+        "sourceCount": 29,
+        "modelP95GatePass": false,
+        "worstSourceModelComputeP95Ms": 927.0900000035763,
+        "cleanSourceStops": true,
+        "interruptionReason": "Ended partial after excessive failed windows; driver did not complete."
+      },
+      {
+        "run": "v6-r2",
+        "model": "mn10-C1",
+        "status": "Failed/interrupted, not a completed qualified run",
+        "durationMs": 1837605,
+        "overall": {
+          "seconds": 1837,
+          "passRate": 0.7457811649428416,
+          "p05Fps": 29,
+          "medianFps": 60,
+          "failedSeconds": 467
+        },
+        "missingSeconds": 0,
+        "frameGatePass": false,
+        "sourceCount": 52,
+        "modelP95GatePass": false,
+        "worstSourceModelComputeP95Ms": 518.3700000047684,
+        "cleanSourceStops": true,
+        "interruptionReason": "Harness expected32s but selected a100s legacy noise file. Driver stopped on deadline. End report also retains subsequent uncaptured background frames; this is not a completed continuous controlled soak."
+      },
+      {
+        "run": "v6-r3",
+        "model": "mn10-C1",
+        "status": "Failed/interrupted, not a completed qualified run",
+        "durationMs": 1278024,
+        "overall": {
+          "seconds": 1277,
+          "passRate": 0.7674236491777604,
+          "p05Fps": 28,
+          "medianFps": 55,
+          "failedSeconds": 297
+        },
+        "missingSeconds": 3,
+        "frameGatePass": false,
+        "sourceCount": 23,
+        "modelP95GatePass": false,
+        "worstSourceModelComputeP95Ms": 2518.4600000083447,
+        "cleanSourceStops": true,
+        "interruptionReason": "ENOSPC writing EgoLite task ledger. Continuous controlled run interrupted; retain all diagnostics and subsequent uncaptured windows, do not mark performance passed."
+      },
+      {
+        "run": "production-yamnet-r4",
+        "model": "YAMNet",
+        "status": "Failed/interrupted, not a completed qualified run",
+        "durationMs": 335605,
+        "overall": {
+          "seconds": 335,
+          "passRate": 0.5611940298507463,
+          "p05Fps": 23,
+          "medianFps": 46,
+          "failedSeconds": 147
+        },
+        "missingSeconds": 0,
+        "frameGatePass": false,
+        "sourceCount": 15,
+        "modelP95GatePass": false,
+        "worstSourceModelComputeP95Ms": 222.5300000011921,
+        "cleanSourceStops": true,
+        "interruptionReason": "Short/full-pipeline preflight was not stable: some sources showed DSP/model timeout degradation under resource pressure. A causal role of the debugger filter has not been established. Ended for scoped adapter/startup diagnosis; no performance qualification."
+      }
+    ]
+  },
+  "constraints": {
+    "newUpstreamCalls": 0,
+    "newFrontendRuntime": false,
+    "newPretrainedWeights": false,
+    "deployed": false,
+    "committed": false,
+    "pushed": false,
+    "aiLedgerSha256": "f143a94f5666a41ddfb9ab6d89b6751c986cc9462eab461c8a5d67ef0b8b599b"
+  },
+  "engineering20261023": {
+    "tests": 186,
+    "testFiles": 21,
+    "canonicalCheck": "Passed: lint, tests, types, verified assets, production build, package hygiene,44 static resources",
+    "nextVersion": "16.4.2",
+    "eslintConfigNext": "16.4.2",
+    "sharp": "0.35.5",
+    "productionAudit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "securityReference": "https://nextjs.org/blog/nextjs-security-update-october-14-2026",
+    "resolvedDspBug": "Late source capture consumed new DSP task deadline. Deadline now starts at dispatch; stale publish rejection and genuine2s stalled-task expiry retained.",
+    "temporaryObserver": "Removed from source and final static bundle; final normal production build/package/smoke passed.",
+    "platform": "macOS arm64; not a qualified Linux release",
+    "legacyTests": 47,
+    "legacyTestFiles": 3,
+    "finalBuildId": "Xho23fmac9FR_ctM2yCrV",
+    "renderingValidationBuildId": "Ub1_NlKcugz6zqt-vZYlZ",
+    "observerRemovalScope": "Only hook source changed since successful rendering run; SDK/core/workers/Mosaic/framework source hashes unchanged.",
+    "powerRestored": {
+      "acLowPower": 1,
+      "batteryLowPower": 0
+    },
+    "ownedTestListenersStopped": [
+      3100,
+      3106,
+      3107
+    ]
+  }
+}

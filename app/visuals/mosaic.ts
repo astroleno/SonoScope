@@ -1,5 +1,6 @@
 // Mosaic (2693579) - Direct port from p5.js 2D cellular automata
 // Based on ref_p5/Mosaic_2693579, keeping the original 2D rendering approach
+import type { AudioValues } from '@sonoscope/core';
 
 export type MosaicCell = {
   alive: boolean;
@@ -189,11 +190,14 @@ type MosaicExtras = {
 
 export class MosaicVisual {
   private grid: MosaicGrid = [];
+  private spareGrid: MosaicGrid = [];
   private cols: number = 0;
   private rows: number = 0;
   private colors: string[] = [];
+  private palette: any[] = [];
   private bgColor: string = '';
   private frameCount: number = 0;
+  private playbackAt: number | null = null;
   // 频谱增强
   private frequencyBands: number = 8;
   private bandWidth: number = 0;
@@ -216,6 +220,8 @@ export class MosaicVisual {
   private initializeGrid() {
     const colorScheme = MOSAIC_COLOR_SCHEMES[this.controls.colorScheme];
     this.colors = colorScheme.colors;
+    // Palette endpoints are immutable inputs to lerpColor, not per-cell colors.
+    this.palette = this.colors.map(color => this.p.color(color));
     this.bgColor = colorScheme.bgColor;
     
     // 使用 ceil 保证铺满屏幕，避免右/下出现空带
@@ -234,6 +240,8 @@ export class MosaicVisual {
         shape: this.p.random(['circle', 'triangle', 'rect']),
       }))
     );
+    // No random calls here: grid evolution keeps the original random sequence.
+    this.spareGrid = this.grid.map(column => column.map(() => ({ alive: false, age: 0, shape: 'circle' })));
   }
 
   public syncState(
@@ -270,16 +278,11 @@ export class MosaicVisual {
   }
 
   private countAliveNeighbors(x: number, y: number): number {
-    let count = 0;
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx === 0 && dy === 0) continue;
-        const nx = (x + dx + this.cols) % this.cols;
-        const ny = (y + dy + this.rows) % this.rows;
-        if (this.grid[nx][ny].alive) count++;
-      }
-    }
-    return count;
+    const left = this.grid[x ? x - 1 : this.cols - 1], center = this.grid[x], right = this.grid[x === this.cols - 1 ? 0 : x + 1];
+    const above = y ? y - 1 : this.rows - 1, below = y === this.rows - 1 ? 0 : y + 1;
+    return Number(left[above].alive) + Number(left[y].alive) + Number(left[below].alive)
+      + Number(center[above].alive) + Number(center[below].alive)
+      + Number(right[above].alive) + Number(right[y].alive) + Number(right[below].alive);
   }
 
   // 频谱增强：获取频段活跃度（强制使用频谱数据）
@@ -487,8 +490,8 @@ export class MosaicVisual {
     const mix = (blend * (this.colors.length - 1)) % 1;
     
     const c = this.p.lerpColor(
-      this.p.color(this.colors[indexA]),
-      this.p.color(this.colors[indexB]),
+      this.palette[indexA],
+      this.palette[indexB],
       mix
     );
     
@@ -626,7 +629,12 @@ export class MosaicVisual {
     }
   }
 
-  private drawShape(shape: string, size: number) {
+  private drawShape(shape: string, size: number, x: number, y: number) {
+    // Native 2D transform preserves the original rasterization, without cloning
+    // the entire p5 style object for each cell. The frame scopes p5 styles once.
+    const context = this.p.drawingContext as CanvasRenderingContext2D;
+    context.save(); context.translate(x, y);
+    try {
     switch (shape) {
       case 'circle':
         this.p.ellipse(0, 0, size, size);
@@ -640,18 +648,21 @@ export class MosaicVisual {
         );
         break;
       case 'rect':
-        this.p.rectMode(this.p.CENTER);
         this.p.rect(0, 0, size, size);
         break;
     }
+    } finally { context.restore(); }
   }
 
-  public draw() {
+  public draw(mediaMs?: number) {
+    const elapsedFrames = mediaMs === undefined ? 1 : Math.max(0, Math.min(8, (mediaMs - (this.playbackAt ?? mediaMs - 1000 / 60)) * .06));
+    if (mediaMs !== undefined) { this.frameCount = Math.floor(mediaMs * .06); this.playbackAt = mediaMs; } else this.playbackAt = null;
     // 轻微的背景残影，让过渡更自然
     this.p.push();
     this.p.noStroke();
     this.p.rectMode(this.p.CORNER);
     const fade = this.p.color(this.bgColor + "08"); // 很淡的背景残影
+    if (mediaMs !== undefined) fade.setAlpha?.(8 * elapsedFrames);
     this.p.fill(fade);
     this.p.rect(0, 0, this.p.width, this.p.height);
     this.p.pop();
@@ -663,6 +674,8 @@ export class MosaicVisual {
       console.warn('⚠️ 绘制频谱条失败:', e);
     }
 
+    this.p.push();
+    this.p.rectMode(this.p.CENTER);
     for (let i = 0; i < this.cols; i++) {
       for (let j = 0; j < this.rows; j++) {
         const cell = this.grid[i][j];
@@ -670,7 +683,7 @@ export class MosaicVisual {
         const y = j * this.controls.cellSize + this.controls.cellSize / 2;
 
         if (cell.alive) {
-          cell.age++;
+          cell.age += elapsedFrames;
 
           // 🎵 动态调整元胞大小最大值：根据音频特征调整 maxAge
           const dynamicMaxAge = this.controls.maxAge * (0.5 + this.audio.level * 1.0 + this.audio.flux * 0.8);
@@ -721,10 +734,7 @@ export class MosaicVisual {
           this.p.fill(baseColor);
           this.p.noStroke();
 
-          this.p.push();
-          this.p.translate(x, y);
-          this.drawShape(cell.shape, size);
-          this.p.pop();
+          this.drawShape(cell.shape, size, x, y);
 
           // 原始的age out逻辑，但创建残影
           if (cell.age > this.controls.maxAge) {
@@ -738,7 +748,7 @@ export class MosaicVisual {
         
         // 🎵 绘制残影：极短留存时间
         if (cell.ghostAge !== undefined && cell.ghostAge < 3) { // 极短时间：3 帧
-          cell.ghostAge++;
+          cell.ghostAge += elapsedFrames;
           
           // 残影快速变淡
           const ghostAlpha = this.p.map(cell.ghostAge, 0, 3, 0.1, 0); // 极低透明度
@@ -750,10 +760,7 @@ export class MosaicVisual {
             this.p.fill(ghostColor);
             this.p.noStroke();
             
-            this.p.push();
-            this.p.translate(x, y);
-            this.drawShape(cell.shape, cell.ghostSize || 0);
-            this.p.pop();
+            this.drawShape(cell.shape, cell.ghostSize || 0, x, y);
           }
         } else if (cell.ghostAge !== undefined) {
           // 🎵 残影超时，立即清理
@@ -763,6 +770,7 @@ export class MosaicVisual {
         }
       }
     }
+    this.p.pop();
 
     // 简单的生长间隔，基于整体音频活动
     const growthChance = this.p.constrain(
@@ -770,10 +778,10 @@ export class MosaicVisual {
       0.01, 0.15
     );
 
-    if (this.frameCount % 2 === 0 || this.p.random() < growthChance) {
+    if (elapsedFrames > 0 && (this.frameCount % 2 === 0 || this.p.random() < growthChance * elapsedFrames)) {
       this.updateGrowth();
     }
-    this.frameCount++;
+    if (mediaMs === undefined) this.frameCount++;
   }
 
   // 绘制频谱条：从底部向上绘制列状条形，并带峰值保持指示
@@ -861,15 +869,16 @@ export class MosaicVisual {
 
   // 频谱增强的生长逻辑
   private updateGrowth() {
-    const next: MosaicGrid = [];
+    const next = this.spareGrid;
 
     for (let i = 0; i < this.cols; i++) {
-      next[i] = [];
       for (let j = 0; j < this.rows; j++) {
         const cell = this.grid[i][j];
         const neighbors = this.countAliveNeighbors(i, j);
 
-        const newCell = { ...cell };
+        const newCell = next[i][j];
+        newCell.alive = cell.alive; newCell.age = cell.age; newCell.shape = cell.shape;
+        newCell.ghostAge = cell.ghostAge; newCell.ghostSize = cell.ghostSize; newCell.ghostColor = cell.ghostColor;
 
         if (!cell.alive) {
           // 频谱增强：根据频段活跃度调整生成概率
@@ -954,6 +963,7 @@ export class MosaicVisual {
       }
     }
 
+    this.spareGrid = this.grid;
     this.grid = next;
   }
 
@@ -961,11 +971,21 @@ export class MosaicVisual {
   public resize() {
     this.initializeGrid();
   }
+  public seekPlayback(mediaMs: number, samples: { atMs: number; values: AudioValues }[]) {
+    this.initializeGrid(); this.spectrumColumnsSmoothed = undefined; this.spectrumPeaks = undefined; this.bandCooling = undefined;
+    const current = this.audio;
+    for (const sample of samples.slice(-20)) {
+      this.frameCount = Math.floor(sample.atMs * .06);
+      this.audio = { ...current, level: sample.values.rms, flux: sample.values.flux, centroid: Math.min(1, sample.values.centroidHz / 6000), flatness: sample.values.flatness, zcr: sample.values.zcr, bandLow: sample.values.bands.low, bandMid: sample.values.bands.mid, bandHigh: sample.values.bands.high };
+      this.updateGrowth();
+    }
+    this.audio = current; this.frameCount = Math.floor(mediaMs * .06); this.playbackAt = mediaMs;
+  }
 }
 
 // Export functions for compatibility with existing visualizer
-export function drawMosaic(p: any, mosaicVisual: MosaicVisual) {
-  mosaicVisual.draw();
+export function drawMosaic(p: any, mosaicVisual: MosaicVisual, mediaMs?: number) {
+  mosaicVisual.draw(mediaMs);
 }
 
 export function applyMosaicUniforms(

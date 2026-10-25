@@ -1,0 +1,3045 @@
+{
+  "updatedAt": "2026-10-23T06:37:34.273611+00:00",
+  "scope": "Approved local comparison of two pretrained weights, exposed development corpus only. No app integration or independent acceptance claim.",
+  "source": "https://github.com/fschmid56/EfficientAT/tree/a425fdce92572e602a1d5634799bd9f1f2efa806",
+  "corpus": {
+    "sources": 62,
+    "positiveSources": 53,
+    "controls": 9,
+    "sha256": "501d21dee843f5c17d0ab396afc5ce4d8166b5b87be64bea00d318ecf0e797b3",
+    "recordings": [
+      {
+        "id": "guitar-jazz",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 24,
+        "sourceSha256": "6cbf135bc1f69b7cdb9ed6234fff92d91ecb04d2de0cd21d30c3ee6afd47bfe5",
+        "pcmSha256": "c8ac3bf44ad5fe90024e7d800e31fb298247b1baf9f68d87bbbe1270e32421c5",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "drums-cadence-a",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 31.998549,
+        "sourceSha256": "cd9368ff3ca3c4f0f233004a2e2a8391598a04cd630672beb3880966303e5494",
+        "pcmSha256": "5775dedb80d016e78a456837da71393a3814e5931447251e74ba85732da5b31d",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "drums-cadence-b",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 32,
+        "sourceSha256": "8659f6c27fea638d70b9918edc046c01250d6076cc2ca5f507bb92357c009be5",
+        "pcmSha256": "2be177c41e8cb5c7dd4b2796518e0f9ace15a9fac0d179149cba94849c81a50b",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "piano-pitman",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "bba402c26d9be327adbdffc298109f370f35e30e3bd8730c9e62e81ca3c46bd5",
+        "pcmSha256": "6f34833d569fa6f06828be3850e20341b080e2020374f3e5cce36f33d2475802",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "piano-isaac",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "490b24aaf7055e9036a0680e89d3b276cdf9052cf2d64103f7042d08a3bf3272",
+        "pcmSha256": "b288bc77023eed7e40a2d6065f84a7c6ef5a5d9d4f88bb53491efb9fb58af035",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "guitar-barrios",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "3b62415a21dfe55c4e591055331899d9c55be33e1719a940c77796390e0fdeb9",
+        "pcmSha256": "6abe2a06c027e45a37ed6d97370a2a32761ac95afca8d18bb300ca90ec3ae5a4",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "04_SS1-100-C#_comp",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 28.8,
+        "sourceSha256": "39b592e5ab79e457a7901e865b4320e04014903465acdebd64235b4f44416650",
+        "pcmSha256": "b84eee93e7d135d99fb9892dd885df2bbd4b92623a50bd4315df3a5b97c445e3",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "02_BN2-131-B_comp",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 29.306395,
+        "sourceSha256": "6478e7ade863d3b84ec26b443499979ee8db10a726d60ad0836e805f5349af83",
+        "pcmSha256": "28122787eafcb90845b1226dc1d870dfc4eb819838bdff90799f9531096b5521",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "05_Rock1-90-C#_comp",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "f8410ac3049cc8564487b1a83f921a068ad3dd919efc6fb34f8869151ac03046",
+        "pcmSha256": "09b48c43a84af7ec3f44918ad101d54d4a6835015ac66e503290d2a3dbe52b3b",
+        "manifest": "p0-holdout-20261021.json"
+      },
+      {
+        "id": "guitar-habanera",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "1fc962688e0272e730061bb60a7c98792f6dba6d4e29719a97ee3a2588f2685b",
+        "pcmSha256": "464209f30705b43109f5cbbfa3ead87ac33bf19dd7f88162e57c384f8493a897",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-capricho",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "5ae9c28c356c63236ae002fbf73056a2489d291819c0216b8167695cd4930d8b",
+        "pcmSha256": "f1545859543a352ce5280ac42c9888a35aa9d356ec47bd8532e7d55dbaa68a2c",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "piano-italian",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "4f1829930f660673c9357636a0a58f86a800a77469e61ccbfe57417ca61cc5bc",
+        "pcmSha256": "1fed772b64c84cea67a48077a3699eb20ef88bae078c8e73747fcd54e65f356e",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "piano-busoni",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 31.999637,
+        "sourceSha256": "bdd132f604c276d266fb17cc78820803685fc46664ae9290da81bbbe1448f5b1",
+        "pcmSha256": "f7b5d1f9298f0c12529c2397c6e3ec91dde3bf21d58058d406e545b5b79d55a2",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "drums-imakepitart",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 32,
+        "sourceSha256": "56204c4559851ea9f265a1cc68d40b21b0a02b8da4e1c3e2ddaeb5943bbdc595",
+        "pcmSha256": "4a6d1a3afb412e38d5e4bfe6cc3a669f40a31dae55b560f09c9565c64b16ff93",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "drums-jazz",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 16,
+        "sourceSha256": "7e192d5c26eba7da36aa940456aace4d92cb7f1b6d5f0646a62f0b461de4732e",
+        "pcmSha256": "afa6a5ba1a052f466d0d2d56558e6b17975c4d0fbb3adc726f256096f00cbe3b",
+        "manifest": "p0-model-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-sarita",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "8cc17d6701d96b19834e9055c67fc839273be7358aabe2a47d615d1aa151c644",
+        "pcmSha256": "b580d9f9a64a51b57f8c4620c39b142ab504c6dcab69580fa7d5b45cbc66e185",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "01_Rock2-142-D_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 27.04161,
+        "sourceSha256": "596821f0764ce6e836ea3465b24d9dbc2f939808148319f844613c81013cbc4a",
+        "pcmSha256": "2fe766f2c04210fbcf02f8fd4be8ea29d25757b8dd565a84cdf17afbc47a98c0",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "piano-chopin",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "a0f54c392660e7bf62ae2897127cd59e5a9983987985ba63bc65facf659d39a1",
+        "pcmSha256": "e9cb56abbfe577692f3e8b5fcd25394de3d634c4fb5a2620804581588de83858",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "piano-presto",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "2894f1cabb8a1e07faf7a99b0e34dc5cfe23465785af680ad3c310bea5edc2a5",
+        "pcmSha256": "e8ea3b4ccb8c0cb6c313821ae156afce2714159acc46f562269c78a25c7fc08b",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-bodhran",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 32,
+        "sourceSha256": "fa187ec9db1e0fa50ec55d8555b548c6d7acdedc967342496e9c77522e0ee7c3",
+        "pcmSha256": "96c25a01d26dcdfe1559604cf7088b9b201b55631996703ba54f3af621f75f29",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-djembe",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 31.994671,
+        "sourceSha256": "c0e8898b548aa5ffdb0aa243b84a6e9b21279f9cee89f522138d00e8c5f74c27",
+        "pcmSha256": "fa204041ca853f956b8c3882198293f07a343c8a5645d266590061d3ad8abf17",
+        "manifest": "p0-mn05-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-minuet",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "fa98a7af8351d21ad6ef1b8b978689dfb41b556d82b0d19670575d703c0f0982",
+        "pcmSha256": "dc73c2aa511fded65c34fe12c034f54b2b102a98d0a891feef64872838b07a79",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "01_Rock3-117-Bb_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "e516195bd9567470e4ffa999cb2e4958dcf66fb29de549f56c53a46ba73d196e",
+        "pcmSha256": "7d93567dd0286a4a1371aa0668ee5b4eabc5acd0e10338c1d21af4dfb74c6451",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "piano-english-suite",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "b14095519017cc97f4ba6ea9224f861559f06b3a5d6e89d1e0f2b05841935565",
+        "pcmSha256": "02674c34fef2cf8446f54cf7a160590b1561a5dd78dfe88c6ff952d57c3d6465",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "piano-mazurka",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 31.997098,
+        "sourceSha256": "309c312240028baf502797110859b24b952476366199af8e328018d1aec73a88",
+        "pcmSha256": "68fbc50801663306ccdcb3ccb671774c5b66c8a26d10a55580eb7da077400fc7",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-kit",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 8.781429,
+        "sourceSha256": "50c74afd6107bcc0c24fa023255e6e2ce7f49871df945269f92d60a90a2c1fc7",
+        "pcmSha256": "927e5c51b9dd1b62dfbcddbf20b39633d4850fc169ba8fa8299be84be09ee959",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-accompaniment",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 12.596916,
+        "sourceSha256": "57d412a203aaf7dc819a1303667ca4dd8b11435fd4e263c9a8b69be2dc2cd128",
+        "pcmSha256": "7769d14adab184e5c2208028efedb2b1b011abe529581f27c115c39c3ad2b953",
+        "manifest": "p0-mn05-v2-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-matilde",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "d873699817cc86ef7b7efe06c01564200772dcf013ea28777c0d9efadee930a7",
+        "pcmSha256": "dd1de91e3be60ebf024009cc510b7b37dd1d76ad47471ff06235f89bed9113c4",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "02_Jazz3-137-Eb_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 28.023197,
+        "sourceSha256": "d1059c346cc5de05a3135c933c01aceba7893407904eeaa6b2ed527633fa90dc",
+        "pcmSha256": "35dbdb7f61baf514b2a7ad12b5d65b4895ea0c104c5d5dbd6ab1653757bbd438",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "piano-debussy",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "19711e4a483551be77fbb3cada27ac34bed26f5c30b7bd3ab3ac663d5154c0ae",
+        "pcmSha256": "0f12c932dd40ec32085032f04d780c64e86885228a04eea7a7fb3f04cf68268d",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "piano-variatio26",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "defef29769770b22379943516c88f7b91520355b6b7fbea13d2829d884631549",
+        "pcmSha256": "cc67869a12956de9d76fd8936a7fd0cb00c289859df0fd9f7ef1b7a4825c62f3",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-darbuka",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 16.636281,
+        "sourceSha256": "eefcb475f6880580412258694c02326a89d21c97a8923f826bb8cf2c4bf54efb",
+        "pcmSha256": "de4f3ca8787e2c19b91c8e8790dc232c61ed174c5456706b0173baf9e706d56d",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-tabla",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 31.999705,
+        "sourceSha256": "1c8284deb504953303a93d43241c3479a6b42e3a1f0bb91e6114f29abd9a9599",
+        "pcmSha256": "936bea71c3506d920523c81e8f803aa05dee7951bfd1b27bceef3d19ebd396ff",
+        "manifest": "p0-mn10-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-divagacion",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "ebbc2b4ef91109e48bcb54a54a5d49a049c9f822e2ec93a9cc399223a932f1ba",
+        "pcmSha256": "cd43f2e8a6dc97a526b1bedcc65fffa686a8bc14b40ce9fd2f883268931bca12",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-rapsodia",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "e4246bfd8e00236d809ac05b1fbb21a0c535ff646c0feb5ab8434c744bad2e13",
+        "pcmSha256": "f0d2d66d79cf56fe98ba50e319712c7b869fcfba479e34af3831eabb857dd90d",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "02_Jazz3-150-C_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 25.6,
+        "sourceSha256": "eff6d8f59c84a86a813841d6913525b2df3da455b70022ef840a8d13ed2cffef",
+        "pcmSha256": "10a13918330bda091d75114fdd7f17434f71a62d7d7f433564135e71416c57f9",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "piano-satie-gnossienne",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "aeda56d4a2efcaec7aa87a4a903741c6c19dd3f8c3bff12fdace16c9a022fd81",
+        "pcmSha256": "20211d2c8979339c8768fb65f28dffcecda8ac6cdd062e9c20ac9162d60af58b",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "piano-satie-daria",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "aad1616c7a67a08125101259dce6d5703d24d01f8621a23d233aca08ae481725",
+        "pcmSha256": "bb6b3ecf9f3cdef35da58a38b87b7ef2a6c40ff4dfc85e3e23d947f1dfb6f65e",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-ceramic-djembe",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 10.949615,
+        "sourceSha256": "787f933e2694c666fdf718c284aa5a77377de36a369a8e4a26e7baeee898db7e",
+        "pcmSha256": "3501cd1f792310beb4754bdd4c15ecded6ba9d7f8d2812991f4f5a16585ea840",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-djembe-pattern",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 10.16254,
+        "sourceSha256": "b2d259ead454683272a7c310bff2982b691cac88ac9c2bb212c8174c6e93edc2",
+        "pcmSha256": "74754400f7d477894bc603c1755cc148eb48723f4b54e172e79d75ae694d2b2e",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "control-rain-wind",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 32,
+        "sourceSha256": "fa977afaca1d96cd0985fbd7353d6cc213d547226877d092960fcf09647c1fb7",
+        "pcmSha256": "8118ec4bcab2a1b961f295737e1077a4c3df7b6f20fa8a1b2b71c12521e68d28",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "control-ukulele-playing",
+        "role": "near-instrument",
+        "expectedInstrument": "Ukulele",
+        "durationSeconds": 32,
+        "sourceSha256": "f3433424e1618f9ea09ec5c2af74a0034ae6c9f486ee0759173ec068ebc099ae",
+        "pcmSha256": "d26eb2014e6b3556e6c876096e8c5764a81e33ae6fb4813eff98b33f373bc3ab",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "control-ukulele-picking",
+        "role": "near-instrument",
+        "expectedInstrument": "Ukulele",
+        "durationSeconds": 28.084535,
+        "sourceSha256": "70ee9758a57c0f3c45e73aec9b29036b28a4852af949a330aa754d2afa8c1dc0",
+        "pcmSha256": "5e2cb9f497df77c6abff3f7816bbdee61c059f33b9c10689618a64419bc294a0",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "control-traffic-sellers",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 32,
+        "sourceSha256": "b063faa39be1d430a4382fd304c5489aa197ec9b232cd34cc92713801628f1dd",
+        "pcmSha256": "b3e3c029677f3c78640cfc3be262b370e3eb4aa780129f6ffef1a232f5fe89bd",
+        "manifest": "p0-mn10-repair-holdout-20261022.json"
+      },
+      {
+        "id": "guitar-souvenir-1928",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "06495ab1e486d8bd389948d99d728dc60c4a82572b5ceb3c13f60c36354b79dd",
+        "pcmSha256": "4b2e1c934b7e754ff96e62127abef1dc79aad383bad825749399d540f6c8adbd",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "02_Jazz2-110-Bb_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "bd0d059660a1de32896082364499ad8e276d0be08305453a7997092192c87392",
+        "pcmSha256": "a6b6356ec2ee7a39a92b7c2cb178592dd300e57a326790d41bcdc786c051cf38",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "piano-chopin-hughes",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "0b7730db9b989cc8a1cb02b95ec874bf94b4c28c6fe76d39230556a431705416",
+        "pcmSha256": "77459293fab7ca1b365a050ab5a0a4dd69b1aca36ed3bd4370a121e29e2c5919",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "piano-chopin-neeman",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "4c73c906f0f5a80e160db047b25ee9f3f20fe07b4317a9dfeb0dfd9e8ffda8aa",
+        "pcmSha256": "73e62ae72898aacd38e2f421d3802af623f80e302aaf6b6102226842a760fcae",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-tambourine-pattern",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 16.068209,
+        "sourceSha256": "c9c3c525ab8920cbf300e917661b723c4cbdf090c8c5cd15171dde274a041699",
+        "pcmSha256": "94993105590fc34a15cbc03e9d2ea03507c4a1cc33654325ae480536f34dd8d2",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "percussion-headless-tambourine",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 14.207415,
+        "sourceSha256": "2fb86890b24e1c3fface4e7c7e27a11ff6f59c3cb7c1c6bddf143d16dce2d682",
+        "pcmSha256": "ca9cd2385643630ccc9a0b7bdb13045d474e62d5246de846907fc8d8daa4cd04",
+        "manifest": "p0-mn10-repair-v5-holdout-20261022.json"
+      },
+      {
+        "id": "speech",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 13.065938,
+        "sourceSha256": "7c3d979b3474c42d8ccbba87d4b3c65a24b66d2e8e6f2989dc320e4bbe8372e2",
+        "pcmSha256": "bf69399e3401851b273d0b030f5969e54ad5442b6fa395c6a4c037541f595a47",
+        "manifest": "existing-negative-fixture"
+      },
+      {
+        "id": "noise",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 32,
+        "sourceSha256": "f9320d8f8338c314ce873be630013753e9b95f2514ae1f6f57ca81a499f9dee5",
+        "pcmSha256": "6171550676b934501122482b172fc22564e802795b4312a36417767aeae355ee",
+        "manifest": "existing-negative-fixture"
+      },
+      {
+        "id": "silence",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 32,
+        "sourceSha256": "d66ef793f90b0d75af3029a7a8f3dc708d21e4d256551a5d38560c3c639c62b6",
+        "pcmSha256": "830497acdc4cbdebb0fc5a05f65cb02a183648329f3067ac2ed27fbcb0ea3419",
+        "manifest": "existing-negative-fixture"
+      },
+      {
+        "id": "guitar-southern-blues",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "286bbcf6ca92231b9ee8798dea33d084705cffbd7a19b3c26ba68f7c2a11cf53",
+        "pcmSha256": "69f8a9fcf61448ebcfb12898f43b46b4dbe8387234c200244353746235beb49b",
+        "manifest": null
+      },
+      {
+        "id": "guitar-honolulu-bay",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 32,
+        "sourceSha256": "20930aa52d43e66f7d29b8bfd700613c4ce60c2eee3bbe25489840f79c12c29c",
+        "pcmSha256": "e24f59573bcbc36ea3c1c8c5258bb053c8716863bd119f4e6297592ed1a0b086",
+        "manifest": null
+      },
+      {
+        "id": "02_Jazz2-187-F#_solo",
+        "role": "positive",
+        "expectedInstrument": "Guitar",
+        "durationSeconds": 20.531995,
+        "sourceSha256": "624ac91cf80509ab89823da1a70b7eed26b3b2cebf4ad9909d2c8cdb79e845f7",
+        "pcmSha256": "afcf188444b0994f3c3423e7630e92bb9187d9b827ae984fa9a416b4e95a310f",
+        "manifest": null
+      },
+      {
+        "id": "piano-cramer-mo",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "7b7afbc4aca54235c311e555b70586dca042b4766628e9c5a2c3bd1c05d356c7",
+        "pcmSha256": "04d2f8850c685c27c893f3288fd5c50d1498df33790b078f227fcd17698af2b0",
+        "manifest": null
+      },
+      {
+        "id": "piano-minute-waltz-rachmaninoff",
+        "role": "positive",
+        "expectedInstrument": "Piano",
+        "durationSeconds": 32,
+        "sourceSha256": "913cde3c41aed78a5c960913e7cb7437e652dd3d33e550b5fc376f7befac35ec",
+        "pcmSha256": "7a98fd44716609d76d0205f11a6b96b9bd557e337c4feaf3496a64f441e30404",
+        "manifest": null
+      },
+      {
+        "id": "percussion-maracas-murphy",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 32,
+        "sourceSha256": "14acacdd2cbb40b59fb460c03d32bbc6ea57ad0cc56986d777e73bc01084195b",
+        "pcmSha256": "0b776f6a6b62a6ff1a48a7f3a946df209f5919eae9108522b9b142102227ebf8",
+        "manifest": null
+      },
+      {
+        "id": "percussion-drum-solo-perny",
+        "role": "positive",
+        "expectedInstrument": "Percussion",
+        "durationSeconds": 31.942313,
+        "sourceSha256": "923a3486497ee24980e2bfe7a4316f800ae28a9e684cc92b4c724263aab7a888",
+        "pcmSha256": "0adccbd3e4a854ad81fd9a3cd23286cdbb2c27b0dbe3420fc2a4224ee3affa34",
+        "manifest": null
+      },
+      {
+        "id": "control-rolling-toy-rattle",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 24.999184,
+        "sourceSha256": "8750a4ebba0b543d3ca087db0a930454aa15287e1055ecb19c8e3755bee14e30",
+        "pcmSha256": "2d62a23adae888842b27824387805e50f501f25821ab57190bc10d1d7f71c9a3",
+        "manifest": null
+      },
+      {
+        "id": "control-chain-tumbling",
+        "role": "nonmusic",
+        "expectedInstrument": null,
+        "durationSeconds": 27.093333,
+        "sourceSha256": "6d3b6946133c644962488cfd37e9645fc43e633d06e72c215c5a2db17b2a7c87",
+        "pcmSha256": "ab8ba3bfce0d5621bc6e9a9c82f12b762a272df7a2910916a4816b1d62dc66cf",
+        "manifest": null
+      }
+    ]
+  },
+  "scopeLimits": [
+    "Source times use the previously frozen RMS-onset proxy; historical-intro/performance annotation uncertainty remains. No excerpt or label was changed after prediction.",
+    "Each model is evaluated separately using the same strict development baseline. Scores and calibrated qualification are not inherited across weights; these results do not prove that every possible candidate-specific policy would fail.",
+    "Offline/page/isolated Worker results do not prove production SDK capture-to-visible-comment, coupled rendering, total memory or server/network performance.",
+    "New independent recordings are not exposed before a candidate passes development gates. Default YAMNet frame qualification cannot qualify a new model."
+  ],
+  "models": [
+    {
+      "model": "mn10_as_mels_64",
+      "selectedDevelopmentAdapter": "pad10",
+      "weightsSha256": "50d004a4d0bb2dc7bad63a9196b6117f4a3df528b3e8ffd7ec4350cf4a9fbf5c",
+      "parameters": 4876831,
+      "nMels": 64,
+      "completeReferenceCorpus": true,
+      "referenceSources": 62,
+      "policyBaseline": "Frozen strict mn10-v6 thresholds applied only as development baseline. No score calibration or qualification is inherited by either new weights.",
+      "policy": {
+        "pad10": {
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "guitar-jazz",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.6981132075471698,
+              "firstMs": 2143.9999999999995,
+              "wrong": 0,
+              "instrumentPredictions": 37,
+              "passed": false
+            },
+            {
+              "id": "guitar-capricho",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.9041095890410958,
+              "firstMs": 5557.333333333333,
+              "wrong": 0,
+              "instrumentPredictions": 66,
+              "passed": false
+            },
+            {
+              "id": "percussion-bodhran",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "pad10",
+              "correctCoverage": 0.5753424657534246,
+              "firstMs": 2181.333333333333,
+              "wrong": 0,
+              "instrumentPredictions": 43,
+              "passed": false
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.7534246575342466,
+              "firstMs": 7978.666666666666,
+              "wrong": 5,
+              "instrumentPredictions": 60,
+              "passed": false
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.863013698630137,
+              "firstMs": 7072,
+              "wrong": 0,
+              "instrumentPredictions": 63,
+              "passed": false
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.8493150684931506,
+              "firstMs": 7157.333333333334,
+              "wrong": 0,
+              "instrumentPredictions": 62,
+              "passed": false
+            },
+            {
+              "id": "guitar-souvenir-1928",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.547945205479452,
+              "firstMs": 6250.666666666667,
+              "wrong": 0,
+              "instrumentPredictions": 40,
+              "passed": false
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "pad10",
+              "correctCoverage": 0.5357142857142857,
+              "firstMs": 2735.9999999999995,
+              "wrong": 0,
+              "instrumentPredictions": 16,
+              "passed": false
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "pad10",
+              "correctCoverage": 0.2465753424657534,
+              "firstMs": 2416,
+              "wrong": 6,
+              "instrumentPredictions": 25,
+              "passed": false
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            }
+          ]
+        },
+        "direct2": {
+          "positivePassed": 4,
+          "positiveTotal": 53,
+          "controlsPassed": 7,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "guitar-jazz",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "drums-cadence-a",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.125,
+              "firstMs": 19973.333333333336,
+              "wrong": 0,
+              "instrumentPredictions": 9,
+              "passed": false
+            },
+            {
+              "id": "drums-cadence-b",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.5068493150684932,
+              "firstMs": 2416,
+              "wrong": 0,
+              "instrumentPredictions": 38,
+              "passed": false
+            },
+            {
+              "id": "piano-pitman",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-isaac",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 40,
+              "instrumentPredictions": 40,
+              "passed": false
+            },
+            {
+              "id": "guitar-barrios",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.1917808219178082,
+              "firstMs": 25936,
+              "wrong": 0,
+              "instrumentPredictions": 14,
+              "passed": false
+            },
+            {
+              "id": "04_SS1-100-C#_comp",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "02_BN2-131-B_comp",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "05_Rock1-90-C#_comp",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.1095890410958904,
+              "firstMs": 18000,
+              "wrong": 0,
+              "instrumentPredictions": 8,
+              "passed": false
+            },
+            {
+              "id": "guitar-habanera",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-capricho",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-italian",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 10,
+              "instrumentPredictions": 10,
+              "passed": false
+            },
+            {
+              "id": "piano-busoni",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "drums-imakepitart",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "drums-jazz",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.21212121212121213,
+              "firstMs": 9200,
+              "wrong": 0,
+              "instrumentPredictions": 7,
+              "passed": false
+            },
+            {
+              "id": "guitar-sarita",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "01_Rock2-142-D_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.7666666666666667,
+              "firstMs": 2202.6666666666665,
+              "wrong": 0,
+              "instrumentPredictions": 47,
+              "passed": false
+            },
+            {
+              "id": "piano-chopin",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 55,
+              "instrumentPredictions": 55,
+              "passed": false
+            },
+            {
+              "id": "piano-presto",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.3698630136986301,
+              "firstMs": 19978.666666666664,
+              "wrong": 0,
+              "instrumentPredictions": 27,
+              "passed": false
+            },
+            {
+              "id": "01_Rock3-117-Bb_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 5578.666666666666,
+              "wrong": 0,
+              "instrumentPredictions": 50,
+              "passed": false
+            },
+            {
+              "id": "piano-english-suite",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-mazurka",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "percussion-kit",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.6428571428571429,
+              "firstMs": 5008,
+              "wrong": 0,
+              "instrumentPredictions": 9,
+              "passed": false
+            },
+            {
+              "id": "percussion-accompaniment",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-matilde",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "02_Jazz3-137-Eb_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.2698412698412698,
+              "firstMs": 19200,
+              "wrong": 0,
+              "instrumentPredictions": 17,
+              "passed": false
+            },
+            {
+              "id": "piano-debussy",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 11,
+              "instrumentPredictions": 11,
+              "passed": false
+            },
+            {
+              "id": "piano-variatio26",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "percussion-darbuka",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "percussion-tabla",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.1232876712328767,
+              "firstMs": 27472,
+              "wrong": 0,
+              "instrumentPredictions": 9,
+              "passed": false
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "02_Jazz3-150-C_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.43859649122807015,
+              "firstMs": 11600.000000000002,
+              "wrong": 0,
+              "instrumentPredictions": 25,
+              "passed": false
+            },
+            {
+              "id": "piano-satie-gnossienne",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-satie-daria",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 10,
+              "instrumentPredictions": 10,
+              "passed": false
+            },
+            {
+              "id": "percussion-ceramic-djembe",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.4,
+              "firstMs": 7978.666666666666,
+              "wrong": 0,
+              "instrumentPredictions": 8,
+              "passed": false
+            },
+            {
+              "id": "control-traffic-sellers",
+              "role": "nonmusic",
+              "expectedInstrument": null,
+              "adapter": "direct2",
+              "correctCoverage": null,
+              "firstMs": null,
+              "wrong": 24,
+              "instrumentPredictions": 24,
+              "passed": false
+            },
+            {
+              "id": "guitar-souvenir-1928",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "02_Jazz2-110-Bb_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.3287671232876712,
+              "firstMs": 20000,
+              "wrong": 0,
+              "instrumentPredictions": 24,
+              "passed": false
+            },
+            {
+              "id": "piano-chopin-hughes",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-chopin-neeman",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.5357142857142857,
+              "firstMs": 2735.9999999999995,
+              "wrong": 0,
+              "instrumentPredictions": 16,
+              "passed": false
+            },
+            {
+              "id": "speech",
+              "role": "nonmusic",
+              "expectedInstrument": null,
+              "adapter": "direct2",
+              "correctCoverage": null,
+              "firstMs": null,
+              "wrong": 1,
+              "instrumentPredictions": 1,
+              "passed": false
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "02_Jazz2-187-F#_solo",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.5227272727272727,
+              "firstMs": 8378.666666666668,
+              "wrong": 0,
+              "instrumentPredictions": 23,
+              "passed": false
+            },
+            {
+              "id": "piano-cramer-mo",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 15,
+              "instrumentPredictions": 15,
+              "passed": false
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.1643835616438356,
+              "firstMs": 27157.333333333336,
+              "wrong": 0,
+              "instrumentPredictions": 12,
+              "passed": false
+            },
+            {
+              "id": "percussion-drum-solo-perny",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            }
+          ]
+        }
+      },
+      "resources": {
+        "pad10/float": {
+          "bytes": 19811627,
+          "sha256": "c58c23233c139064b0e02e1d6907c6ca786da934c423d3f87fb12aa4c5fa1dbf",
+          "sizeGate": false
+        },
+        "pad10/mixed": {
+          "bytes": 8246023,
+          "sha256": "26bf31a5eb13d7f670ccb157aa3f0ac13e27bfc2c87d212c2dffc63d9edcb0d8",
+          "sizeGate": true
+        }
+      },
+      "native": [
+        {
+          "mode": "full",
+          "variant": "float",
+          "startedAt": "2026-10-23T05:25:56.131Z",
+          "finishedAt": "2026-10-23T05:30:49.587Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/float-full-2026-10-23T05-25-56-131Z.json",
+          "sourceCount": 62,
+          "sha256": "280dff4116c4406fa8a83d260c9704ea59e5ad534d46a47731a6a4526b8b5ff6",
+          "observationCount": 4134,
+          "maxScoreError": 9.98377799987793e-06,
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "guitar-jazz",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6981132075471698,
+              "firstMs": 2143.9999999999995,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-capricho",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.9041095890410958,
+              "firstMs": 5557.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-bodhran",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.5753424657534246,
+              "firstMs": 2181.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.7534246575342466,
+              "firstMs": 7978.666666666666,
+              "wrong": 5
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.863013698630137,
+              "firstMs": 7072,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.8493150684931506,
+              "firstMs": 7157.333333333334,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-souvenir-1928",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.547945205479452,
+              "firstMs": 6250.666666666667,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.5357142857142857,
+              "firstMs": 2735.9999999999995,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.2465753424657534,
+              "firstMs": 2416,
+              "wrong": 6
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            }
+          ]
+        },
+        {
+          "mode": "parity",
+          "variant": "float",
+          "startedAt": "2026-10-23T05:23:58.866Z",
+          "finishedAt": "2026-10-23T05:24:03.532Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/float-parity-2026-10-23T05-23-58-866Z.json",
+          "sourceCount": 7,
+          "sha256": "99a4c239914e54bee514eac1a5f7126bb1b62d8350071ceaa86e169692b74ddf",
+          "observationCount": 21,
+          "maxScoreError": 3.427267074584961e-06
+        },
+        {
+          "mode": "full",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T05:37:59.730Z",
+          "finishedAt": "2026-10-23T05:43:12.705Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/pad10-mixed-full-2026-10-23T05-37-59-730Z.json",
+          "sourceCount": 62,
+          "sha256": "081cdcb41e725cb2b00fa4c0bddb654c1ef6e3c6474ce1d97d7dc6c517660db3",
+          "observationCount": 4134,
+          "maxScoreError": 0.045019567012786865,
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "guitar-jazz",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6981132075471698,
+              "firstMs": 2143.9999999999995,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-capricho",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.9041095890410958,
+              "firstMs": 5557.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-bodhran",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.5753424657534246,
+              "firstMs": 2181.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.7534246575342466,
+              "firstMs": 7978.666666666666,
+              "wrong": 5
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.863013698630137,
+              "firstMs": 7072,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.8493150684931506,
+              "firstMs": 7157.333333333334,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-souvenir-1928",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.547945205479452,
+              "firstMs": 6250.666666666667,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.5357142857142857,
+              "firstMs": 3136,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.2465753424657534,
+              "firstMs": 2416,
+              "wrong": 6
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            }
+          ]
+        },
+        {
+          "mode": "worker",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T06:07:30.698Z",
+          "finishedAt": "2026-10-23T06:07:31.309Z",
+          "errors": [
+            "Error: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:3108/wasm/audio_wasm_internal.js"
+          ],
+          "modelClosed": false,
+          "workerTerminated": true,
+          "maxInFlight": 1,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/pad10-mixed-worker-2026-10-23T06-07-30-698Z.json",
+          "sourceCount": 0,
+          "sha256": "12a5ddd09b342aca57990865c66ec0ebe79ea99ccb8f9d0b9ca823be9db33ead",
+          "observationCount": 0,
+          "maxScoreError": null,
+          "workerProcessingP95Ms": null,
+          "workerWallP95Ms": null,
+          "perSourceWallP95Ms": {},
+          "quantileMethod": "NumPy higher empirical quantile, including first inference of each source"
+        },
+        {
+          "mode": "worker",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T06:11:51.615Z",
+          "finishedAt": "2026-10-23T06:11:51.818Z",
+          "errors": [
+            "Error: Error: ModuleFactory not set."
+          ],
+          "modelClosed": false,
+          "workerTerminated": true,
+          "maxInFlight": 1,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/pad10-mixed-worker-2026-10-23T06-11-51-615Z.json",
+          "sourceCount": 0,
+          "sha256": "4eeae51bdbc71deb10c031c2318cc4bb4e6541bfcc10f183ba545a8f400429eb",
+          "observationCount": 0,
+          "maxScoreError": null,
+          "workerProcessingP95Ms": null,
+          "workerWallP95Ms": null,
+          "perSourceWallP95Ms": {},
+          "quantileMethod": "NumPy higher empirical quantile, including first inference of each source"
+        },
+        {
+          "mode": "worker",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T06:23:39.594Z",
+          "finishedAt": "2026-10-23T06:24:38.820Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": true,
+          "maxInFlight": 1,
+          "adapter": "pad10",
+          "file": "mn10_as_mels_64/native/pad10-mixed-worker-2026-10-23T06-23-39-594Z.json",
+          "sourceCount": 10,
+          "sha256": "05cfd5e077080e097dfb7443f22d864cd50080887ca338971ba3a00704012403",
+          "observationCount": 651,
+          "maxScoreError": 0.023434102535247803,
+          "workerProcessingP95Ms": 113.18500000005588,
+          "workerWallP95Ms": 114.55500000016764,
+          "perSourceWallP95Ms": {
+            "guitar-jazz": 141.285000000149,
+            "guitar-minuet": 122.1699999999255,
+            "guitar-matilde": 111.01499999989755,
+            "drums-jazz": 116.60999999986961,
+            "percussion-djembe": 109.7949999999255,
+            "piano-pitman": 169.19500000029802,
+            "piano-minute-waltz-rachmaninoff": 118.10999999986961,
+            "speech": 103.72999999998137,
+            "noise": 111.11499999975786,
+            "silence": 109.9250000002794
+          },
+          "quantileMethod": "NumPy higher empirical quantile, including first inference of each source"
+        }
+      ],
+      "quantization": {
+        "maxAllClassDifferenceToAuthorFloat": 0.045019567012786865,
+        "maxCoverageDeclinePercentagePoints": 0.0,
+        "numericGatePassed": true,
+        "coverageDeltaGatePassed": true,
+        "absoluteQualityGatePassed": false,
+        "perSource": [
+          {
+            "id": "guitar-jazz",
+            "floatCoverage": 0.6981132075471698,
+            "mixedCoverage": 0.6981132075471698,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-cadence-a",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-cadence-b",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-pitman",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-isaac",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-barrios",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "04_SS1-100-C#_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_BN2-131-B_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "05_Rock1-90-C#_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-habanera",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-capricho",
+            "floatCoverage": 0.9041095890410958,
+            "mixedCoverage": 0.9041095890410958,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-italian",
+            "floatCoverage": 0.958904109589041,
+            "mixedCoverage": 0.958904109589041,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-busoni",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-imakepitart",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-jazz",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-sarita",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "01_Rock2-142-D_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-presto",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-bodhran",
+            "floatCoverage": 0.5753424657534246,
+            "mixedCoverage": 0.5753424657534246,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-djembe",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-minuet",
+            "floatCoverage": 0.7534246575342466,
+            "mixedCoverage": 0.7534246575342466,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "01_Rock3-117-Bb_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-english-suite",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-mazurka",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-kit",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-accompaniment",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-matilde",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz3-137-Eb_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-debussy",
+            "floatCoverage": 0.9452054794520548,
+            "mixedCoverage": 0.9452054794520548,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-variatio26",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-darbuka",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-tabla",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-divagacion",
+            "floatCoverage": 0.863013698630137,
+            "mixedCoverage": 0.863013698630137,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-rapsodia",
+            "floatCoverage": 0.8493150684931506,
+            "mixedCoverage": 0.8493150684931506,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz3-150-C_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-satie-gnossienne",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-satie-daria",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-ceramic-djembe",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-djembe-pattern",
+            "floatCoverage": 0.8888888888888888,
+            "mixedCoverage": 0.8888888888888888,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-souvenir-1928",
+            "floatCoverage": 0.547945205479452,
+            "mixedCoverage": 0.547945205479452,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz2-110-Bb_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin-hughes",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin-neeman",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-tambourine-pattern",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-headless-tambourine",
+            "floatCoverage": 0.5357142857142857,
+            "mixedCoverage": 0.5357142857142857,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-southern-blues",
+            "floatCoverage": 0,
+            "mixedCoverage": 0,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-honolulu-bay",
+            "floatCoverage": 0,
+            "mixedCoverage": 0,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz2-187-F#_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-cramer-mo",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-minute-waltz-rachmaninoff",
+            "floatCoverage": 0.2465753424657534,
+            "mixedCoverage": 0.2465753424657534,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-maracas-murphy",
+            "floatCoverage": 0,
+            "mixedCoverage": 0,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-drum-solo-perny",
+            "floatCoverage": 0.9027777777777778,
+            "mixedCoverage": 0.9027777777777778,
+            "coverageDeclinePercentagePoints": 0.0
+          }
+        ]
+      },
+      "workerDiagnostic": {
+        "report": "mn10_as_mels_64/native/pad10-mixed-worker-2026-10-23T06-23-39-594Z.json",
+        "processingP95Ms": 113.18500000005588,
+        "dispatchToResponseP95Ms": 114.55500000016764,
+        "sampledProcessingWithin100Ms": false,
+        "normalPowerAcceptance": "not established",
+        "note": "Current AC low-power mode was enabled. Post-run host load was high; do not infer an architectural speed ranking from these sequential diagnostics."
+      }
+    },
+    {
+      "model": "dymn04_as",
+      "selectedDevelopmentAdapter": "direct2",
+      "weightsSha256": "49b0e63577021994257b3de2ac5f1686d71554b93c8149f9d2568ad5760b904e",
+      "parameters": 1961239,
+      "nMels": 128,
+      "completeReferenceCorpus": true,
+      "referenceSources": 62,
+      "policyBaseline": "Frozen strict mn10-v6 thresholds applied only as development baseline. No score calibration or qualification is inherited by either new weights.",
+      "policy": {
+        "pad10": {
+          "positivePassed": 39,
+          "positiveTotal": 53,
+          "controlsPassed": 8,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "guitar-jazz",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.49056603773584906,
+              "firstMs": 1744.0000000000002,
+              "wrong": 0,
+              "instrumentPredictions": 26,
+              "passed": false
+            },
+            {
+              "id": "guitar-barrios",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.6301369863013698,
+              "firstMs": 9536.000000000002,
+              "wrong": 0,
+              "instrumentPredictions": 46,
+              "passed": false
+            },
+            {
+              "id": "guitar-capricho",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.3561643835616438,
+              "firstMs": 19557.333333333336,
+              "wrong": 0,
+              "instrumentPredictions": 26,
+              "passed": false
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.3972602739726027,
+              "firstMs": 11578.666666666668,
+              "wrong": 2,
+              "instrumentPredictions": 31,
+              "passed": false
+            },
+            {
+              "id": "guitar-matilde",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 9029.333333333332,
+              "wrong": 0,
+              "instrumentPredictions": 50,
+              "passed": false
+            },
+            {
+              "id": "piano-debussy",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "pad10",
+              "correctCoverage": 0.8767123287671232,
+              "firstMs": 5605.333333333334,
+              "wrong": 0,
+              "instrumentPredictions": 64,
+              "passed": false
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.6027397260273972,
+              "firstMs": 12272,
+              "wrong": 0,
+              "instrumentPredictions": 44,
+              "passed": false
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.5205479452054794,
+              "firstMs": 17157.333333333336,
+              "wrong": 0,
+              "instrumentPredictions": 38,
+              "passed": false
+            },
+            {
+              "id": "guitar-souvenir-1928",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 3450.666666666667,
+              "wrong": 0,
+              "instrumentPredictions": 50,
+              "passed": false
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "pad10",
+              "correctCoverage": 0.3698630136986301,
+              "firstMs": 6016,
+              "wrong": 3,
+              "instrumentPredictions": 30,
+              "passed": false
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "pad10",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "control-chain-tumbling",
+              "role": "nonmusic",
+              "expectedInstrument": null,
+              "adapter": "pad10",
+              "correctCoverage": null,
+              "firstMs": null,
+              "wrong": 1,
+              "instrumentPredictions": 1,
+              "passed": false
+            }
+          ]
+        },
+        "direct2": {
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "drums-jazz",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.6666666666666666,
+              "firstMs": 2800,
+              "wrong": 0,
+              "instrumentPredictions": 23,
+              "passed": false
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.6575342465753424,
+              "firstMs": 7578.666666666667,
+              "wrong": 7,
+              "instrumentPredictions": 55,
+              "passed": false
+            },
+            {
+              "id": "guitar-matilde",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.6438356164383562,
+              "firstMs": 9429.333333333334,
+              "wrong": 0,
+              "instrumentPredictions": 47,
+              "passed": false
+            },
+            {
+              "id": "piano-debussy",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 6805.333333333333,
+              "wrong": 0,
+              "instrumentPredictions": 58,
+              "passed": false
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.3424657534246575,
+              "firstMs": 8272,
+              "wrong": 17,
+              "instrumentPredictions": 42,
+              "passed": false
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 7557.333333333334,
+              "wrong": 0,
+              "instrumentPredictions": 58,
+              "passed": false
+            },
+            {
+              "id": "piano-satie-gnossienne",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 3136,
+              "wrong": 0,
+              "instrumentPredictions": 50,
+              "passed": false
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.75,
+              "firstMs": 5536,
+              "wrong": 0,
+              "instrumentPredictions": 21,
+              "passed": false
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "adapter": "direct2",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0,
+              "instrumentPredictions": 0,
+              "passed": false
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "adapter": "direct2",
+              "correctCoverage": 0.0136986301369863,
+              "firstMs": 2416,
+              "wrong": 10,
+              "instrumentPredictions": 12,
+              "passed": false
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "adapter": "direct2",
+              "correctCoverage": 0.1780821917808219,
+              "firstMs": 20357.333333333336,
+              "wrong": 0,
+              "instrumentPredictions": 13,
+              "passed": false
+            }
+          ]
+        }
+      },
+      "resources": {
+        "pad10/float": {
+          "bytes": 8396351,
+          "sha256": "fb97d0134884698988e77a26c52336dc05ae742969f8d0c7891f5d34004a9494",
+          "sizeGate": false
+        },
+        "pad10/mixed": {
+          "bytes": 4538451,
+          "sha256": "f9750e7c55774a2f10c39b4ee524bd3215640c52657bc39d21112b3e51af7956",
+          "sizeGate": true
+        },
+        "direct2/float": {
+          "bytes": 8345135,
+          "sha256": "afe9b2d2450e30305d9e862005463af57e159f6baa09acb64d86940e31907c1f",
+          "sizeGate": true
+        },
+        "direct2/mixed": {
+          "bytes": 4487243,
+          "sha256": "2444cb076e80df5d4e772dd679b238d731098d3b40a177e578651c4191611f54",
+          "sizeGate": true
+        }
+      },
+      "native": [
+        {
+          "mode": "full",
+          "variant": "float",
+          "startedAt": "2026-10-23T06:16:24.043Z",
+          "finishedAt": "2026-10-23T06:18:23.657Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "direct2",
+          "file": "dymn04_as/native/direct2-float-full-2026-10-23T06-16-24-043Z.json",
+          "sourceCount": 62,
+          "sha256": "2c01688db9757f52c50ed040aab03daeae53db21c83e761e2f36ad97df2835d5",
+          "observationCount": 4134,
+          "maxScoreError": 3.7550926208496094e-06,
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "drums-jazz",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.6666666666666666,
+              "firstMs": 2800,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6575342465753424,
+              "firstMs": 7578.666666666666,
+              "wrong": 7
+            },
+            {
+              "id": "guitar-matilde",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6438356164383562,
+              "firstMs": 9429.333333333332,
+              "wrong": 0
+            },
+            {
+              "id": "piano-debussy",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 6805.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.3424657534246575,
+              "firstMs": 8272,
+              "wrong": 17
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 7557.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "piano-satie-gnossienne",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 3136,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.75,
+              "firstMs": 5536,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.0136986301369863,
+              "firstMs": 2416,
+              "wrong": 10
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.1780821917808219,
+              "firstMs": 20357.333333333332,
+              "wrong": 0
+            }
+          ]
+        },
+        {
+          "mode": "prefix-parity",
+          "variant": "float",
+          "startedAt": "2026-10-23T05:35:04.395Z",
+          "finishedAt": "2026-10-23T05:35:06.129Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "direct2",
+          "file": "dymn04_as/native/direct2-float-prefix-parity-2026-10-23T05-35-04-395Z.json",
+          "sourceCount": 3,
+          "sha256": "e36657284ae913a630cbc0a941ab74c507d2442b26e28591c3fe2c03fd9b6d80",
+          "observationCount": 9,
+          "maxScoreError": 1.5497207641601562e-06
+        },
+        {
+          "mode": "full",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T06:20:33.972Z",
+          "finishedAt": "2026-10-23T06:22:06.719Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": null,
+          "maxInFlight": null,
+          "adapter": "direct2",
+          "file": "dymn04_as/native/direct2-mixed-full-2026-10-23T06-20-33-972Z.json",
+          "sourceCount": 62,
+          "sha256": "ec767556181927af3f9ea8d7fb5336ea42ecc2a85ff0516651407557480b63f2",
+          "observationCount": 4134,
+          "maxScoreError": 0.004208087921142578,
+          "positivePassed": 41,
+          "positiveTotal": 53,
+          "controlsPassed": 9,
+          "controlsTotal": 9,
+          "failures": [
+            {
+              "id": "drums-jazz",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.6666666666666666,
+              "firstMs": 2800,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-minuet",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6575342465753424,
+              "firstMs": 7578.666666666666,
+              "wrong": 7
+            },
+            {
+              "id": "guitar-matilde",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.6438356164383562,
+              "firstMs": 9429.333333333332,
+              "wrong": 0
+            },
+            {
+              "id": "piano-debussy",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 6805.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-divagacion",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.3424657534246575,
+              "firstMs": 8272,
+              "wrong": 17
+            },
+            {
+              "id": "guitar-rapsodia",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0.7945205479452054,
+              "firstMs": 7557.333333333333,
+              "wrong": 0
+            },
+            {
+              "id": "piano-satie-gnossienne",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.684931506849315,
+              "firstMs": 3136,
+              "wrong": 0
+            },
+            {
+              "id": "percussion-headless-tambourine",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.75,
+              "firstMs": 5536,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-southern-blues",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "guitar-honolulu-bay",
+              "role": "positive",
+              "expectedInstrument": "Guitar",
+              "correctCoverage": 0,
+              "firstMs": null,
+              "wrong": 0
+            },
+            {
+              "id": "piano-minute-waltz-rachmaninoff",
+              "role": "positive",
+              "expectedInstrument": "Piano",
+              "correctCoverage": 0.0136986301369863,
+              "firstMs": 2416,
+              "wrong": 10
+            },
+            {
+              "id": "percussion-maracas-murphy",
+              "role": "positive",
+              "expectedInstrument": "Percussion",
+              "correctCoverage": 0.1780821917808219,
+              "firstMs": 20357.333333333332,
+              "wrong": 0
+            }
+          ]
+        },
+        {
+          "mode": "worker",
+          "variant": "mixed",
+          "startedAt": "2026-10-23T06:24:44.453Z",
+          "finishedAt": "2026-10-23T06:26:00.284Z",
+          "errors": [],
+          "modelClosed": true,
+          "workerTerminated": true,
+          "maxInFlight": 1,
+          "adapter": "direct2",
+          "file": "dymn04_as/native/direct2-mixed-worker-2026-10-23T06-24-44-453Z.json",
+          "sourceCount": 10,
+          "sha256": "810b14b55eb79201842b9b864a1eac8fe363c092f8bb44c578ebe11cb0c47e54",
+          "observationCount": 651,
+          "maxScoreError": 0.0024700164794921875,
+          "workerProcessingP95Ms": 369.16500000003725,
+          "workerWallP95Ms": 389.10000000009313,
+          "perSourceWallP95Ms": {
+            "guitar-jazz": 187.35499999998137,
+            "guitar-minuet": 67.10999999986961,
+            "guitar-matilde": 164.68000000016764,
+            "drums-jazz": 60.87999999988824,
+            "percussion-djembe": 180.44500000029802,
+            "piano-pitman": 978.6350000002421,
+            "piano-minute-waltz-rachmaninoff": 388.72500000009313,
+            "speech": 82.94500000029802,
+            "noise": 968.6199999996461,
+            "silence": 272.5649999999441
+          },
+          "quantileMethod": "NumPy higher empirical quantile, including first inference of each source"
+        }
+      ],
+      "quantization": {
+        "maxAllClassDifferenceToAuthorFloat": 0.004208087921142578,
+        "maxCoverageDeclinePercentagePoints": 0.0,
+        "numericGatePassed": true,
+        "coverageDeltaGatePassed": true,
+        "absoluteQualityGatePassed": false,
+        "perSource": [
+          {
+            "id": "guitar-jazz",
+            "floatCoverage": 0.8301886792452831,
+            "mixedCoverage": 0.8301886792452831,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-cadence-a",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-cadence-b",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-pitman",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-isaac",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-barrios",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "04_SS1-100-C#_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_BN2-131-B_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "05_Rock1-90-C#_comp",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-habanera",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-capricho",
+            "floatCoverage": 0.863013698630137,
+            "mixedCoverage": 0.863013698630137,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-italian",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-busoni",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-imakepitart",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "drums-jazz",
+            "floatCoverage": 0.6666666666666666,
+            "mixedCoverage": 0.6666666666666666,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-sarita",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "01_Rock2-142-D_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-presto",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-bodhran",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-djembe",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-minuet",
+            "floatCoverage": 0.6575342465753424,
+            "mixedCoverage": 0.6575342465753424,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "01_Rock3-117-Bb_solo",
+            "floatCoverage": 0.9863013698630136,
+            "mixedCoverage": 0.9863013698630136,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-english-suite",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-mazurka",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-kit",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-accompaniment",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-matilde",
+            "floatCoverage": 0.6438356164383562,
+            "mixedCoverage": 0.6438356164383562,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz3-137-Eb_solo",
+            "floatCoverage": 0.9523809523809523,
+            "mixedCoverage": 0.9523809523809523,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-debussy",
+            "floatCoverage": 0.7945205479452054,
+            "mixedCoverage": 0.7945205479452054,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-variatio26",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-darbuka",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-tabla",
+            "floatCoverage": 0.9583333333333334,
+            "mixedCoverage": 0.9583333333333334,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-divagacion",
+            "floatCoverage": 0.3424657534246575,
+            "mixedCoverage": 0.3424657534246575,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-rapsodia",
+            "floatCoverage": 0.7945205479452054,
+            "mixedCoverage": 0.7945205479452054,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz3-150-C_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-satie-gnossienne",
+            "floatCoverage": 0.684931506849315,
+            "mixedCoverage": 0.684931506849315,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-satie-daria",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-ceramic-djembe",
+            "floatCoverage": 0.95,
+            "mixedCoverage": 0.95,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-djembe-pattern",
+            "floatCoverage": 0.8888888888888888,
+            "mixedCoverage": 0.8888888888888888,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-souvenir-1928",
+            "floatCoverage": 0.821917808219178,
+            "mixedCoverage": 0.821917808219178,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz2-110-Bb_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin-hughes",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-chopin-neeman",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-tambourine-pattern",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-headless-tambourine",
+            "floatCoverage": 0.75,
+            "mixedCoverage": 0.75,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-southern-blues",
+            "floatCoverage": 0,
+            "mixedCoverage": 0,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "guitar-honolulu-bay",
+            "floatCoverage": 0,
+            "mixedCoverage": 0,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "02_Jazz2-187-F#_solo",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-cramer-mo",
+            "floatCoverage": 0.9315068493150684,
+            "mixedCoverage": 0.9315068493150684,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "piano-minute-waltz-rachmaninoff",
+            "floatCoverage": 0.0136986301369863,
+            "mixedCoverage": 0.0136986301369863,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-maracas-murphy",
+            "floatCoverage": 0.1780821917808219,
+            "mixedCoverage": 0.1780821917808219,
+            "coverageDeclinePercentagePoints": 0.0
+          },
+          {
+            "id": "percussion-drum-solo-perny",
+            "floatCoverage": 1,
+            "mixedCoverage": 1,
+            "coverageDeclinePercentagePoints": 0.0
+          }
+        ]
+      },
+      "workerDiagnostic": {
+        "report": "dymn04_as/native/direct2-mixed-worker-2026-10-23T06-24-44-453Z.json",
+        "processingP95Ms": 369.16500000003725,
+        "dispatchToResponseP95Ms": 389.10000000009313,
+        "sampledProcessingWithin100Ms": false,
+        "normalPowerAcceptance": "not established",
+        "note": "Current AC low-power mode was enabled. Post-run host load was high; do not infer an architectural speed ranking from these sequential diagnostics."
+      }
+    }
+  ],
+  "cloudCallsAdded": 0,
+  "newFrontendRuntime": false,
+  "integrated": false,
+  "committed": false,
+  "pushed": false,
+  "deployed": false,
+  "acceptancePassed": false,
+  "frozenInputs": {
+    "scope": "62 already-exposed recordings, complete previously frozen excerpts, all original labels and failures retained. Offline development only; native decode and Worker qualification remain separate.",
+    "decoding": "FFmpeg mono 48 kHz then unchanged streaming Hann-sinc resampler to 32 kHz, complete source, no post-prediction crop.",
+    "timing": "2s real windows / 0.4s hop; coverage on every window ending >=3s, absent/unknown count failure; onset is an RMS timing proxy, not independently annotated performance onset.",
+    "frozenAt": "2026-10-23T05:09:09.037Z"
+  },
+  "reproduction": {
+    "screen-freeze.json": "01505949298d8c92f231648fbe378bff4f5eded37fe80d642dd7e6640348b309",
+    "source-pin.json": "1fd7997f08823c9e3a76b9e20011a299e5b512d2389298c022148af0ef92ecf9",
+    "screen.py": "736ef1a14c0daebed5052fa1eccbb42d36a93243738f5df77e7c7da979973428",
+    "replay.mjs": "b7448bb4d02edbbfaaf7512b94c132daf800565af3c1d55138b0321d331e3dd5",
+    "prepare-corpus.mjs": "6637895ecd9332892e1a6e19e5535e37cefd6ca163e7000e178b902574782201",
+    "export-parameters.py": "1d04c9d50551a05a5569a12a4d137663c92b2b9287a9ed8045604ec9b1d67e05",
+    "build-builtin.py": "9973238e5e3968a332003c4754b6e22f7b7e0d9a9595b48e702de16b96e8a079",
+    "quantize-builtin.py": "94920036436527cb042146cea486ceaa16a4200230507783af7895590cc1b4f8",
+    "native-screen.html": "92e9bd1828c539c38bbc720ddcf33a95fe2db468407d3695dfc3af7f9cfd416c",
+    "native-worker.mjs": "767ec7d0d45042404c3791cc6b2b06f3da76e61f550e91da7ef831f6ab09a3ab",
+    "native-worker-bundle.js": "8badaa132836b55fb2797f7f7d2d65da690f682a030802471995b04927aa13f2",
+    "worker-screen.html": "1fd998bd1d9fa92d3fb4eb3a3011c4905ad0c07019ae0fcc99817d7959b56827",
+    "summarize.py": "bcc9e7c9a04301845746a26093a7fb147c5223dced0ab199f6f35c9474ea7a53",
+    "publish-summary.py": "6ee3e0faa775f9dca6d92ec3fe6a62d50bc4f1a60514f203c056c273ce075ec0"
+  },
+  "remainingCandidateAcceptance": [
+    "Separate log-mel tensor comparison",
+    "New frozen independent recordings after a viable development candidate exists",
+    "Stable actual Worker processing p95 within 100 ms under normal-power conditions",
+    "Real capture-to-visible targeted comment within 5 seconds",
+    "Production SDK PCM plus in-flight bound below 1 MiB for the selected candidate",
+    "20 real lifecycle/source-switch/cold-start/cancellation checks",
+    "Candidate coupled five-preset 30-minute frame qualification",
+    "Target server, HTTPS and real-network cold loading"
+  ],
+  "comparisonCompletedAt": "2026-10-23T06:37:35.608842+00:00",
+  "decision": {
+    "localComparisonComplete": true,
+    "candidateAccepted": null,
+    "reason": "Both best development variants pass only 41/53 positive recordings and fail the absolute quality gate. Both historical guitar recordings remain at zero correct coverage.",
+    "nextStage": "No candidate integration or new independent set; retain original failures and current production default.",
+    "notClaimed": "This does not prove that every alternative model-specific policy would fail, nor does it complete the wider P0 accuracy goal."
+  },
+  "resourceEnvironment": {
+    "browser": "Ego Lite, guide 2.1.0; Chrome/154.0.0.0 user agent",
+    "runtime": "@mediapipe/tasks-audio 1.1.0, existing CPU WASM runtime, classic Worker bundle",
+    "powerSource": "AC Power",
+    "acLowPower": 1,
+    "batteryLowPower": 0,
+    "powerSettingsChanged": false,
+    "normalPowerRetest": "Not run: local power-setting command requires administrator authentication; no password was requested or privilege change attempted.",
+    "postRunHostLoadSample": {
+      "localTime": "2026-10-23 14:28 Asia/Shanghai",
+      "oneMinute": 73.63,
+      "fiveMinutes": 44.4,
+      "fifteenMinutes": 38.99
+    },
+    "interpretation": "These are measured Worker diagnostics, not normal-power steady-state performance qualification. Post-run load is not a continuous record of the benchmark interval."
+  },
+  "harnessCorrections": [
+    "Initial zero-row module-worker run failed because the local server served wasm loader JavaScript with an unsuitable MIME type; corrected only in the private server.",
+    "A later zero-row module-worker run failed with ModuleFactory not set. The private worker was bundled as a classic worker, matching the app worker creation mode. Both failed reports remain in native evidence.",
+    "The owned page debugging binding survived navigation. A new owned page in the same task space was used for the final Worker runs; no global debugging flags or browser permissions changed."
+  ],
+  "production": {
+    "default": "YAMNet unchanged",
+    "modelSha256": "4d8b4a53282dc83ef04e3e7dbc4fbc98082e34e44ed798e16c3a0cdd4c584faf",
+    "ledgerCalls": 36,
+    "ledgerDebitedTokens": 63411,
+    "ledgerSha256": "f143a94f5666a41ddfb9ab6d89b6751c986cc9462eab461c8a5d67ef0b8b599b",
+    "upstreamCallsAdded": 0,
+    "newFrontendRuntime": false,
+    "productionSourceEditsInThisComparison": false,
+    "newIndependentRecordingsExposed": 0,
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  },
+  "cleanup": {
+    "completedAt": "2026-10-23T06:35:49.648603+00:00",
+    "ownedBrowserTaskSpace": 3,
+    "closedSpace": true,
+    "closedManagedLabels": [
+      "p2"
+    ],
+    "preservedUnmanagedCount": 0,
+    "modelClosedAfterEachSuccessfulNativeRun": true,
+    "workerTerminatedAfterEachWorkerRun": true,
+    "ownLocalServerPid": 34533,
+    "listenersStopped": [
+      3108
+    ],
+    "listenerAbsentVerified": true,
+    "powerSettingsChanged": false,
+    "acLowPower": 1,
+    "batteryLowPower": 0,
+    "retained": "Weights, original CPU references, conversion source, all numerical traces, failures, and environment records remain private."
+  }
+}

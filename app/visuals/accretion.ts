@@ -191,9 +191,9 @@ export function applyAccretionAudioUniforms(
   shader.setUniform('uOverallBoost', overallBoost);
 }
 
-export function drawAccretion(p: any, shader: any) {
+export function drawAccretion(p: any, shader: any, mediaSeconds?: number) {
   shader.setUniform('iResolution', [p.width, p.height]);
-  shader.setUniform('iTime', p.millis() / 1000.0);
+  shader.setUniform('iTime', mediaSeconds ?? p.millis() / 1000.0);
   p.shader(shader);
   p.noStroke();
   p.rectMode(p.CENTER);

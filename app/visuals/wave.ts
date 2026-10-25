@@ -174,10 +174,11 @@ export function applyWaveUniforms(
   shader: any,
   audio: WaveAudioUniforms,
   sensitivity: number,
-  controls?: WaveControls
+  controls?: WaveControls,
+  mediaSeconds?: number
 ){
   try {
-    shader.setUniform('uTime', p.millis() / 1000.0);
+    shader.setUniform('uTime', mediaSeconds ?? p.millis() / 1000.0);
     shader.setUniform('uResolution', [p.width, p.height]);
 
     const clamp01 = (v: number) => Math.max(0, Math.min(1, v || 0));

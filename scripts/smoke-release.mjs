@@ -13,7 +13,7 @@ const socket = createServer(); socket.listen(0, '127.0.0.1'); await once(socket,
 const port = socket.address().port; await new Promise(resolve => socket.close(resolve));
 const origin = `http://127.0.0.1:${port}`;
 const child = spawn(process.execPath, [join(directory, 'server.js')], {
-  env: { ...process.env, NODE_ENV: 'production', HOSTNAME: '127.0.0.1', PORT: String(port), APP_ORIGIN: origin, AI_ENABLED: '0', AI_DAILY_CALLS: '0', AI_DAILY_TOKENS: '0', AI_MAX_CONCURRENCY: '0' },
+  env: { ...process.env, NODE_ENV: 'production', HOSTNAME: '127.0.0.1', PORT: String(port), APP_ORIGIN: origin, APP_ORIGINS: origin, AI_ENABLED: '0', AI_DAILY_CALLS: '0', AI_DAILY_TOKENS: '0', AI_MAX_CONCURRENCY: '0' },
   stdio: ['ignore', 'ignore', 'ignore']
 });
 let spawnError; child.on('error', error => { spawnError = error; });

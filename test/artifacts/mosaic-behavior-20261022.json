@@ -1,0 +1,17 @@
+{
+  "sourceSha256": "65da06d60241999f5cfa7abfb0afe663c038825b759629b01ccef56734ea1c87",
+  "provenance": "Generated before optimization from frozen original; semantic drawing coordinates rounded at1e-10px, fixed RNG/noise;160frames include color changes, resize, spectrum, aurora, and ghosts.",
+  "trace": {
+    "sha256": "ddf8b3385e506fcd8feedde64a64e87cf2eb7f19d1b78f1f8527f158a5038fe0",
+    "checkpoints": [
+      "129810996248b9a6cd0885608e478605f8fe18122a45b95324c1916329dfda96",
+      "2e615d6782d5b61876c12e63b412a191f67f9dc08d1b2ce06bbe31106761a64e",
+      "b8f58f2c96576037a9087d8f79fe3bc6ecd724d7f99b7c273a03e9cfc2a2df1c",
+      "b20fb027931ce1c8197615dc74f5a9bd42067491b73e34cf22703daf7c22e719",
+      "c299a989e76c2a6fe9f798ce1235a8cfb1399fc189974e4d79dc13792510ff0e",
+      "0ea217859c973d1c0f52ff4131c05d3a439f37455fe85e7195474f7b65796a7b",
+      "8dcccade500b2b8587cb14c8b9acb4a2f276fd9e9dd82ecf97c36d5c9496add8",
+      "ddf8b3385e506fcd8feedde64a64e87cf2eb7f19d1b78f1f8527f158a5038fe0"
+    ]
+  }
+}

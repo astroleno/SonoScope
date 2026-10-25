@@ -1,4 +1,4 @@
-import { CONTRACT_VERSION, cleanComment, instrumentComment, instrumentEvidence, type CommentCandidate, type FeatureFrame, type FeatureSnapshot, type GenerationRequest } from '@sonoscope/core';
+import { CONTRACT_VERSION, cleanComment, instrumentComment, instrumentEvidence, soundObservation, type CommentCandidate, type FeatureFrame, type FeatureSnapshot, type GenerationRequest } from '@sonoscope/core';
 import { CommentQueue, type CommentSink } from './comment-queue';
 import type { Generate } from './client';
 
@@ -9,7 +9,7 @@ export interface DanmuState {
   history: CommentCandidate[];
   metrics: { localFirstMs: number | null; aiFirstMs: number | null; aiFirstSnapshotId: string | null };
 }
-export interface ControllerOptions { generate?: Generate; now?: () => number; id?: () => string; intervalMs?: number; minRequestIntervalMs?: number; deadlineMs?: number }
+export interface ControllerOptions { generate?: Generate; now?: () => number; id?: () => string; intervalMs?: number; minRequestIntervalMs?: number; deadlineMs?: number; feedbackMode?: 'standard' | 'tiered' | 'acoustic' }
 export class DanmuController {
   private audioId: string | null = null;
   private runId: string | null = null;
@@ -26,6 +26,7 @@ export class DanmuController {
   private voiceActive = false;
   private lastTempo: number | null = null;
   private lastInstrument: string | null = null;
+  private lastMusic = false;
   private lastRequest = -Infinity;
   private effectiveSoundAt: number | null = null;
   private cooldownUntil = 0;
@@ -55,14 +56,14 @@ export class DanmuController {
   }
   private matches(audioId: string, runId: string) { return this.audioId === audioId && this.runId === runId; }
   setCloudEnabled(enabled: boolean) {
-    const next = enabled && !!this.options.generate; if (next === this.cloudEnabled) return;
+    const next = enabled && this.options.feedbackMode !== 'tiered' && !!this.options.generate; if (next === this.cloudEnabled) return;
     this.cloudEnabled = next; ++this.cloudGeneration;
     if (!next) { for (const controller of this.requests.values()) controller.abort(); this.requests.clear(); this.queue.discardAI(); }
     this.state = { ...this.state, cloud: next ? 'ready' : 'off', message: null }; this.publish();
   }
   start(audioSessionId: string) {
     if (this.audioId === audioSessionId && this.runId) return;
-    this.stop(); this.audioId = audioSessionId; this.runId = this.id(); this.lastLocal = -Infinity; this.lastRequest = -Infinity; this.baseline = null; this.previousRms = 0; this.voiceActive = false; this.lastTempo = null; this.lastInstrument = null; this.effectiveSoundAt = null; this.cooldownUntil = 0;
+    this.stop(); this.audioId = audioSessionId; this.runId = this.id(); this.lastLocal = -Infinity; this.lastRequest = -Infinity; this.baseline = null; this.previousRms = 0; this.voiceActive = false; this.lastTempo = null; this.lastInstrument = null; this.lastMusic = false; this.effectiveSoundAt = null; this.cooldownUntil = 0;
     this.queue.start(audioSessionId, this.runId); this.state = { ...this.initialState(), active: true, audioSessionId, danmuRunId: this.runId, cloud: this.cloudEnabled ? 'ready' : 'off' };
     this.timer = setInterval(() => { this.queue.tick(); this.publish(); }, 50); this.publish();
   }
@@ -75,18 +76,27 @@ export class DanmuController {
     this.previousRms = v.rms;
     const model = frame.model && frame.validity.classification.state === 'valid' && frame.capturedAt - frame.model.capturedAt >= 0 && frame.capturedAt - frame.model.capturedAt <= 3000 ? frame.model : null;
     const voice = model?.voiceProbability ?? null;
-    const instrument = instrumentEvidence(model)?.label ?? null;
-    const musical = !model || model.categories.some(c => /^(Music|Singing|Choir)$/.test(c.label) && c.score >= .5);
-    const tempo = musical && frame.validity.tempo.state === 'valid' && v.tempo && v.tempo.confidence >= .7 ? v.tempo : null;
+    const acoustic = this.options.feedbackMode === 'acoustic';
+    const tiered = this.options.feedbackMode === 'tiered' || acoustic;
+    const instrument = tiered ? null : instrumentEvidence(model)?.label ?? null;
+    const reliableMusic = !!model && (voice ?? 1) < .3 && model.categories.some(c => c.label === 'Music' && c.score >= .8);
+    const musical = tiered ? reliableMusic : !model || model.categories.some(c => /^(Music|Singing|Choir)$/.test(c.label) && c.score >= .5);
+    const tempo = !acoustic && musical && frame.validity.tempo.state === 'valid' && v.tempo && v.tempo.confidence >= .7 ? v.tempo : null;
     if (voice !== null && voice < .3) this.voiceActive = false;
     if (v.rms < .008) return;
     const first = this.effectiveSoundAt === null;
     if (first) this.effectiveSoundAt = frame.capturedAt;
     if (now - this.lastLocal < 950) return;
-    let text = '', event: 'sound' | 'voice' | 'instrument' | 'energy' | 'spectrum' | 'onset' | 'tempo' = 'sound';
-    if (first) text = '声音进来了，开始听这一段';
+    let text = '', event: 'sound' | 'music' | 'voice' | 'instrument' | 'energy' | 'spectrum' | 'onset' | 'tempo' = 'sound';
+    if (tiered && this.lastLocal === -Infinity) {
+      text = soundObservation(frame) ?? '';
+      if (!text && !acoustic && reliableMusic) { text = '听起来是一段音乐'; event = 'music'; }
+      if (!text && !acoustic && voice !== null && voice >= .8) { text = '像是有人声进来了'; event = 'voice'; }
+    }
+    else if (first) text = '声音进来了，开始听这一段';
     else if (instrument && instrument !== this.lastInstrument && instrumentComment(instrument)) { text = instrumentComment(instrument)!; event = 'instrument'; }
-    else if (voice !== null && voice >= .8 && !this.voiceActive) { text = '像是有人声进来了'; event = 'voice'; }
+    else if (!acoustic && voice !== null && voice >= .8 && !this.voiceActive) { text = '像是有人声进来了'; event = 'voice'; }
+    else if (!acoustic && tiered && reliableMusic && !this.lastMusic) { text = '听起来是一段音乐'; event = 'music'; }
     else if (tempo && (this.lastTempo === null || Math.abs(tempo.bpm - this.lastTempo) >= 8)) { text = `节拍大约 ${Math.round(tempo.bpm)} BPM`; event = 'tempo'; }
     else if (now - this.lastLocal < 1500) return;
     else if (previous && v.rms > Math.max(.03, previous.rms * 1.8)) { text = '声音变得更有力了'; event = 'energy'; }
@@ -96,7 +106,7 @@ export class DanmuController {
     else if (previous && high - previous.high > .3) { text = '高频的声音更明显了'; event = 'spectrum'; }
     if (!text) return; // Stable sound keeps the picture alive without periodic filler comments.
     if (this.offer({ commentId: this.id(), source: 'local', kind: 'regular', audioSessionId: this.audioId!, danmuRunId: this.runId, snapshotId: `${frame.audioSessionId}_${frame.seq}`, text, createdAt: now, expiresAt: now + 3000 })) {
-      this.lastLocal = now; if (event === 'voice') this.voiceActive = true; if (event === 'tempo') this.lastTempo = tempo!.bpm; if (event === 'instrument') this.lastInstrument = instrument;
+      this.lastLocal = now; if (event === 'voice') this.voiceActive = true; if (event === 'music') this.lastMusic = true; if (event === 'tempo') this.lastTempo = tempo!.bpm; if (event === 'instrument') this.lastInstrument = instrument;
     }
   }
   offer(comment: CommentCandidate) { const accepted = this.queue.enqueue(comment); this.queue.tick(); this.publish(); return accepted; }
@@ -141,5 +151,5 @@ export class DanmuController {
     this.audioId = null; this.runId = null; if (this.timer) clearInterval(this.timer); this.timer = null;
     for (const controller of this.requests.values()) controller.abort(); this.requests.clear(); this.firstRequests.clear(); this.queue?.stop(); this.state = { ...this.initialState(), history: this.state?.history ?? [] }; this.publish();
   }
-  dispose() { this.stop(); this.listeners.clear(); }
+  dispose() { this.stop(); this.queue.dispose(); this.listeners.clear(); }
 }
