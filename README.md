@@ -4,6 +4,8 @@
 
 当前实施版的入口为 `/SonoScope`。共享运行时、流式协议、安全配额与实际验收状态见 [上线验收](docs/launch-validation.md) 和 [部署指南](docs/部署指南.md)；旧阶段报告中的功能完整性声明不作为本版发布证据。
 
+公网入口：[aitoshuu.me/SonoScope](https://aitoshuu.me/SonoScope) · [tongye.me/SonoScope](https://tongye.me/SonoScope)。应用运行于腾讯服务器，两个入口保留各自域名；录播按访问域名分别保存在浏览器中。发布结果与未测项目见[公网部署记录](docs/public-deployment-20261025.md)。
+
 ## 🎯 项目简介
 
 SonoScope 将浏览器采集的声音转换为画面与弹幕。本地分析直接驱动画面和短反馈；可选的 AI 服务只接收当前声音摘要与最近弹幕，逐条返回评论。

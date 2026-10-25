@@ -1,0 +1,255 @@
+{
+  "testedAt": "2026-10-25T05:26:47.483796+00:00",
+  "sourceCommit": "523495ce53e05fed0c775c80991783faf886e178",
+  "hosts": [
+    {
+      "host": "aitoshuu.me",
+      "passed": true,
+      "checks": [
+        {
+          "path": "/SonoScope/_next/static/css/c3364a2eab645679.css",
+          "status": 200,
+          "bytes": 27929
+        },
+        {
+          "path": "/SonoScope/_next/static/chunks/webpack-6ead125e81b46ba0.js",
+          "status": 200,
+          "bytes": 3773
+        },
+        {
+          "path": "/SonoScope/_next/static/chunks/a2a2839e-72656f315f5c0091.js",
+          "status": 200,
+          "bytes": 203721
+        },
+        {
+          "path": "/SonoScope",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope",
+          "bytes": 14419,
+          "isApp": true,
+          "headers": {
+            "Permissions-Policy": "microphone=(self)",
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp"
+          },
+          "assetCount": 11
+        },
+        {
+          "path": "/SonoScope/api/health",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/api/health",
+          "bytes": 29,
+          "json": {
+            "status": "ok",
+            "version": "2"
+          }
+        },
+        {
+          "path": "/SonoScope/api/runtime-config",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/api/runtime-config",
+          "bytes": 49,
+          "json": {
+            "version": "2",
+            "aiEnabled": false,
+            "mode": "hybrid"
+          }
+        },
+        {
+          "path": "/SonoScope/manifest.webmanifest",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/manifest.webmanifest",
+          "bytes": 269
+        },
+        {
+          "path": "/SonoScope/audio/capture-worklet.js",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/audio/capture-worklet.js",
+          "bytes": 862
+        },
+        {
+          "path": "/SonoScope/test",
+          "status": 404,
+          "url": "https://aitoshuu.me/SonoScope/test",
+          "bytes": 6874
+        },
+        {
+          "path": "/SonoScope/.env",
+          "status": 404,
+          "url": "https://aitoshuu.me/SonoScope/.env",
+          "bytes": 146
+        },
+        {
+          "path": "/SonoScope/standalone-client",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope",
+          "bytes": 14419
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://aitoshuu.me",
+          "site": "same-origin",
+          "status": 400
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://untrusted.invalid",
+          "site": "same-origin",
+          "status": 403
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://aitoshuu.me",
+          "site": "cross-site",
+          "status": 403
+        }
+      ],
+      "root": {
+        "status": 200,
+        "url": "https://aitoshuu.me/",
+        "bytes": 994,
+        "sha256": "de5f736ac5a9bd532b87d79a8c52a3271f6dcb34bde152b22563d017d671ac91"
+      },
+      "rootUnchanged": true
+    },
+    {
+      "host": "tongye.me",
+      "passed": true,
+      "checks": [
+        {
+          "path": "/SonoScope/_next/static/css/c3364a2eab645679.css",
+          "status": 200,
+          "bytes": 27929
+        },
+        {
+          "path": "/SonoScope/_next/static/chunks/webpack-6ead125e81b46ba0.js",
+          "status": 200,
+          "bytes": 3773
+        },
+        {
+          "path": "/SonoScope/_next/static/chunks/a2a2839e-72656f315f5c0091.js",
+          "status": 200,
+          "bytes": 203721
+        },
+        {
+          "path": "/SonoScope",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope",
+          "bytes": 14419,
+          "isApp": true,
+          "headers": {
+            "Permissions-Policy": "microphone=(self)",
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp"
+          },
+          "assetCount": 11
+        },
+        {
+          "path": "/SonoScope/api/health",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/api/health",
+          "bytes": 29,
+          "json": {
+            "status": "ok",
+            "version": "2"
+          }
+        },
+        {
+          "path": "/SonoScope/api/runtime-config",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/api/runtime-config",
+          "bytes": 49,
+          "json": {
+            "version": "2",
+            "aiEnabled": false,
+            "mode": "hybrid"
+          }
+        },
+        {
+          "path": "/SonoScope/manifest.webmanifest",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/manifest.webmanifest",
+          "bytes": 269
+        },
+        {
+          "path": "/SonoScope/audio/capture-worklet.js",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/audio/capture-worklet.js",
+          "bytes": 862
+        },
+        {
+          "path": "/SonoScope/test",
+          "status": 404,
+          "url": "https://tongye.me/SonoScope/test",
+          "bytes": 6874
+        },
+        {
+          "path": "/SonoScope/.env",
+          "status": 404,
+          "url": "https://tongye.me/SonoScope/.env",
+          "bytes": 146
+        },
+        {
+          "path": "/SonoScope/standalone-client",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope",
+          "bytes": 14419
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://tongye.me",
+          "site": "same-origin",
+          "status": 400
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://untrusted.invalid",
+          "site": "same-origin",
+          "status": 403
+        },
+        {
+          "path": "/SonoScope/api/danmu/stream",
+          "origin": "https://tongye.me",
+          "site": "cross-site",
+          "status": 403
+        }
+      ],
+      "root": {
+        "status": 200,
+        "url": "https://tongye.me/experience/",
+        "bytes": 19133,
+        "sha256": "337e812329c46ff15346f620fb090d233340c48cc363ac5b3e5f5cf24cb50490"
+      },
+      "rootUnchanged": true
+    }
+  ],
+  "longTestsRun": false,
+  "linuxBuild": {
+    "manifest": {
+      "version": 1,
+      "platform": "linux",
+      "arch": "x64",
+      "nodeVersion": "22.23.4",
+      "builtAt": "2026-10-25T05:05:21.183Z",
+      "sourceCommit": "523495ce53e05fed0c775c80991783faf886e178"
+    },
+    "buildId": "O9nESlxcf7F0i4JpYfFu2",
+    "verifiedInputFiles": 237,
+    "focusedTests": 36,
+    "focusedTestSeconds": 2.57,
+    "staticResources": 47,
+    "service": "sonoscope",
+    "enabledAtBoot": true,
+    "bind": "127.0.0.1:3100",
+    "aiEnabled": false
+  },
+  "proxy": {
+    "publicProvider": "Alibaba Cloud",
+    "applicationProvider": "Tencent Cloud",
+    "upstream": "https://aitoshuu.art",
+    "tlsVerify": true,
+    "tlsVerifyDepth": 3,
+    "initial502": "Resolved by setting the certificate chain verification depth to 3",
+    "nginxConfigChecksPassed": true
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "523495ce53e05fed0c775c80991783faf886e178",
+  "primary": {
+    "origin": "https://aitoshuu.me",
+    "url": "https://aitoshuu.me/SonoScope",
+    "secure": true,
+    "isolated": true,
+    "recordingSaved": true,
+    "durationLabel": "00:07",
+    "sizeLabel": "64 KB",
+    "archivedComments": 3,
+    "replayPlayedAndPaused": true,
+    "replayPausedAtLabel": "00:01",
+    "transcript": [
+      "这段声音的高频比较明显",
+      "声音变得更有力了",
+      "声音轻了下来"
+    ],
+    "modelOrCloudRequests": []
+  },
+  "secondary": {
+    "origin": "https://tongye.me",
+    "url": "https://tongye.me/SonoScope",
+    "secure": true,
+    "isolated": true,
+    "visibility": "visible",
+    "visibleComments": [
+      {
+        "text": "这段声音的高频比较明显",
+        "rect": {
+          "top": 205.234375,
+          "bottom": 251.234375
+        }
+      }
+    ],
+    "modelOrCloudRequests": []
+  },
+  "secondaryFileEnded": true,
+  "physicalMicrophoneUsed": false,
+  "longTestsRun": false
+}

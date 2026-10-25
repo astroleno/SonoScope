@@ -1,6 +1,6 @@
-# SonoScope 上线验收（更新至2026-10-24）
+# SonoScope 上线验收（更新至2026-10-25）
 
-当前主入口已实现本地声学反馈、内部录制、完整弹幕归档、同步回看和备份恢复，实际结果见[内部录播验证](internal-recording-replay-validation.md)与[平台矩阵](recording-platform-matrix.md)。用户已明确停止本轮长测；未测指标不记为通过。本轮没有提交、推送或部署，生产 AI 关闭，未新增 AI 调用。手机和 Windows 实机仍缺少证据，旧的具名乐器识别失败继续保留。
+当前主入口已实现本地声学反馈、内部录制、完整弹幕归档、同步回看和备份恢复。2026-10-25 按用户明确授权提交、推送并部署至腾讯服务器，公网入口为 `https://aitoshuu.me/SonoScope` 与 `https://tongye.me/SonoScope`，均保留原域名。实际发布与短验见[公网部署记录](public-deployment-20261025.md)，录播证据见[内部录播验证](internal-recording-replay-validation.md)与[平台矩阵](recording-platform-matrix.md)。用户已明确停止长测；未测指标不记为通过。生产 AI 关闭，未新增 AI 调用。手机和 Windows 实机仍缺少证据，旧的具名乐器识别失败继续保留。
 
 **最新状态优先看[录播验证](internal-recording-replay-validation.md)。** 下文保留旧模型、服务器与性能调查：历史 YAMNet 在获批条件下完成过 30 分钟五预设帧率验收；mn10 C1 的冻结集按原标注仅 2/7 段演奏达到窗口门槛。上述历史结论不能替代当前录播版本的验证，也不能将主入口切换声学反馈记为原模型准确率已解决。
 
