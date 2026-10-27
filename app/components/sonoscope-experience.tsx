@@ -13,9 +13,17 @@ import { ReplayControls } from './replay-controls';
 import { recordingTime } from '../lib/recording-format';
 import { OfflineStatus } from './offline-status';
 import { AudioInputStatus } from './audio-input-status';
+import { MicrophonePrompt } from './microphone-prompt';
 
 const Visualizer = dynamic(() => import('./visualizer'), { ssr: false });
 const presets = [ { id: 'wave', label: 'Wave' }, { id: 'accretion', label: 'Accretion' }, { id: 'spiral', label: 'Spiral' }, { id: 'mosaic', label: 'Mosaic' }, { id: 'mochi', label: 'Mochi' } ];
+
+function MicrophoneIcon({ off }: { off: boolean }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8" />{off && <path d="m3 3 18 18" />}</svg>;
+}
+function MoreIcon() {
+  return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg>;
+}
 
 export default function SonoScopeExperience({ initialPreset = 'wave', diagnostics = false }: { initialPreset?: PresetId; diagnostics?: boolean }) {
   const [preset, setPreset] = useState<PresetId>(initialPreset);
@@ -27,13 +35,12 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
   const [showHistory, setShowHistory] = useState(false);
   const [showRecordings, setShowRecordings] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
-  const [interfaceHidden, setInterfaceHidden] = useState(false);
+  const [interfaceHidden, setInterfaceHidden] = useState(true);
+  const [introOpen, setIntroOpen] = useState(true);
   const container = useRef<HTMLDivElement>(null);
   const replayContainer = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
-  const restoreButton = useRef<HTMLButtonElement>(null);
-  const hideButton = useRef<HTMLButtonElement>(null);
-  const wasHidden = useRef(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const { reducedMotion } = useAccessibility();
   const session = useSonoScope(container, reducedMotion || pausedMotion, replayContainer);
   const { ready, aiAvailable, setDanmuEnabled: applyDanmu, setCloudEnabled: applyCloud, start: startAudio, stop: stopAudio } = session;
@@ -49,6 +56,11 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
   const openRecordings = useCallback(() => { void refreshRecordings(); setShowRecordings(true); }, [refreshRecordings]);
   const openRecording = useCallback(async (id: string) => { if (await openPlayback(id)) { setShowRecordings(false); setShowHistory(false); } }, [openPlayback]);
   const toggleInterface = useCallback(() => { setShowHistory(false); setToolsOpen(false); setInterfaceHidden(value => !value); }, []);
+  const toggleMicrophone = useCallback(() => {
+    if (running || requesting) { stopAudio(); return; }
+    if (session.audio.error?.code === 'init-failed') { location.reload(); return; }
+    if (ready && !recordingBusy && !replaying) { setIntroOpen(false); void startAudio(); }
+  }, [running, requesting, stopAudio, session.audio.error?.code, ready, recordingBusy, replaying, startAudio]);
   const selectPreset = useCallback((id: string) => {
     if (!ready || requesting || replaying || recordingBusy && !running) return;
     if (running && audioSourceType !== 'file' && id === preset) { stopAudio(); setNotice('麦克风已关闭'); return; }
@@ -56,20 +68,18 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
     if (!running) void startAudio();
   }, [ready, requesting, replaying, recordingBusy, running, audioSourceType, startAudio, stopAudio, preset]);
   useEffect(() => {
-    if (interfaceHidden) restoreButton.current?.focus();
-    else if (wasHidden.current) hideButton.current?.focus();
-    wasHidden.current = interfaceHidden;
-  }, [interfaceHidden]);
+    if (!introOpen) menuButton.current?.focus();
+  }, [interfaceHidden, introOpen]);
   useEffect(() => { if (!replaying) setRecordingControls({ preset, spectrum, pausedMotion, danmuEnabled }); }, [replaying, preset, spectrum, pausedMotion, danmuEnabled, setRecordingControls]);
   useEffect(() => { applyDanmu(danmuEnabled); }, [danmuEnabled, ready, applyDanmu]);
   useEffect(() => { applyCloud(cloud && aiAvailable); }, [cloud, aiAvailable, ready, applyCloud]);
   useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(''), 1800); return () => clearTimeout(timer); }, [notice]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog') || target?.matches('input, textarea, select, [contenteditable="true"]')) return;
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (introOpen || event.repeat || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog') || target?.matches('input, textarea, select, [contenteditable="true"]')) return;
       if (event.key.toLowerCase() === 'h') { toggleInterface(); return; }
-      if (event.key === 'Escape') { if (showHistory) setShowHistory(false); else if (interfaceHidden) setInterfaceHidden(false); else setToolsOpen(false); return; }
+      if (event.key === 'Escape') { if (showHistory) setShowHistory(false); else if (toolsOpen) setToolsOpen(false); else setInterfaceHidden(true); return; }
       if (replaying) return;
       const index = Number(event.key) - 1;
       if (index >= 0 && index < presets.length && /^\d$/.test(event.key)) selectPreset(presets[index].id);
@@ -77,9 +87,10 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
       if (event.key.toLowerCase() === 's') { setSpectrum(v => !v); setNotice('频谱模式已切换'); }
     };
     window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
-  }, [replaying, selectPreset, toggleInterface, showHistory, interfaceHidden]);
+  }, [replaying, selectPreset, toggleInterface, showHistory, toolsOpen, introOpen]);
   const status = replaying ? session.playback.status === 'playing' ? '正在回看录播' : '录播回看' : requesting ? session.audio.sourceType === 'file' ? '正在加载音频' : '等待麦克风授权' : running ? session.audio.sourceType === 'file' ? '正在播放音频' : '麦克风已开启' : session.audio.error ? '音频未启动' : ready ? '麦克风未开启' : '正在准备声音…';
   const cloudLabel = session.danmu?.cloud === 'loading' ? 'AI 正在回应' : session.danmu?.cloud === 'error' || session.danmu?.cloud === 'limited' ? 'AI 暂不可用' : cloud ? 'AI 增强已开' : '本地反馈';
+  const microphoneLabel = replaying ? '回看期间不可开启麦克风' : requesting ? '取消启动' : running ? audioSourceType === 'file' ? '停止声音' : '关闭麦克风' : session.audio.error?.code === 'init-failed' ? '重新加载声音' : session.audio.error ? '重试麦克风' : !ready ? '声音准备中…' : '开启麦克风';
   return (
     <main className="experience" data-interface-hidden={interfaceHidden} data-audio-status={session.audio.status} data-model-status={session.analysis.model} data-model-label={session.telemetry.model?.categories[0]?.label ?? ''} data-model-result={JSON.stringify(session.telemetry.model)} data-runtime-metrics={JSON.stringify(replaying ? session.replayMetrics : session.telemetry.metrics)} data-recording-state={JSON.stringify(session.recording)} data-playback-state={JSON.stringify(session.playback)}>
       <h1 className="sr-only">SonoScope · 让声音有个形状</h1>
@@ -88,16 +99,19 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
       </ErrorBoundary>
       <div ref={container} className="danmu-layer" aria-hidden="true" />
       <div ref={replayContainer} className="danmu-layer replay-layer" aria-hidden="true" />
-      <header className="experience-header" hidden={interfaceHidden}>
-        <div className="brand-row"><span className="wordmark">SonoScope<span className="brand-cn">声象</span></span><div className="header-actions"><span className="status-indicator" data-active={running} role="status">{status}</span><button ref={hideButton} type="button" className="text-button" onClick={toggleInterface}>隐藏界面</button></div></div>
+      <div className="experience-top" data-danmu-top-boundary>
+      <div className="corner-controls" role="group" aria-label="快捷控制">
+        <button type="button" className="corner-icon" data-active={running} aria-label={microphoneLabel} title={microphoneLabel} aria-pressed={running} aria-busy={requesting} disabled={replaying || !running && !requesting && session.audio.error?.code !== 'init-failed' && (!ready || recordingBusy)} onClick={toggleMicrophone}><MicrophoneIcon off={!running && !requesting} /></button>
+        <button ref={menuButton} type="button" className="corner-icon" aria-label={interfaceHidden ? '显示界面' : '隐藏界面'} title={interfaceHidden ? '显示界面' : '隐藏界面'} aria-expanded={!interfaceHidden} aria-controls="experience-header experience-footer" onClick={toggleInterface}><MoreIcon /></button>
+      </div>
+      <header id="experience-header" className="experience-header" hidden={interfaceHidden}>
+        <div className="brand-row"><span className="wordmark">SonoScope<span className="brand-cn">声象</span></span></div>
         <FlipOptionList options={presets.map(option => ({ ...option, disabled: replaying || !ready || requesting || recordingBusy && !running }))} value={shownPreset} onChange={selectPreset} animation={motionPaused ? 'off' : 'auto'} aria-label={replaying ? '录播中的画面预设' : '画面预设'} className="preset-selector" />
       </header>
+      </div>
       <input ref={fileInput} hidden type="file" accept="audio/*" aria-label="选择音频文件" tabIndex={-1} onChange={event => { const file = event.target.files?.[0]; if (file) { session.stop(); void session.start({ type: 'file', file }); } event.target.value = ''; }} />
-      <footer className="experience-footer" hidden={interfaceHidden}>
+      <footer id="experience-footer" className="experience-footer" hidden={interfaceHidden}>
         <div className="dock-row">
-          {!replaying && (running || requesting ? <button type="button" className="action-button" onClick={session.stop}>{requesting ? '取消启动' : '停止声音'}</button>
-            : session.audio.error?.code === 'init-failed' ? <button type="button" className="action-button" onClick={() => location.reload()}>重新加载声音</button>
-            : <button type="button" className="action-button" disabled={!ready || recordingBusy} onClick={() => { void session.start(); }}>{!ready ? '声音准备中…' : session.audio.error ? '重试麦克风' : '开启麦克风'}</button>)}
           <button type="button" className="action-button tools-toggle" aria-expanded={toolsOpen} aria-controls="experience-tools" onClick={() => setToolsOpen(value => !value)}>{toolsOpen ? '收起工具' : '工具'}<span aria-hidden="true">{toolsOpen ? '−' : '+'}</span></button>
           {!replaying && <AudioInputStatus monitor={session.inputMonitor} paused={motionPaused} />}
         </div>
@@ -123,12 +137,13 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
         {session.recordingMessage && !showRecordings && <p className="recording-note" role="status">{session.recordingMessage}</p>}
         {running && (session.analysis.message || session.danmu?.message) && <p className="service-note">{session.danmu?.message || session.analysis.message}</p>}
       </footer>
-      {interfaceHidden && <div className="hidden-controls">
-        {session.audio.error && <><p className="audio-error" role="alert">{session.audio.error.message}</p><button type="button" className="action-button" onClick={() => { setInterfaceHidden(false); if (session.audio.error?.code === 'init-failed') location.reload(); else void startAudio(); }}>{session.audio.error.code === 'init-failed' ? '重新加载声音' : '重试麦克风'}</button></>}
-        {(running || requesting) && <button type="button" className="action-button" onClick={session.stop}>{requesting ? '取消启动' : '停止声音'}</button>}
-        {recordingBusy && <RecordingControls compact state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => {}} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
-        <button ref={restoreButton} type="button" className="action-button interface-restore" onClick={toggleInterface}>显示控制</button>
+      {interfaceHidden && !introOpen && (requesting || session.audio.error) && <div className="corner-feedback">
+        {session.audio.error ? <p className="audio-error" role="alert">{session.audio.error.message}</p> : <p role="status">{audioSourceType === 'file' ? '正在读取音频文件…' : '请在浏览器中允许麦克风。没有弹出提示时，请检查地址栏的网站设置。'}</p>}
       </div>}
+      {interfaceHidden && recordingBusy && <div className="hidden-controls">
+        {recordingBusy && <RecordingControls compact state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => {}} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
+      </div>}
+      {introOpen && <MicrophonePrompt ready={ready} failed={session.audio.error?.code === 'init-failed'} onAllow={() => { setIntroOpen(false); toggleMicrophone(); }} onDismiss={() => setIntroOpen(false)} />}
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{notice || status}</p>
       {notice && <div className="toast" aria-hidden="true">{notice}</div>}
       {showHistory && <section id="comment-history" className="history-panel" aria-label={replaying ? '录播弹幕记录' : '最近弹幕'}><div className="history-heading"><h2>{replaying ? '录播弹幕记录' : '最近弹幕'}</h2><button type="button" className="action-button" onClick={() => setShowHistory(false)}>关闭记录</button></div>{replaying ? <><ol>{session.replayComments.map(c => <li key={c.seq}><button type="button" className="transcript-comment" onClick={() => session.seek(c.atMs)}><time>{recordingTime(c.atMs)}</time><span className="source-tag">{c.source === 'ai' ? 'AI' : '本地'}</span><span>{c.text}</span></button></li>)}</ol>{!session.replayComments.length && <p>这段录播没有已显示的弹幕。</p>}{session.hasMoreComments && <button type="button" className="action-button" onClick={session.loadMoreComments}>读取更多弹幕</button>}</> : session.danmu?.history.length ? <ol>{session.danmu.history.map(c => <li key={c.commentId}><span className="source-tag">{c.source === 'ai' ? 'AI' : '本地'}</span>{c.text}</li>)}</ol> : <p>开启声音与弹幕后，这里会保留最近 12 条记录。完整录播另行保存。</p>}</section>}

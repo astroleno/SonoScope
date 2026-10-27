@@ -18,8 +18,10 @@ export class DomCommentSink implements CommentSink {
   }
   private measure() {
     const box = this.container.getBoundingClientRect(), viewport = globalThis.innerHeight || box.height;
-    const top = Math.max(0, -box.top, (this.controls.top?.getBoundingClientRect().bottom ?? box.top) - box.top) + 12;
-    const bottom = Math.min(box.height, viewport - box.top, (this.controls.bottom?.getBoundingClientRect().top ?? box.top + box.height) - box.top) - 12;
+    const topControl = this.controls.top && !this.controls.top.hidden ? this.controls.top.getBoundingClientRect() : null;
+    const bottomControl = this.controls.bottom && !this.controls.bottom.hidden ? this.controls.bottom.getBoundingClientRect() : null;
+    const top = Math.max(0, -box.top, (topControl?.bottom ?? box.top) - box.top) + 12;
+    const bottom = Math.min(box.height, viewport - box.top, (bottomControl?.top ?? box.top + box.height) - box.top) - 12;
     const changed = this.width !== box.width || this.top !== top || this.bottom !== bottom;
     this.width = box.width; this.top = top; this.bottom = bottom;
     if (changed && this.active.length) {

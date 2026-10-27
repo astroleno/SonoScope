@@ -2,7 +2,29 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { DomCommentSink } from '../../packages/danmu-pipeline/dom-sink';
 import { CommentQueue } from '../../packages/danmu-pipeline/comment-queue';
 import { comment } from './fixtures';
+import { ReplayCommentSink } from '../../packages/danmu-pipeline/replay-sink';
 afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+it.each(['live', 'replay'] as const)('keeps %s comments visible below corner icons when the interface footer is hidden', mode => {
+  let resize!: () => void, topBottom = 68;
+  vi.stubGlobal('ResizeObserver', class { constructor(callback: () => void) { resize = callback; } observe() {} disconnect() {} });
+  vi.stubGlobal('innerHeight', 600); vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1)); vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  const container = document.createElement('div'), top = document.createElement('div'), footer = document.createElement('footer');
+  footer.hidden = true; document.body.append(top, container, footer);
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
+    if (this === top) return { top: 0, bottom: topBottom } as DOMRect;
+    if (this === footer) return { top: footer.hidden ? 0 : 500 } as DOMRect;
+    return { width: this.className === 'danmu-comment' ? 200 : 800, height: this.className === 'danmu-comment' ? 30 : 600, top: 0 } as DOMRect;
+  });
+  const sink = mode === 'live' ? new DomCommentSink(container, { top, bottom: footer }) : new ReplayCommentSink(container, { top, bottom: footer });
+  try {
+    if (sink instanceof DomCommentSink) expect(sink.show(comment())).toBe(true);
+    else sink.render([{ id: 'one', text: '声音在延续', source: 'local', startMs: 0, endMs: 6500, durationMs: 6500, elapsedMs: 0, order: 1 }], 1000);
+    const node = container.firstElementChild as HTMLElement;
+    expect(node).toBeTruthy(); expect(node.style.visibility).not.toBe('hidden'); expect(node.style.transform).toContain('80px');
+    footer.hidden = false; topBottom = 160; resize(); expect(node.style.transform).toContain('172px');
+    footer.hidden = true; topBottom = 68; resize(); expect(node.style.visibility).not.toBe('hidden'); expect(node.style.transform).toContain('80px');
+  } finally { sink.dispose(); }
+});
 it('a shown comment starts inside the viewport and history height cannot add off-screen lanes', () => {
   const disconnect = vi.fn(), cancel = vi.fn();
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect = disconnect; });

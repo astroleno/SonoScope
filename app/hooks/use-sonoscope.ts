@@ -29,7 +29,7 @@ export function useSonoScope(container: React.RefObject<HTMLDivElement | null>, 
       const [{ SonoRuntime: Runtime }, { DomCommentSink: Sink, streamingClient }] = await Promise.all([import('@sonoscope/sdk/runtime'), import('@sonoscope/danmu-pipeline')]);
       if (cancelled || !container.current) return;
       const experience = container.current.parentElement;
-      const renderer = new Sink(container.current, { top: experience?.querySelector<HTMLElement>('header'), bottom: experience?.querySelector<HTMLElement>('footer') }); sink.current = renderer;
+      const renderer = new Sink(container.current, { top: experience?.querySelector<HTMLElement>('[data-danmu-top-boundary]'), bottom: experience?.querySelector<HTMLElement>('footer') }); sink.current = renderer;
       const r = new Runtime({ sink: renderer, workletUrl: appPath('/audio/capture-worklet.js'),
         feedbackMode,
         workerFactory: () => new Worker(new URL('../lib/workers/dsp.worker.ts', import.meta.url)),

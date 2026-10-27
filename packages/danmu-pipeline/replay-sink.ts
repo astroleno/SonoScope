@@ -31,8 +31,10 @@ export class ReplayCommentSink {
     }
     if (this.dirty) {
       const box = this.container.getBoundingClientRect(); this.width = box.width;
-      this.top = Math.max(0, (this.controls.top?.getBoundingClientRect().bottom ?? box.top) - box.top) + 12;
-      this.bottom = Math.min(box.height, (globalThis.innerHeight || box.height) - box.top, (this.controls.bottom?.getBoundingClientRect().top ?? box.top + box.height) - box.top) - 12;
+      const topControl = this.controls.top && !this.controls.top.hidden ? this.controls.top.getBoundingClientRect() : null;
+      const bottomControl = this.controls.bottom && !this.controls.bottom.hidden ? this.controls.bottom.getBoundingClientRect() : null;
+      this.top = Math.max(0, (topControl?.bottom ?? box.top) - box.top) + 12;
+      this.bottom = Math.min(box.height, (globalThis.innerHeight || box.height) - box.top, (bottomControl?.top ?? box.top + box.height) - box.top) - 12;
       for (const node of this.nodes.values()) { node.element.style.maxWidth = `${Math.max(0, Math.min(580, this.width - 32))}px`; const box = node.element.getBoundingClientRect(); node.width = box.width; node.height = box.height; }
       this.dirty = false;
     }

@@ -34,7 +34,7 @@ export function useRecordings(engine: SonoRuntime | null, container: React.RefOb
       if (disposed || !container.current) return;
       setSupported(typeof MediaRecorder !== 'undefined' && typeof indexedDB !== 'undefined');
       const experience = container.current.parentElement;
-      const sink = new Sink(container.current, { top: experience?.querySelector<HTMLElement>('header'), bottom: experience?.querySelector<HTMLElement>('footer') }); renderer.current = sink; sink.setReducedMotion(motionRef.current);
+      const sink = new Sink(container.current, { top: experience?.querySelector<HTMLElement>('[data-danmu-top-boundary]'), bottom: experience?.querySelector<HTMLElement>('footer') }); renderer.current = sink; sink.setReducedMotion(motionRef.current);
       const p = new Player(engine.recording.store), m = new Metrics(); player.current = p; replayMetrics.current = m;
       let metricId: string | null = null, lastSample = 0;
       cleanups.push(p.subscribe(state => {
