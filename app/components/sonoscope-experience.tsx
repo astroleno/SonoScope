@@ -12,6 +12,7 @@ import { RecordingLibrary } from './recording-library';
 import { ReplayControls } from './replay-controls';
 import { recordingTime } from '../lib/recording-format';
 import { OfflineStatus } from './offline-status';
+import { AudioInputStatus } from './audio-input-status';
 
 const Visualizer = dynamic(() => import('./visualizer'), { ssr: false });
 const presets = [ { id: 'wave', label: 'Wave' }, { id: 'accretion', label: 'Accretion' }, { id: 'spiral', label: 'Spiral' }, { id: 'mosaic', label: 'Mosaic' }, { id: 'mochi', label: 'Mochi' } ];
@@ -25,12 +26,18 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
   const [notice, setNotice] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [showRecordings, setShowRecordings] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [interfaceHidden, setInterfaceHidden] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const replayContainer = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const restoreButton = useRef<HTMLButtonElement>(null);
+  const hideButton = useRef<HTMLButtonElement>(null);
+  const wasHidden = useRef(false);
   const { reducedMotion } = useAccessibility();
   const session = useSonoScope(container, reducedMotion || pausedMotion, replayContainer);
-  const { ready, aiAvailable, setDanmuEnabled: applyDanmu, setCloudEnabled: applyCloud } = session;
+  const { ready, aiAvailable, setDanmuEnabled: applyDanmu, setCloudEnabled: applyCloud, start: startAudio, stop: stopAudio } = session;
+  const audioSourceType = session.audio.sourceType;
   const { refreshRecordings, setRecordingControls, openPlayback } = session;
   const running = session.audio.status === 'running', requesting = session.audio.status === 'requesting';
   const replaying = session.playback.id !== null;
@@ -41,6 +48,18 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
   const closeRecordings = useCallback(() => setShowRecordings(false), []);
   const openRecordings = useCallback(() => { void refreshRecordings(); setShowRecordings(true); }, [refreshRecordings]);
   const openRecording = useCallback(async (id: string) => { if (await openPlayback(id)) { setShowRecordings(false); setShowHistory(false); } }, [openPlayback]);
+  const toggleInterface = useCallback(() => { setShowHistory(false); setToolsOpen(false); setInterfaceHidden(value => !value); }, []);
+  const selectPreset = useCallback((id: string) => {
+    if (!ready || requesting || replaying || recordingBusy && !running) return;
+    if (running && audioSourceType !== 'file' && id === preset) { stopAudio(); setNotice('麦克风已关闭'); return; }
+    setPreset(id as PresetId); setNotice(`画面：${presets.find(option => option.id === id)?.label ?? id}`);
+    if (!running) void startAudio();
+  }, [ready, requesting, replaying, recordingBusy, running, audioSourceType, startAudio, stopAudio, preset]);
+  useEffect(() => {
+    if (interfaceHidden) restoreButton.current?.focus();
+    else if (wasHidden.current) hideButton.current?.focus();
+    wasHidden.current = interfaceHidden;
+  }, [interfaceHidden]);
   useEffect(() => { if (!replaying) setRecordingControls({ preset, spectrum, pausedMotion, danmuEnabled }); }, [replaying, preset, spectrum, pausedMotion, danmuEnabled, setRecordingControls]);
   useEffect(() => { applyDanmu(danmuEnabled); }, [danmuEnabled, ready, applyDanmu]);
   useEffect(() => { applyCloud(cloud && aiAvailable); }, [cloud, aiAvailable, ready, applyCloud]);
@@ -48,58 +67,68 @@ export default function SonoScopeExperience({ initialPreset = 'wave', diagnostic
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      if (replaying || event.repeat || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog') || target?.matches('input, textarea, select, [contenteditable="true"]')) return;
+      if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || target?.closest('dialog') || target?.matches('input, textarea, select, [contenteditable="true"]')) return;
+      if (event.key.toLowerCase() === 'h') { toggleInterface(); return; }
+      if (event.key === 'Escape') { if (showHistory) setShowHistory(false); else if (interfaceHidden) setInterfaceHidden(false); else setToolsOpen(false); return; }
+      if (replaying) return;
       const index = Number(event.key) - 1;
-      if (index >= 0 && index < presets.length && /^\d$/.test(event.key)) { setPreset(presets[index].id as PresetId); setNotice(`画面：${presets[index].label}`); }
+      if (index >= 0 && index < presets.length && /^\d$/.test(event.key)) selectPreset(presets[index].id);
       if (event.key.toLowerCase() === 'd') { setDanmuEnabled(v => !v); setNotice('弹幕已切换'); }
       if (event.key.toLowerCase() === 's') { setSpectrum(v => !v); setNotice('频谱模式已切换'); }
     };
     window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
-  }, [replaying]);
-  const status = replaying ? session.playback.status === 'playing' ? '正在回看录播' : '录播回看' : requesting ? session.audio.sourceType === 'file' ? '正在加载音频' : '等待麦克风授权' : running ? '正在听声音' : session.audio.error ? '音频未启动' : '等待开始';
+  }, [replaying, selectPreset, toggleInterface, showHistory, interfaceHidden]);
+  const status = replaying ? session.playback.status === 'playing' ? '正在回看录播' : '录播回看' : requesting ? session.audio.sourceType === 'file' ? '正在加载音频' : '等待麦克风授权' : running ? session.audio.sourceType === 'file' ? '正在播放音频' : '麦克风已开启' : session.audio.error ? '音频未启动' : ready ? '麦克风未开启' : '正在准备声音…';
   const cloudLabel = session.danmu?.cloud === 'loading' ? 'AI 正在回应' : session.danmu?.cloud === 'error' || session.danmu?.cloud === 'limited' ? 'AI 暂不可用' : cloud ? 'AI 增强已开' : '本地反馈';
   return (
-    <main className="experience" data-model-status={session.analysis.model} data-model-label={session.telemetry.model?.categories[0]?.label ?? ''} data-model-result={JSON.stringify(session.telemetry.model)} data-runtime-metrics={JSON.stringify(replaying ? session.replayMetrics : session.telemetry.metrics)} data-recording-state={JSON.stringify(session.recording)} data-playback-state={JSON.stringify(session.playback)}>
+    <main className="experience" data-interface-hidden={interfaceHidden} data-audio-status={session.audio.status} data-model-status={session.analysis.model} data-model-label={session.telemetry.model?.categories[0]?.label ?? ''} data-model-result={JSON.stringify(session.telemetry.model)} data-runtime-metrics={JSON.stringify(replaying ? session.replayMetrics : session.telemetry.metrics)} data-recording-state={JSON.stringify(session.recording)} data-playback-state={JSON.stringify(session.playback)}>
+      <h1 className="sr-only">SonoScope · 让声音有个形状</h1>
       <ErrorBoundary fallback={<div className="visual-error" role="alert">画面暂不可用。声音控制仍可操作，请切换预设或刷新。</div>}>
         <Visualizer audioLevel={0} running={running || replaying} preset={shownPreset} liveFrame={replaying ? session.replayFrame : session.latestFrame} onRendered={replaying ? session.recordReplayRender : session.recordRender} spectrumPriority={shownSpectrum} reducedMotion={motionPaused} playbackClock={replaying ? session.playbackClock : undefined} playbackRevision={session.replayRevision} />
       </ErrorBoundary>
       <div ref={container} className="danmu-layer" aria-hidden="true" />
       <div ref={replayContainer} className="danmu-layer replay-layer" aria-hidden="true" />
-      <header className="experience-header">
-        <div className="brand-row"><span className="wordmark">SonoScope<span className="brand-cn">声象</span></span><span className="status-indicator" data-active={running}>{status}</span></div>
-        <FlipOptionList options={replaying ? presets.map(option => ({ ...option, disabled: true })) : presets} value={shownPreset} onChange={id => { setPreset(id as PresetId); setNotice(`画面：${presets.find(p => p.id === id)?.label ?? id}`); }} animation={motionPaused ? 'off' : 'auto'} aria-label={replaying ? '录播中的画面预设' : '画面预设'} className="preset-selector" />
+      <header className="experience-header" hidden={interfaceHidden}>
+        <div className="brand-row"><span className="wordmark">SonoScope<span className="brand-cn">声象</span></span><div className="header-actions"><span className="status-indicator" data-active={running} role="status">{status}</span><button ref={hideButton} type="button" className="text-button" onClick={toggleInterface}>隐藏界面</button></div></div>
+        <FlipOptionList options={presets.map(option => ({ ...option, disabled: replaying || !ready || requesting || recordingBusy && !running }))} value={shownPreset} onChange={selectPreset} animation={motionPaused ? 'off' : 'auto'} aria-label={replaying ? '录播中的画面预设' : '画面预设'} className="preset-selector" />
       </header>
-      {!running && !replaying && (
-        <section className="start-panel" aria-labelledby="start-title">
-          <p className="eyebrow">声音 · 画面 · 此刻</p>
-          <h1 id="start-title">让声音有个形状</h1>
-          <p className="start-description">开启麦克风，让画面和弹幕跟着声音回应。开始后可录下这一段，随时回看。</p>
-          <p className="privacy-note">原始音频留在浏览器。开启 AI 时，仅发送声音特征与最近的弹幕。</p>
-          {session.audio.error && <p className="audio-error" role="alert">{session.audio.error.message}</p>}
-          <div className="start-actions">
-            <button className="action-button primary-action" type="button" disabled={!session.ready || requesting || recordingBusy} onClick={() => { void session.start(); }}>{requesting ? session.audio.sourceType === 'file' ? '加载声音…' : '等待授权…' : session.audio.error ? '重试麦克风' : '开启麦克风'}</button>
-            {requesting ? <button className="action-button" type="button" onClick={session.stop}>取消</button> : <button className="action-button" type="button" disabled={!session.ready || recordingBusy} onClick={() => fileInput.current?.click()}>选择音频文件</button>}
-          </div>
-        </section>
-      )}
-      <input ref={fileInput} className="sr-only" type="file" accept="audio/*" aria-label="选择音频文件" tabIndex={-1} onChange={event => { const file = event.target.files?.[0]; if (file) { session.stop(); void session.start({ type: 'file', file }); } event.target.value = ''; }} />
-      <footer className="experience-footer">
+      <input ref={fileInput} hidden type="file" accept="audio/*" aria-label="选择音频文件" tabIndex={-1} onChange={event => { const file = event.target.files?.[0]; if (file) { session.stop(); void session.start({ type: 'file', file }); } event.target.value = ''; }} />
+      <footer className="experience-footer" hidden={interfaceHidden}>
+        <div className="dock-row">
+          {!replaying && (running || requesting ? <button type="button" className="action-button" onClick={session.stop}>{requesting ? '取消启动' : '停止声音'}</button>
+            : session.audio.error?.code === 'init-failed' ? <button type="button" className="action-button" onClick={() => location.reload()}>重新加载声音</button>
+            : <button type="button" className="action-button" disabled={!ready || recordingBusy} onClick={() => { void session.start(); }}>{!ready ? '声音准备中…' : session.audio.error ? '重试麦克风' : '开启麦克风'}</button>)}
+          <button type="button" className="action-button tools-toggle" aria-expanded={toolsOpen} aria-controls="experience-tools" onClick={() => setToolsOpen(value => !value)}>{toolsOpen ? '收起工具' : '工具'}<span aria-hidden="true">{toolsOpen ? '−' : '+'}</span></button>
+          {!replaying && <AudioInputStatus monitor={session.inputMonitor} paused={motionPaused} />}
+        </div>
+        {!running && !requesting && !replaying && !session.audio.error && ready && <p className="input-guidance">点选上方画面即可开启麦克风，再点当前画面可关闭。</p>}
+        {requesting && <p className="input-guidance" role="status">{session.audio.sourceType === 'file' ? '正在读取音频文件…' : '请在浏览器中允许麦克风。没有弹出提示时，请检查地址栏的网站设置。'}</p>}
+        {session.audio.error && <p className="audio-error" role="alert">{session.audio.error.message}</p>}
         {replaying && <ReplayControls state={session.playback} onPlay={session.play} onPause={session.pause} onSeek={session.seek} onRate={session.setRate} onClose={session.closePlayback} />}
+        <section id="experience-tools" className="tools-panel" aria-label="声音与画面工具" hidden={!toolsOpen}>
         <div className="toolbar" role="group" aria-label="声音与画面控制">
-          {running && <button type="button" className="action-button" onClick={session.stop}>停止声音</button>}
+          {!replaying && <button className="action-button" type="button" disabled={!ready || requesting || recordingBusy} onClick={() => fileInput.current?.click()}>选择音频文件</button>}
           {!replaying && <><button type="button" className="action-button" aria-pressed={danmuEnabled} onClick={() => { setDanmuEnabled(v => !v); setNotice(danmuEnabled ? '弹幕已关' : '弹幕已开'); }}>弹幕 <span>{danmuEnabled ? '开' : '关'}</span></button>
           <button type="button" className="action-button" aria-pressed={spectrum} onClick={() => { setSpectrum(v => !v); setNotice(spectrum ? '频谱模式已关' : '频谱模式已开'); }}>频谱 <span>{spectrum ? '开' : '关'}</span></button>
           <button type="button" className="action-button" aria-pressed={cloud} disabled={!session.aiAvailable} title={session.aiAvailable ? '只发送声音特征' : 'AI 尚未开放，本地反馈照常工作'} onClick={() => { setCloud(v => !v); setNotice(cloud ? '已切换到本地反馈' : 'AI 增强已开'); }}>AI 增强 <span>{cloud ? '开' : '关'}</span></button></>}
-          <button type="button" className="action-button" aria-pressed={pausedMotion} onClick={() => setPausedMotion(v => !v)}>{pausedMotion ? '恢复动态' : '暂停动态'}</button>
+          <button type="button" className="action-button" aria-pressed={reducedMotion || pausedMotion} disabled={reducedMotion} onClick={() => setPausedMotion(v => !v)}>{reducedMotion ? '系统已减少动态' : pausedMotion ? '恢复动态' : '暂停动态'}</button>
           <button type="button" className="action-button" aria-expanded={showHistory} aria-controls="comment-history" onClick={() => setShowHistory(v => !v)}>弹幕记录</button>
           <button type="button" className="action-button" aria-haspopup="dialog" onClick={openRecordings} disabled={!ready}>我的录播</button>
         </div>
-        {!replaying && <RecordingControls state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => { void session.startRecording(); }} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
-        <div className="footer-meta"><span>{replaying ? '同步读取原弹幕 · 不重新生成' : cloudLabel}{!replaying && !session.aiAvailable ? ' · AI 尚未开放' : ''}</span>{!replaying && <span className="keyboard-hint">1–5 切画面 · D 弹幕 · S 频谱</span>}</div>
-        <OfflineStatus />
+        <p className="privacy-note">原始音频留在浏览器。开启 AI 时，仅发送声音特征与最近的弹幕。</p>
+        <div className="footer-meta"><span>{replaying ? '同步读取原弹幕 · 不重新生成' : cloudLabel}{!replaying && !session.aiAvailable ? ' · AI 尚未开放' : ''}</span><span className="keyboard-hint">1–5 切画面 · D 弹幕 · S 频谱 · H 隐藏界面</span></div>
+        </section>
+        {!replaying && (toolsOpen || recordingBusy || ['saved', 'error'].includes(session.recording.status)) && <RecordingControls compact={!toolsOpen} state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => { void session.startRecording(); }} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
+        <div className="offline-indicator"><OfflineStatus /></div>
         {session.recordingMessage && !showRecordings && <p className="recording-note" role="status">{session.recordingMessage}</p>}
         {running && (session.analysis.message || session.danmu?.message) && <p className="service-note">{session.danmu?.message || session.analysis.message}</p>}
       </footer>
+      {interfaceHidden && <div className="hidden-controls">
+        {session.audio.error && <><p className="audio-error" role="alert">{session.audio.error.message}</p><button type="button" className="action-button" onClick={() => { setInterfaceHidden(false); if (session.audio.error?.code === 'init-failed') location.reload(); else void startAudio(); }}>{session.audio.error.code === 'init-failed' ? '重新加载声音' : '重试麦克风'}</button></>}
+        {(running || requesting) && <button type="button" className="action-button" onClick={session.stop}>{requesting ? '取消启动' : '停止声音'}</button>}
+        {recordingBusy && <RecordingControls compact state={session.recording} running={running} supported={session.recordingSupported} ready={ready} onStart={() => {}} onStop={() => { void session.finishRecording(); }} onLibrary={openRecordings} />}
+        <button ref={restoreButton} type="button" className="action-button interface-restore" onClick={toggleInterface}>显示控制</button>
+      </div>}
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{notice || status}</p>
       {notice && <div className="toast" aria-hidden="true">{notice}</div>}
       {showHistory && <section id="comment-history" className="history-panel" aria-label={replaying ? '录播弹幕记录' : '最近弹幕'}><div className="history-heading"><h2>{replaying ? '录播弹幕记录' : '最近弹幕'}</h2><button type="button" className="action-button" onClick={() => setShowHistory(false)}>关闭记录</button></div>{replaying ? <><ol>{session.replayComments.map(c => <li key={c.seq}><button type="button" className="transcript-comment" onClick={() => session.seek(c.atMs)}><time>{recordingTime(c.atMs)}</time><span className="source-tag">{c.source === 'ai' ? 'AI' : '本地'}</span><span>{c.text}</span></button></li>)}</ol>{!session.replayComments.length && <p>这段录播没有已显示的弹幕。</p>}{session.hasMoreComments && <button type="button" className="action-button" onClick={session.loadMoreComments}>读取更多弹幕</button>}</> : session.danmu?.history.length ? <ol>{session.danmu.history.map(c => <li key={c.commentId}><span className="source-tag">{c.source === 'ai' ? 'AI' : '本地'}</span>{c.text}</li>)}</ol> : <p>开启声音与弹幕后，这里会保留最近 12 条记录。完整录播另行保存。</p>}</section>}

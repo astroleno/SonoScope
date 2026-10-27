@@ -64,5 +64,5 @@ export function useSonoScope(container: React.RefObject<HTMLDivElement | null>, 
   const setDanmuEnabled = useCallback((value: boolean) => runtime.current?.setDanmuEnabled(value), []);
   const setCloudEnabled = useCallback((value: boolean) => runtime.current?.setCloudEnabled(value), []);
   const recordRender = useCallback((frame: FeatureFrame | null, at: number) => runtime.current?.metrics.rendered(frame, at), []);
-  return { ready, audio, danmu, analysis, aiAvailable, latestFrame, telemetry, start, stop, setDanmuEnabled, setCloudEnabled, recordRender, ...recordings };
+  return { ready, audio, danmu, analysis, aiAvailable, latestFrame, telemetry, inputMonitor: engine, start, stop, setDanmuEnabled, setCloudEnabled, recordRender, ...recordings };
 }

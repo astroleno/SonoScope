@@ -169,6 +169,40 @@ export type WaveAudioUniforms = {
   pulse: number;
 };
 
+export const WAVE_QUIET_AMPLITUDE = .015;
+const clampUnit = (value: number) => Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0;
+
+/** Flux is relative to the previous spectrum, so even near-silence can have a large flux. */
+export function waveActivity(rms: number) {
+  const x = clampUnit((rms - .002) / .008);
+  return x * x * (3 - 2 * x);
+}
+function waveAmplitude(audio: WaveAudioUniforms, sensitivity: number) {
+  const activity = waveActivity(audio.level);
+  const energy = Math.pow(clampUnit(audio.level * activity * 5 * sensitivity / 1.5), .6);
+  return Math.min(.42, WAVE_QUIET_AMPLITUDE + .28 * energy + .06 * activity * Math.max(clampUnit(audio.flux), clampUnit(audio.pulse)));
+}
+
+/** One time-based envelope owns amplitude. Quiet input cannot retrigger a large pulse. */
+export class WaveEnvelope {
+  private at: number | null = null;
+  private audio: WaveAudioUniforms = { level: 0, flux: 0, centroid: 0, flatness: 0, zcr: 0, mfcc: [0, 0, 0, 0], pulse: 0 };
+  private amplitude = WAVE_QUIET_AMPLITUDE;
+  reset() { this.at = null; this.amplitude = WAVE_QUIET_AMPLITUDE; this.audio = { level: 0, flux: 0, centroid: 0, flatness: 0, zcr: 0, mfcc: [0, 0, 0, 0], pulse: 0 }; }
+  update(input: WaveAudioUniforms, atMs: number, sensitivity = 1.5, snap = false) {
+    const dt = this.at === null ? 1 / 60 : Math.max(0, (atMs - this.at) / 1000);
+    if (this.at !== null && atMs < this.at) this.reset();
+    this.at = atMs;
+    const activity = waveActivity(input.level);
+    const approach = (value: number, target: number) => snap ? target : target + (value - target) * Math.exp(-dt / (target > value ? .055 : .16));
+    for (const key of ['level', 'flux', 'centroid', 'flatness', 'zcr', 'pulse'] as const) this.audio[key] = approach(this.audio[key], clampUnit(input[key]) * activity);
+    this.audio.mfcc = input.mfcc.map((value, i) => approach(this.audio.mfcc[i], clampUnit(value) * activity)) as WaveAudioUniforms['mfcc'];
+    const target = waveAmplitude(input, sensitivity);
+    this.amplitude = snap ? target : target + (this.amplitude - target) * Math.exp(-dt / (target > this.amplitude ? .07 : .18));
+    return { audio: this.audio, amplitude: this.amplitude };
+  }
+}
+
 export function applyWaveUniforms(
   p: any,
   shader: any,
@@ -183,14 +217,8 @@ export function applyWaveUniforms(
 
     const clamp01 = (v: number) => Math.max(0, Math.min(1, v || 0));
     
-    // 🎵 鼓点敏感度增强：根据报告建议实现动态参数
-    const baseAmplitude = controls?.amplitude ?? 0.25;
-    const baseFrequency = controls?.frequency ?? 0.9;
-    
-    // 1. 振幅映射：base + rms * sens * 0.35，使用 percussiveRatio 作为突发增强
-    const rmsBoost = clamp01(audio.level) * sensitivity * 0.35;
-    const percussiveBoost = clamp01(audio.pulse) * 0.4; // 打击乐增强
-    const dynamicAmplitude = Math.max(0.0, Math.min(0.47, baseAmplitude + rmsBoost + percussiveBoost)); // 从 0.7 降到 0.47 (约2/3)
+    // An envelope-supplied amplitude is authoritative; do not add a second pulse boost.
+    const dynamicAmplitude = Math.max(0, Math.min(.47, controls?.amplitude ?? waveAmplitude(audio, sensitivity)));
     
     // 2. 频率控制：用 spectralCentroid 控制相位分离和频率
     const centroidNorm = clamp01(audio.centroid);

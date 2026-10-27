@@ -196,6 +196,7 @@ export default function Visualizer({
           let shaderProgram: any | null = null;
           let spiralProgram: any | null = null;
           let waveProgram: any | null = null;
+          let waveEnvelope: import('../visuals/wave').WaveEnvelope | null = null;
           let mochiProgram: any | null = null;
           let mosaicVisual: any | null = null;
           let playbackEpoch = -1;
@@ -355,10 +356,11 @@ export default function Visualizer({
             const mode = presetRef.current;
             const replay = playbackClockRef.current?.current;
             const replaySeconds = replay ? replay.positionMs / 1000 : undefined;
-            if (replay && replay.epoch !== playbackEpoch) {
+            const replayDiscontinuity = !!replay && replay.epoch !== playbackEpoch;
+            if (replay && replayDiscontinuity) {
               playbackEpoch = replay.epoch;
               for (const key of Object.keys(audioModel)) audioModel[key] = 0;
-              p.__waveAmp = undefined;
+              waveEnvelope?.reset();
               mosaicVisual?.seekPlayback(replay.positionMs, replay.warmup);
             }
             const current = liveFrameRef.current?.current;
@@ -637,131 +639,27 @@ export default function Visualizer({
               );
               mosaicMod.drawMosaic(p, mosaicVisual, replay?.positionMs);
             } else if (mode === 'wave' && waveProgram && waveMod) {
-              const levelInstant = Math.max(0, Math.min(1, rawLvl));
-              const fluxInstant = Math.max(0, Math.min(1, fluxRaw));
-              const centroidInstant = Math.max(0, Math.min(1, centroidNorm));
-              const flatInstant = Math.max(0, Math.min(1, flatNorm));
-              const zcrInstant = Math.max(0, Math.min(1, zcrNorm));
-              const mfccInstant: [number, number, number, number] = [
-                mapM(m0),
-                mapM(m1),
-                mapM(m2),
-                mapM(m3),
-              ];
-              const pulseInstant = Math.max(
-                0,
-                Math.min(1, Math.max(audioModel.fluxPulse, fluxInstant))
-              );
-
-              const glowAttack = 0.28;
-              const glowDecay = 0.12;
-              const glowSmooth = (cur: number, target: number) =>
-                cur + (target > cur ? glowAttack : glowDecay) * (target - cur);
-
-              // @ts-ignore
-              if (!p.__waveGlowState) {
-                // @ts-ignore
-                p.__waveGlowState = {
-                  level: levelInstant,
-                  flux: fluxInstant,
-                  centroid: centroidInstant,
-                  flatness: flatInstant,
-                  zcr: zcrInstant,
-                  pulse: pulseInstant,
-                  mfcc0: mfccInstant[0],
-                  mfcc1: mfccInstant[1],
-                  mfcc2: mfccInstant[2],
-                  mfcc3: mfccInstant[3],
-                };
-              }
-              // @ts-ignore
-              const glowState = p.__waveGlowState as {
-                level: number;
-                flux: number;
-                centroid: number;
-                flatness: number;
-                zcr: number;
-                pulse: number;
-                mfcc0: number;
-                mfcc1: number;
-                mfcc2: number;
-                mfcc3: number;
-              };
-
-              glowState.level = glowSmooth(glowState.level, levelInstant);
-              glowState.flux = glowSmooth(glowState.flux, fluxInstant);
-              glowState.centroid = glowSmooth(glowState.centroid, centroidInstant);
-              glowState.flatness = glowSmooth(glowState.flatness, flatInstant);
-              glowState.zcr = glowSmooth(glowState.zcr, zcrInstant);
-              glowState.pulse = glowSmooth(glowState.pulse, pulseInstant);
-              glowState.mfcc0 = glowSmooth(glowState.mfcc0, mfccInstant[0]);
-              glowState.mfcc1 = glowSmooth(glowState.mfcc1, mfccInstant[1]);
-              glowState.mfcc2 = glowSmooth(glowState.mfcc2, mfccInstant[2]);
-              glowState.mfcc3 = glowSmooth(glowState.mfcc3, mfccInstant[3]);
-
-              const waveAudio = {
-                level: glowState.level,
-                flux: glowState.flux,
-                centroid: glowState.centroid,
-                flatness: glowState.flatness,
-                zcr: glowState.zcr,
-                mfcc: [
-                  glowState.mfcc0,
-                  glowState.mfcc1,
-                  glowState.mfcc2,
-                  glowState.mfcc3,
-                ] as [number, number, number, number],
-                pulse: glowState.pulse,
-              };
-
-              const waveSensitivity = sensitivityRef.current ?? 1.2;
-              const energySmoothing = 0.028;
-              const amplitudeSmoothing = 0.012;
-              const levelDrive = Math.max(0, Math.min(1, audioModel.level));
-              const fluxDrive = Math.max(0, Math.min(1, audioModel.flux));
-              const pulseDrive = Math.max(0, Math.min(1, audioModel.fluxPulse));
-              const combined = Math.min(
-                1,
-                (levelDrive * 0.8) + (fluxDrive * 0.15) + (pulseDrive * 0.2)
-              );
-              // 先对能量做一次缓慢积分，让振幅变化具备缓冲
-              // @ts-ignore
-              if (typeof p.__waveEnergy !== 'number') {
-                // @ts-ignore
-                p.__waveEnergy = combined;
-              }
-              // @ts-ignore
-              p.__waveEnergy =
-                // @ts-ignore
-                p.__waveEnergy + energySmoothing * (combined - p.__waveEnergy);
-              // @ts-ignore
-              const smoothedEnergy = Math.max(0, Math.min(1, p.__waveEnergy as number));
-              const shaped = Math.pow(Math.max(0.0001, smoothedEnergy), 0.58);
-              const targetAmp = Math.max(
-                0.05,
-                Math.min(0.42, 0.09 + 0.24 * 1.3 * shaped)
-              );
-              // 仅对振幅做音频响应和平滑
-              // @ts-ignore
-              if (typeof p.__waveAmp !== 'number') {
-                // @ts-ignore
-                p.__waveAmp = targetAmp;
-              }
-              // @ts-ignore
-              p.__waveAmp =
-                // @ts-ignore
-                p.__waveAmp +
-                amplitudeSmoothing * (targetAmp - p.__waveAmp);
-              // @ts-ignore
-              const amplitude = p.__waveAmp as number;
+              const fresh = !current || !!replay || Date.now() - current.capturedAt <= 500;
+              const active = runningRef.current && fresh;
+              waveEnvelope ??= new waveMod.WaveEnvelope();
+              const waveSensitivity = sensitivityRef.current ?? 1.5;
+              const response = waveEnvelope!.update({
+                level: active ? rawLvl : 0,
+                flux: active ? fluxRaw : 0,
+                centroid: active ? centroidNorm : 0,
+                flatness: active ? flatNorm : 0,
+                zcr: active ? zcrNorm : 0,
+                mfcc: active ? [mapM(m0), mapM(m1), mapM(m2), mapM(m3)] : [0, 0, 0, 0],
+                pulse: active ? Math.max(audioModel.fluxPulse, fluxRaw) : 0,
+              }, replay?.positionMs ?? performance.now(), waveSensitivity, replayDiscontinuity);
 
               waveMod.applyWaveUniforms(
                 p,
                 waveProgram,
-                waveAudio,
+                response.audio,
                 waveSensitivity,
                 {
-                  amplitude,
+                  amplitude: response.amplitude,
                   frequency: 0.82,
                   speed: 0.085,
                   phaseBase: 0.0,

@@ -21,7 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
+    // Translation and assistant extensions can add attributes to the document shells.
+    // Tolerance is shallow on html/body; application children still hydrate normally.
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         {/* 移动端优化 */}
         <meta name="format-detection" content="telephone=no" />
@@ -32,7 +34,7 @@ export default function RootLayout({
           content="black-translucent"
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {/* 无障碍支持 */}
         <div
           id="a11y-announcements"
