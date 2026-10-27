@@ -1,0 +1,616 @@
+{
+  "date": "2026-10-28",
+  "status": "deployed; both public origins verified",
+  "sourceCommit": "932e2d0dd8c3dbbfc25e25f1adfd703a9fa21835",
+  "branch": "main",
+  "longTestsRun": false,
+  "physicalMicrophoneUsed": false,
+  "aiCallsMade": false,
+  "source": {
+    "sourceCommit": "932e2d0dd8c3dbbfc25e25f1adfd703a9fa21835",
+    "archiveSha256": "a2928ebf27917f326f7f8edc53e739e0c88defd0a4fde50bd06ddc663621da40",
+    "archiveBytes": 17836308,
+    "verifiedBuildInputs": 252,
+    "inputManifestSha256": "70de45ddc089d0b3d5074f038e42687541a776337a63a88744dfcb491bc68444"
+  },
+  "deployment": {
+    "activation": {
+      "sourceCommit": "932e2d0dd8c3dbbfc25e25f1adfd703a9fa21835",
+      "archiveSha256": "a2928ebf27917f326f7f8edc53e739e0c88defd0a4fde50bd06ddc663621da40",
+      "archiveBytes": 17836308,
+      "verifiedBuildInputs": 252,
+      "inputManifestSha256": "70de45ddc089d0b3d5074f038e42687541a776337a63a88744dfcb491bc68444",
+      "releaseId": "20261028-932e2d0",
+      "builtAt": "2026-10-27T16:18:08.311Z",
+      "buildId": "fbP0N2w4nr4xyOicVFdjL",
+      "offlineVersion": "0d64f96150a7a1fdc87cbea2",
+      "offlineAssetCount": 51,
+      "workerSha256": "bc086f52256267f3e675082312d4e78d1245a6c87725474ea2fbe1a9138771e6",
+      "workerBytes": 49663,
+      "deployedAt": "2026-10-27T16:18:29.110882+00:00",
+      "previousRelease": "/srv/sonoscope/releases/20261027-65d046f",
+      "release": "/srv/sonoscope/releases/20261028-932e2d0",
+      "verifiedReleaseFiles": 2202,
+      "releaseFileManifestSha256": "e4f5bbb6346c8ccdd1b60b8ce53eb4788f337214cf87fc3e92107d8733a4935b",
+      "configSha256": {
+        "/www/server/panel/vhost/snippets/sonoscope-upstream.conf": "fc2c5fe4700583dc80f46a6c7ff2d0e4565efc58bf1adfa47f7f86281dd513ee",
+        "/etc/systemd/system/sonoscope.service": "72d76bedb91af5227458ff20584e063c2e291200c7325f3a008e8a79d96ea558"
+      },
+      "active": "active",
+      "backup": "/var/backups/sonoscope/20261028-corner-932e2d0"
+    },
+    "cleanup": {
+      "removed": [
+        "/srv/sonoscope/builds/corner-932e2d0",
+        "/tmp/sonoscope-corner-932e2d0",
+        "/var/lib/sonoscope/.local/share/pnpm/store/v3"
+      ],
+      "releaseChecksumsAfterCleanup": "passed",
+      "health": {
+        "status": "ok",
+        "version": "2"
+      },
+      "aiEnabled": false,
+      "service": "NRestarts=0\nActiveState=active",
+      "matchingAccessLogRequestsInLastMiB": 8,
+      "temporaryCredentialsCreated": false,
+      "diskFreeBytes": 7358554112
+    },
+    "release-smoke": {
+      "source": "local standalone release (same platform/architecture)",
+      "measuredAt": "2026-10-27T16:18:06.740Z",
+      "basePath": "/SonoScope",
+      "routes": [
+        {
+          "path": "/SonoScope",
+          "status": 200
+        },
+        {
+          "path": "/api/health",
+          "status": 200
+        },
+        {
+          "path": "/api/runtime-config",
+          "status": 200
+        },
+        {
+          "path": "/standalone-client",
+          "status": 307,
+          "location": "/SonoScope/"
+        },
+        {
+          "path": "/mochi",
+          "status": 200
+        },
+        {
+          "path": "/test",
+          "status": 404
+        },
+        {
+          "path": "/icon.png",
+          "status": 200
+        },
+        {
+          "path": "/apple-icon.png",
+          "status": 200
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "path": "/sonoscope-sw.js",
+          "status": 200
+        },
+        {
+          "path": "/audio/capture-worklet.js",
+          "status": 200
+        },
+        {
+          "path": "/model/yamnet-1.tflite",
+          "status": 200
+        },
+        {
+          "path": "/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+          "status": 200
+        }
+      ],
+      "staticFiles": 47,
+      "providerKeyInPublicOutput": null
+    },
+    "previousReleaseRetained": true,
+    "activeRelease": "/srv/sonoscope/releases/20261028-932e2d0"
+  },
+  "verification": {
+    "linuxTargetedRegressions": {
+      "passed": 18,
+      "failed": 0,
+      "testFiles": 3,
+      "durationSeconds": 3.86
+    },
+    "productionBuildAndTypecheck": "passed",
+    "publicHTTP": {
+      "sourceCommit": "932e2d0dd8c3dbbfc25e25f1adfd703a9fa21835",
+      "releaseId": "20261028-932e2d0",
+      "buildId": "fbP0N2w4nr4xyOicVFdjL",
+      "checks": [
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/api/health",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/api/health",
+          "sha256": "69a2b3f4e41855e63ae199a13be09cc22b9922b98f62643ea637d732d02d79d8",
+          "bytes": 29,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/api/runtime-config",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/api/runtime-config",
+          "sha256": "f6dc0848de4e2661487376f3237272a9f6bbbabe7633bc6f75bfa7cd17604bf9",
+          "bytes": 49,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/sonoscope-sw.js",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/sonoscope-sw.js",
+          "sha256": "bc086f52256267f3e675082312d4e78d1245a6c87725474ea2fbe1a9138771e6",
+          "bytes": 49663,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/_next/static/css/5c20eb728a0c8fb0.css",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/_next/static/css/5c20eb728a0c8fb0.css",
+          "sha256": "bfce7e0e127eaf5f695fee7f668d93fd3eb455f3a61ea248ee8a3da4f45608ea",
+          "bytes": 29559,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/_next/static/chunks/app/page-569087fd2798bae2.js",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/_next/static/chunks/app/page-569087fd2798bae2.js",
+          "sha256": "15ef9ab3c4189eba6c056e66836d733a6f23c7fc2d622cadb19b7cfd026f535c",
+          "bytes": 132,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/audio/capture-worklet.js",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/audio/capture-worklet.js",
+          "sha256": "3139cda95feba0873af3e55d98cd156d3ab40fd1ee5612ce77047f934e0553e0",
+          "bytes": 862,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/manifest.webmanifest",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/manifest.webmanifest",
+          "sha256": "85962997f22664af51f1e0f47571a4f9c4b316c174c42251610d15558b018cf1",
+          "bytes": 308,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 308,
+          "url": "https://aitoshuu.me/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "43a81fb3d47b34e7d42d6b8444f592ed9251b8e57db8f67d32419aa40b1480d0",
+          "bytes": 164,
+          "location": "https://aitoshuu.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX"
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 308,
+          "url": "https://aitoshuu.me/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "43a81fb3d47b34e7d42d6b8444f592ed9251b8e57db8f67d32419aa40b1480d0",
+          "bytes": 164,
+          "location": "https://aitoshuu.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX"
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/standalone-client",
+          "status": 200,
+          "url": "https://aitoshuu.me/SonoScope",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://aitoshuu.me",
+          "path": "/SonoScope/_next/static/missing-corner-932e2d0.js",
+          "status": 404,
+          "url": "https://aitoshuu.me/SonoScope/_next/static/missing-corner-932e2d0.js",
+          "sha256": "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+          "bytes": 9,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/api/health",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/api/health",
+          "sha256": "69a2b3f4e41855e63ae199a13be09cc22b9922b98f62643ea637d732d02d79d8",
+          "bytes": 29,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/api/runtime-config",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/api/runtime-config",
+          "sha256": "f6dc0848de4e2661487376f3237272a9f6bbbabe7633bc6f75bfa7cd17604bf9",
+          "bytes": 49,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/sonoscope-sw.js",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/sonoscope-sw.js",
+          "sha256": "bc086f52256267f3e675082312d4e78d1245a6c87725474ea2fbe1a9138771e6",
+          "bytes": 49663,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/_next/static/css/5c20eb728a0c8fb0.css",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/_next/static/css/5c20eb728a0c8fb0.css",
+          "sha256": "bfce7e0e127eaf5f695fee7f668d93fd3eb455f3a61ea248ee8a3da4f45608ea",
+          "bytes": 29559,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/_next/static/chunks/app/page-569087fd2798bae2.js",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/_next/static/chunks/app/page-569087fd2798bae2.js",
+          "sha256": "15ef9ab3c4189eba6c056e66836d733a6f23c7fc2d622cadb19b7cfd026f535c",
+          "bytes": 132,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/audio/capture-worklet.js",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/audio/capture-worklet.js",
+          "sha256": "3139cda95feba0873af3e55d98cd156d3ab40fd1ee5612ce77047f934e0553e0",
+          "bytes": 862,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/manifest.webmanifest",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/manifest.webmanifest",
+          "sha256": "85962997f22664af51f1e0f47571a4f9c4b316c174c42251610d15558b018cf1",
+          "bytes": 308,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 308,
+          "url": "https://tongye.me/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "43a81fb3d47b34e7d42d6b8444f592ed9251b8e57db8f67d32419aa40b1480d0",
+          "bytes": 164,
+          "location": "https://tongye.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX"
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/sonoscope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 308,
+          "url": "https://tongye.me/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "43a81fb3d47b34e7d42d6b8444f592ed9251b8e57db8f67d32419aa40b1480d0",
+          "bytes": 164,
+          "location": "https://tongye.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX"
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/sOnOsCoPe/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope/mochi?verify=932e2d0&Keep=AbC%2FX",
+          "sha256": "b10c9020ec05e753198df9859b63227ade2a06d60ab3197698a5a702343908a3",
+          "bytes": 16531,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/standalone-client",
+          "status": 200,
+          "url": "https://tongye.me/SonoScope",
+          "sha256": "724f65c29e2dc03df00de53e03965e17206ed74bfb192c4b642ad6718e60258b",
+          "bytes": 15987,
+          "location": null
+        },
+        {
+          "origin": "https://tongye.me",
+          "path": "/SonoScope/_next/static/missing-corner-932e2d0.js",
+          "status": 404,
+          "url": "https://tongye.me/SonoScope/_next/static/missing-corner-932e2d0.js",
+          "sha256": "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+          "bytes": 9,
+          "location": null
+        }
+      ]
+    },
+    "browser": {
+      "tongye": {
+        "before": {
+          "calls": 0,
+          "hidden": "true",
+          "icons": [
+            {
+              "label": "开启麦克风",
+              "svg": true,
+              "text": ""
+            },
+            {
+              "label": "显示界面",
+              "svg": true,
+              "text": ""
+            }
+          ],
+          "prompt": true,
+          "url": "https://tongye.me/SonoScope"
+        },
+        "denied": {
+          "calls": 1,
+          "message": "麦克风未获授权。请在浏览器的网站设置中允许麦克风，再点重试。",
+          "status": "error"
+        },
+        "live": {
+          "calls": 2,
+          "comments": [
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "border": "0px",
+              "text": "这段声音的高频比较明显",
+              "top": 80
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "border": "0px",
+              "text": "低频的成分比较突出",
+              "top": 120
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "border": "0px",
+              "text": "声音的重心偏向低处",
+              "top": 160
+            }
+          ],
+          "hidden": "true",
+          "iconBottom": 56,
+          "signal": {
+            "level": "48",
+            "signal": "receiving",
+            "uAmplitude": 0.1465451866388321,
+            "uFlux": 0.002492224797606468,
+            "uLevel": 0.05673540011048317,
+            "uPulse": 0.002492224797606468
+          },
+          "status": "running"
+        },
+        "expanded": true,
+        "hiddenAgain": {
+          "calls": 2,
+          "comments": 4,
+          "hidden": "true"
+        },
+        "errors": []
+      },
+      "aitoshuu": {
+        "skipped": {
+          "calls": 0,
+          "hidden": "true",
+          "icons": 2,
+          "prompt": false,
+          "url": "https://aitoshuu.me/SonoScope"
+        },
+        "live": {
+          "calls": 1,
+          "comments": 3,
+          "hidden": "true",
+          "signal": {
+            "level": "48",
+            "signal": "receiving",
+            "uAmplitude": 0.14675337076187134,
+            "uFlux": 0.0024055091198533773,
+            "uLevel": 0.056895725429058075,
+            "uPulse": 0.0024055091198533773
+          },
+          "status": "running"
+        },
+        "expanded": true,
+        "errors": []
+      },
+      "local": {
+        "before": {
+          "calls": 0,
+          "hidden": "true",
+          "iconCount": 2
+        },
+        "live": {
+          "calls": 1,
+          "comments": [
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "rect": {
+                "bottom": 110,
+                "top": 80
+              },
+              "text": "这段声音的高频比较明显"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "rect": {
+                "bottom": 150,
+                "top": 120
+              },
+              "text": "低频的成分比较突出"
+            },
+            {
+              "background": "rgba(0, 0, 0, 0)",
+              "rect": {
+                "bottom": 190,
+                "top": 160
+              },
+              "text": "声音的重心偏向低处"
+            }
+          ],
+          "hidden": "true",
+          "iconBottom": 56,
+          "signal": {
+            "level": "48",
+            "signal": "receiving",
+            "uAmplitude": 0.14688169956207275,
+            "uFlux": 0.0023645104374736547,
+            "uLevel": 0.05700504034757614,
+            "uPulse": 0.0023645104374736547
+          }
+        },
+        "expanded": true,
+        "hiddenAgain": {
+          "calls": 1,
+          "comments": 4,
+          "hidden": "true"
+        }
+      },
+      "narrowViewport": {
+        "hidden": true,
+        "expanded": true,
+        "geometry": {
+          "icons": [
+            {
+              "height": 44,
+              "left": 278,
+              "right": 322,
+              "width": 44
+            },
+            {
+              "height": 44,
+              "left": 330,
+              "right": 374,
+              "width": 44
+            }
+          ],
+          "scroll": 390,
+          "width": 390
+        }
+      }
+    },
+    "neighborEntries": {
+      "checked": 18,
+      "statusFinalURLAndBodyUnchanged": true
+    },
+    "localCleanup": {
+      "localTestPort3300": "closed",
+      "removedCacheBytes": 53064310
+    }
+  },
+  "offlineUpdate": {
+    "existingVersionObservedOnReload": true,
+    "bothNewWorkersReachedInstalledWaiting": true,
+    "updateMethod": "Closed the two agent-owned idle origin tabs and reopened; new microphone prompts and hidden controls appeared. No forced activation or site-data clearing.",
+    "newVersionOfflineColdStartRetested": false
+  },
+  "remainingAcceptance": [
+    "Real physical microphone permission/device-disconnect behavior; browser tests used a scoped synthetic getUserMedia path and simulated denial",
+    "Real mobile devices, Windows, Safari and cross-device recording formats",
+    "Previously unmet named-instrument recognition accuracy",
+    "Per-platform first-comment p95 statistics and long recording/replay/resource/drift acceptance",
+    "No new end-to-end real recording playback or offline cold-start qualification for this UI release"
+  ]
+}
