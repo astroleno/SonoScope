@@ -66,6 +66,25 @@ it('first AI and fresh local feedback can replace the oldest visible item when a
   expect(shown).toHaveBeenCalledTimes(4); expect(queue.size).toBe(1);
   queue.dispose(); sink.dispose();
 });
+it('can withdraw an old acoustic candidate without creating a presentation event', () => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+  let nextFrame: FrameRequestCallback | undefined;
+  vi.stubGlobal('requestAnimationFrame', vi.fn(callback => { nextFrame = callback; return 1; }));
+  vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  vi.stubGlobal('innerHeight', 600);
+  vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+  const container = document.createElement('div');
+  document.body.append(container);
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () { return { width: 800, height: this === container ? 600 : 40, top: 0 } as DOMRect; });
+  const sink = new DomCommentSink(container), events = vi.fn();
+  sink.subscribePresentation(events);
+  expect(sink.show(comment({ commentId: 'old-phrase' }))).toBe(true);
+  sink.discardUnpresented('old-phrase');
+  nextFrame?.(performance.now());
+  expect(container.children).toHaveLength(0);
+  expect(events).not.toHaveBeenCalled();
+  sink.dispose();
+});
 it('does not archive nodes removed before a visible render and reports early removal once', () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
   let nextFrame: FrameRequestCallback | undefined;

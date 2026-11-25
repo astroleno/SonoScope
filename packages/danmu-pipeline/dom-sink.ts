@@ -40,6 +40,10 @@ export class DomCommentSink implements CommentSink {
   setReducedMotion(value: boolean) { if (value === this.reducedMotion) return; this.clear(); this.reducedMotion = value; }
   subscribePresentation(listener: (event: CommentPresentation) => void) { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
   visibleComments() { const now = performance.now(); return this.active.filter(c => c.presented && c.expires > now).map(c => ({ comment: c.comment, remainingMs: c.expires - now, durationMs: c.duration })); }
+  discardUnpresented(id: string) {
+    const index = this.active.findIndex(c => !c.presented && c.comment.commentId === id);
+    if (index >= 0) this.remove(this.active.splice(index, 1)[0]);
+  }
   private remove(c: typeof this.active[number]) { c.element.remove(); if (c.presented) for (const listener of this.listeners) listener({ type: 'hide', comment: c.comment, durationMs: c.duration }); }
   private position(height: number) {
     let y = this.top;

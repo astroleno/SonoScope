@@ -1,7 +1,7 @@
 import { CONTRACT_VERSION, cleanComment, instrumentComment, instrumentEvidence, soundObservation, type CommentCandidate, type FeatureFrame, type FeatureSnapshot, type GenerationRequest } from '@sonoscope/core';
 import { CommentQueue, type CommentSink } from './comment-queue';
 import type { Generate } from './client';
-import { AcousticFeedback } from './acoustic-observations';
+import { AcousticFeedback, type AcousticObservation } from './acoustic-observations';
 
 export interface DanmuState {
   active: boolean; audioSessionId: string | null; danmuRunId: string | null;
@@ -23,6 +23,7 @@ export class DanmuController {
   private listeners = new Set<(state: DanmuState) => void>();
   private lastLocal = -Infinity;
   private acousticFeedback: AcousticFeedback | null = null;
+  private pendingAcoustic: { candidate: CommentCandidate; observation: AcousticObservation } | null = null;
   private baseline: { rms: number; low: number; high: number } | null = null;
   private previousRms = 0;
   private voiceActive = false;
@@ -41,6 +42,14 @@ export class DanmuController {
     this.state = this.initialState();
     this.queue = new CommentQueue(sink, { now: this.now, intervalMs: options.intervalMs, onShown: (c, at) => {
       if (!this.matches(c.audioSessionId, c.danmuRunId)) return;
+      const pending = this.pendingAcoustic;
+      if (pending?.candidate.commentId === c.commentId) {
+        this.pendingAcoustic = null;
+        if (this.acousticFeedback?.isCurrent(pending.observation)) {
+          this.acousticFeedback.presented(pending.observation, at);
+          this.effectiveSoundAt ??= pending.observation.startedAt;
+        }
+      }
       const firstAI = c.source === 'ai' && c.requestStartedAt !== undefined && !this.firstRequests.has(c.snapshotId);
       if (firstAI) { this.firstRequests.add(c.snapshotId); if (this.firstRequests.size > 100) this.firstRequests.delete(this.firstRequests.values().next().value!); }
       this.state = { ...this.state, displayed: this.state.displayed + 1, localDisplayed: this.state.localDisplayed + Number(c.source === 'local'), aiDisplayed: this.state.aiDisplayed + Number(c.source === 'ai'), history: [...this.state.history, c].slice(-12), metrics: { localFirstMs: this.state.metrics.localFirstMs ?? (c.source === 'local' && this.effectiveSoundAt !== null ? at - this.effectiveSoundAt : null), aiFirstMs: firstAI ? at - c.requestStartedAt! : this.state.metrics.aiFirstMs, aiFirstSnapshotId: firstAI ? c.snapshotId : this.state.metrics.aiFirstSnapshotId } };
@@ -76,9 +85,16 @@ export class DanmuController {
     if (acousticFeedback) {
       const now = this.now();
       const observation = acousticFeedback.observe(frame, now);
+      if (this.pendingAcoustic && (this.pendingAcoustic.candidate.expiresAt <= now || !acousticFeedback.isCurrent(this.pendingAcoustic.observation))) {
+        this.queue.discardUnpresented(this.pendingAcoustic.candidate);
+        this.pendingAcoustic = null;
+      }
+      if (this.pendingAcoustic) return;
       if (!observation) return;
-      this.effectiveSoundAt ??= observation.startedAt;
-      if (this.offerLocal(frame, observation.text, now)) acousticFeedback.accepted(observation, now);
+      const candidate = this.localCandidate(frame, observation.text, now);
+      const pending = { candidate, observation };
+      this.pendingAcoustic = pending;
+      if (!this.offer(candidate, { retryIfUnpresented: true }) && this.pendingAcoustic === pending) this.pendingAcoustic = null;
       return;
     }
     const now = this.now(), v = frame.values, previous = this.baseline, priorRms = this.previousRms;
@@ -115,14 +131,14 @@ export class DanmuController {
     else if (v.flux > .25 && v.rms > .02 && v.rms > priorRms * 1.2) { text = '声音刚刚有了新的变化'; event = 'onset'; }
     else if (previous && low - previous.low > .3) { text = '低频的声音更明显了'; event = 'spectrum'; }
     else if (previous && high - previous.high > .3) { text = '高频的声音更明显了'; event = 'spectrum'; }
-    if (text && this.offerLocal(frame, text, now)) {
+    if (text && this.offer(this.localCandidate(frame, text, now))) {
       this.lastLocal = now; if (event === 'voice') this.voiceActive = true; if (event === 'music') this.lastMusic = true; if (event === 'tempo') this.lastTempo = tempo!.bpm; if (event === 'instrument') this.lastInstrument = instrument;
     }
   }
-  private offerLocal(frame: FeatureFrame, text: string, now: number) {
-    return this.offer({ commentId: this.id(), source: 'local', kind: 'regular', audioSessionId: frame.audioSessionId, danmuRunId: this.runId!, snapshotId: `${frame.audioSessionId}_${frame.seq}`, text, createdAt: now, expiresAt: now + 3000 });
+  private localCandidate(frame: FeatureFrame, text: string, now: number): CommentCandidate {
+    return { commentId: this.id(), source: 'local', kind: 'regular', audioSessionId: frame.audioSessionId, danmuRunId: this.runId!, snapshotId: `${frame.audioSessionId}_${frame.seq}`, text, createdAt: now, expiresAt: now + 3000 };
   }
-  offer(comment: CommentCandidate) { const accepted = this.queue.enqueue(comment); this.queue.tick(); this.publish(); return accepted; }
+  offer(comment: CommentCandidate, options?: { retryIfUnpresented?: boolean }) { const accepted = this.queue.enqueue(comment, options); this.queue.tick(); this.publish(); return accepted; }
   async feedSnapshot(snapshot: FeatureSnapshot) {
     if (!this.runId || snapshot.audioSessionId !== this.audioId || !this.cloudEnabled || !this.options.generate || this.requests.size || snapshot.stats.rmsMean < 0.008) return;
     const started = this.now();
@@ -162,6 +178,7 @@ export class DanmuController {
   stop() {
     ++this.cloudGeneration;
     this.acousticFeedback = null;
+    this.pendingAcoustic = null;
     this.audioId = null; this.runId = null; if (this.timer) clearInterval(this.timer); this.timer = null;
     for (const controller of this.requests.values()) controller.abort(); this.requests.clear(); this.firstRequests.clear(); this.queue?.stop(); this.state = { ...this.initialState(), history: this.state?.history ?? [] }; this.publish();
   }

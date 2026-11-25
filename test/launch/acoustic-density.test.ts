@@ -1,14 +1,15 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { DanmuController } from '../../packages/danmu-pipeline/controller';
+import type { CommentPresentation } from '../../packages/danmu-pipeline/comment-queue';
 import { comment, frame } from './fixtures';
 
 afterEach(() => vi.useRealTimers());
 
-function setup() {
+function setup(canShow = () => true) {
   vi.useFakeTimers();
   const shown: { text: string; at: number }[] = [];
   const controller = new DanmuController({
-    show(comment) { shown.push({ text: comment.text, at: Date.now() }); return true; },
+    show(comment) { if (!canShow()) return false; shown.push({ text: comment.text, at: Date.now() }); return true; },
     clear() {},
   }, { feedbackMode: 'acoustic' });
   controller.start('audio-1');
@@ -39,6 +40,80 @@ it('sparsely reaffirms a stable sound without cycling through paraphrases', () =
     for (let i = 1; i < t.shown.length; i++) expect(t.shown[i].at - t.shown[i - 1].at).toBeGreaterThanOrEqual(12000);
     expect(t.controller.current.queued).toBe(0);
   } finally { t.controller.dispose(); expect(vi.getTimerCount()).toBe(0); }
+});
+
+it('retries an expired first observation when display space returns', () => {
+  let room = false;
+  const t = setup(() => room);
+  try {
+    t.play(3300);
+    expect(t.shown).toHaveLength(0);
+    expect(t.controller.current.queued).toBe(1);
+    room = true;
+    const openedAt = Date.now();
+    t.play(200);
+    expect(t.shown).toHaveLength(1);
+    expect(t.shown[0].at - openedAt).toBeLessThanOrEqual(200);
+    t.play(11700);
+    expect(t.shown).toHaveLength(1);
+    t.play(400);
+    expect(t.shown).toHaveLength(2);
+    expect(t.shown[1].at - t.shown[0].at).toBeGreaterThanOrEqual(12000);
+  } finally { t.controller.dispose(); }
+});
+
+it('uses the asynchronous presentation acknowledgement and ignores an expired observation', () => {
+  vi.useFakeTimers();
+  let listener!: (event: CommentPresentation) => void;
+  const offered: CommentPresentation[] = [];
+  const controller = new DanmuController({
+    show(candidate) { offered.push({ type: 'show', comment: candidate, durationMs: 4000 }); return true; },
+    clear() {},
+    subscribePresentation(fn) { listener = fn; return () => {}; },
+  }, { feedbackMode: 'acoustic' });
+  controller.start('audio-1');
+  const sound = frame();
+  Object.assign(sound.values, { rms: .07, centroidHz: 200, bands: { low: .8, mid: .1, high: .1, columns: [] } });
+  let seq = 0;
+  const play = (ms: number) => {
+    for (let t = 0; t < ms; t += 20) {
+      controller.feedFrame({ ...sound, seq: seq++, capturedAt: Date.now() });
+      vi.advanceTimersByTime(20);
+    }
+  };
+  try {
+    play(3300);
+    expect(offered).toHaveLength(2);
+    expect(controller.current.localDisplayed).toBe(0);
+    listener(offered[0]);
+    expect(controller.current.localDisplayed).toBe(0);
+    listener(offered[1]);
+    expect(controller.current.localDisplayed).toBe(1);
+    expect(controller.current.metrics.localFirstMs).toBe(3300);
+    play(11900);
+    expect(offered).toHaveLength(2);
+    play(200);
+    expect(offered).toHaveLength(3);
+  } finally { controller.dispose(); }
+});
+
+it('replaces an unheard queued observation after silence separates two sounds', () => {
+  let room = false;
+  const t = setup(() => room);
+  try {
+    t.play(400);
+    expect(t.controller.current.queued).toBe(1);
+    t.sound.values.rms = 0;
+    t.play(800);
+    expect(t.controller.current.queued).toBe(0);
+    t.sound.values.rms = .07;
+    t.sound.values.centroidHz = 4400;
+    t.sound.values.bands = { low: .02, mid: .03, high: .8, columns: [] };
+    t.play(800);
+    room = true;
+    t.play(200);
+    expect(t.shown.map(c => c.text)).toEqual(['这段声音的高频比较明显']);
+  } finally { t.controller.dispose(); }
 });
 
 it('reports confirmed frequency changes in both directions without waiting for a steady reminder', () => {

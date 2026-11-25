@@ -6,6 +6,7 @@ export interface CommentSink {
   clear(): void;
   dispose?(): void;
   subscribePresentation?(listener: (event: CommentPresentation) => void): () => void;
+  discardUnpresented?(commentId: string): void;
   visibleComments?(): { comment: CommentCandidate; remainingMs: number; durationMs?: number }[];
 }
 /** Only entry to rendering. IDs and text keys cover queued and actually displayed comments. */
@@ -21,27 +22,43 @@ export class CommentQueue {
   private unsubscribe?: () => void;
   constructor(private sink: CommentSink, private options: { capacity?: number; intervalMs?: number; dedupMs?: number; now?: () => number; onShown?: (c: CommentCandidate, at: number) => void } = {}) {
     this.unsubscribe = sink.subscribePresentation?.(event => {
-      const c = event.comment;
-      if (event.type !== 'show' || c.audioSessionId !== this.audioId || c.danmuRunId !== this.runId || this.acknowledged.has(c.commentId)) return;
-      this.acknowledged.add(c.commentId); if (this.acknowledged.size > 100) this.acknowledged.delete(this.acknowledged.values().next().value!);
-      const now = this.now();
-      this.lastShownAt = Math.max(this.lastShownAt, now);
-      this.ids.set(c.commentId, now + (this.options.dedupMs ?? 60000));
-      this.texts.set(textKey(c.text), now + (this.options.dedupMs ?? (c.source === 'local' ? 10000 : 60000)));
-      this.options.onShown?.(c, now);
+      if (event.type === 'show') this.presented(event.comment, this.now());
     });
+  }
+  private presented(comment: CommentCandidate, now: number) {
+    if (comment.audioSessionId !== this.audioId || comment.danmuRunId !== this.runId || comment.expiresAt <= now || this.acknowledged.has(comment.commentId)) return;
+    this.acknowledged.add(comment.commentId);
+    if (this.acknowledged.size > 100) this.acknowledged.delete(this.acknowledged.values().next().value!);
+    this.lastShownAt = Math.max(this.lastShownAt, now);
+    this.ids.set(comment.commentId, now + (this.options.dedupMs ?? 60000));
+    this.texts.set(textKey(comment.text), now + (this.options.dedupMs ?? (comment.source === 'local' ? 10000 : 60000)));
+    this.options.onShown?.(comment, now);
   }
   private now() { return (this.options.now ?? Date.now)(); }
   start(audioId: string, runId: string) { this.stop(); this.audioId = audioId; this.runId = runId; }
-  enqueue(candidate: CommentCandidate) {
+  enqueue(candidate: CommentCandidate, { retryIfUnpresented = false } = {}) {
     const now = this.now(); this.prune(now);
     const text = cleanComment(candidate.text);
     if (!text || candidate.audioSessionId !== this.audioId || candidate.danmuRunId !== this.runId || candidate.expiresAt <= now || this.ids.has(candidate.commentId) || this.texts.has(textKey(text))) return false;
     const capacity = this.options.capacity ?? 12;
     if (this.items.length >= capacity) return false;
     const c = { ...candidate, text };
-    this.items.push(c); this.ids.set(c.commentId, now + (this.options.dedupMs ?? 60000)); this.texts.set(textKey(text), now + (this.options.dedupMs ?? (c.source === 'local' ? 10000 : 60000)));
+    // An acoustic observation can retry when its slot expires without a presentation.
+    this.items.push(c);
+    this.ids.set(c.commentId, retryIfUnpresented ? c.expiresAt : now + (this.options.dedupMs ?? 60000));
+    this.texts.set(textKey(text), retryIfUnpresented ? c.expiresAt : now + (this.options.dedupMs ?? (c.source === 'local' ? 10000 : 60000)));
     return true;
+  }
+  discardUnpresented(candidate: CommentCandidate) {
+    if (candidate.audioSessionId !== this.audioId || candidate.danmuRunId !== this.runId || this.acknowledged.has(candidate.commentId)) return;
+    const index = this.items.findIndex(comment => comment.commentId === candidate.commentId);
+    if (index >= 0) this.items.splice(index, 1);
+    if (this.ids.get(candidate.commentId) === candidate.expiresAt) {
+      this.ids.delete(candidate.commentId);
+      const key = textKey(candidate.text);
+      if (this.texts.get(key) === candidate.expiresAt) this.texts.delete(key);
+    }
+    this.sink.discardUnpresented?.(candidate.commentId);
   }
   private prune(now: number) {
     this.items = this.items.filter(c => c.expiresAt > now && c.audioSessionId === this.audioId && c.danmuRunId === this.runId);
@@ -60,7 +77,7 @@ export class CommentQueue {
     if (!this.sink.show(candidate, { priority: firstAI >= 0 || candidate.source === 'local' })) return;
     if (candidate.source === 'ai') this.boostedAI.set(candidate.snapshotId, now + 60000);
     this.items.splice(index, 1); this.lastShownAt = now;
-    if (!this.sink.subscribePresentation) this.options.onShown?.(candidate, now);
+    if (!this.sink.subscribePresentation) this.presented(candidate, now);
   }
   stop() { this.audioId = null; this.runId = null; this.items = []; this.ids.clear(); this.texts.clear(); this.boostedAI.clear(); this.acknowledged.clear(); this.lastShownAt = -Infinity; this.sink.clear(); }
   dispose() { this.stop(); this.unsubscribe?.(); this.unsubscribe = undefined; }

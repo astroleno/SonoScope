@@ -15,7 +15,7 @@ const bandText = {
 };
 type Band = keyof typeof bandText;
 type Change = 'low' | 'high' | 'louder' | 'quieter' | 'onset';
-type AcousticObservation = { text: string; startedAt: number; change?: Change };
+export type AcousticObservation = { text: string; startedAt: number; change?: Change };
 
 const changeText: Record<Change, string> = {
   low: '低频的声音更明显了',
@@ -143,7 +143,9 @@ export class AcousticFeedback {
     return null;
   }
 
-  accepted(observation: AcousticObservation, now: number) {
+  isCurrent(observation: AcousticObservation) { return this.startedAt === observation.startedAt; }
+
+  presented(observation: AcousticObservation, now: number) {
     this.lastFeedback = now;
     this.phraseFeedback = true;
     if (observation.change) this.lastChange[observation.change] = now;
