@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FeaturePipeline, type FeatureWorker } from '../../packages/sdk/src/feature-pipeline';
 import { frame } from './fixtures';
-import { MN10_MODEL_VERSION } from '@sonoscope/core';
+import { makeFrame, MN10_MODEL_VERSION, summarizeFrames, type FeatureFrame, type FeatureSnapshot } from '@sonoscope/core';
 
 const assets = { wasmUrl: '/vendor/wasm', modelUrl: '/model/yamnet.tflite', modelVersion: 'yamnet-1' };
 function worker() { return { postMessage: vi.fn(), terminate: vi.fn(), onmessage: null, onerror: null } as FeatureWorker & { postMessage: ReturnType<typeof vi.fn>; terminate: ReturnType<typeof vi.fn> }; }
@@ -13,6 +13,37 @@ const pcm = () => new Float32Array(1024).fill(.1);
 afterEach(() => vi.useRealTimers());
 
 describe('worker readiness and bounded processing', () => {
+  it('keeps snapshots equivalent with a full history, late timestamps, and the exact time boundary', () => {
+    vi.useFakeTimers();
+    let now = 10000, lastSnapshotAt = 0, reference: FeatureFrame[] = [];
+    const w = worker(), pipeline = new FeaturePipeline({ workerFactory: () => w, now: () => now });
+    const snapshots: FeatureSnapshot[] = [], expected: (FeatureSnapshot | null)[] = [];
+    pipeline.onSnapshot(value => snapshots.push(value));
+    const captures = [...Array.from({ length: 181 }, (_, i) => 10000 + i * 14), 12550, 12398, 12399, 14599];
+    const values = frame().values;
+    try {
+      pipeline.start('audio');
+      send(w, 'dsp-ready');
+      for (const [seq, capturedAt] of captures.entries()) {
+        now = Math.max(now, capturedAt);
+        const measured = { ...values, rms: seq / captures.length };
+        pipeline.feed(pcm(), 48000, seq / 50, 'audio', capturedAt);
+        const message = w.postMessage.mock.calls.at(-1)![0];
+        send(w, 'frame', { ...message, type: 'frame', values: measured, processingMs: 2 });
+        reference = [...reference, makeFrame('audio', seq, seq / 50, capturedAt, 48000, measured)]
+          .filter(f => capturedAt - f.capturedAt <= 2200).slice(-120);
+        lastSnapshotAt ||= capturedAt;
+        if (capturedAt - lastSnapshotAt >= 2000) {
+          expected.push(summarizeFrames(reference, `audio_${seq}`));
+          lastSnapshotAt = capturedAt;
+        }
+      }
+      expect(snapshots).toEqual(expected);
+      expect(snapshots[0].frames).toBe(120);
+      expect(reference.map(f => f.capturedAt)).toContain(12399);
+      expect(reference.map(f => f.capturedAt)).not.toContain(12398);
+    } finally { pipeline.dispose(); }
+  });
   it.each([16000, 44100, 48000])('sends complete non-padded model windows at %s Hz without losing the remainder', rate => {
     vi.useFakeTimers(); const w = worker(), pipeline = new FeaturePipeline({ modelWorkerFactory: () => w, workerAssets: assets });
     try {

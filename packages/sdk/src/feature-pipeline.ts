@@ -220,7 +220,18 @@ export class FeaturePipeline {
     if (!this.id || this.now() - capturedAt > 1000 || (this.frames.length && seq <= this.frames[this.frames.length - 1].seq)) return;
     const model = this.model && capturedAt >= this.model.capturedAt && capturedAt - this.model.capturedAt < 3000 ? this.model : null;
     const frame = makeFrame(this.id, seq, audioTime, capturedAt, sampleRate, values, model);
-    this.frames.push(frame); this.frames = this.frames.filter(f => capturedAt - f.capturedAt <= 2200).slice(-120);
+    // Keep the snapshot window in place. Captured timestamps can arrive out of
+    // order even when frame sequences increase, so scan all retained entries.
+    let retained = 0;
+    for (const previous of this.frames) {
+      if (capturedAt - previous.capturedAt <= 2200) this.frames[retained++] = previous;
+    }
+    this.frames.length = retained;
+    this.frames.push(frame);
+    if (this.frames.length > 120) {
+      this.frames.copyWithin(0, this.frames.length - 120);
+      this.frames.length = 120;
+    }
     const timing: FeatureTiming = { audioSessionId: this.id, seq, capturedAt, readyAt: this.now(), dspComputeMs: typeof processingMs === 'number' && Number.isFinite(processingMs) && processingMs >= 0 && processingMs <= 2000 ? processingMs : null, source };
     for (const fn of this.timingListeners) fn(timing);
     for (const fn of this.frameListeners) fn(frame);
