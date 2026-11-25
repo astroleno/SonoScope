@@ -1,0 +1,1911 @@
+{
+  "dateLocal": "2026-11-25",
+  "timezone": "Asia/Taipei",
+  "baselineCommit": "4433c59cecc2405a5930a4f35b48e18d958770ac",
+  "baselineAppCommit": "66a682c73b53ad78c2025fac56309c8b43e89c6f",
+  "buildId": "HpEMgTtvpYh9W8vKwjiwA",
+  "validatedSourceSha256": {
+    "app/app/globals.css": "b8d33af907aa87d43d2ea7e1b868a2d2bd079d90bab598a91ff581858ef7c978",
+    "app/components/recording-controls.tsx": "97628bbb871bb910fc9325ee32ee3f26d5fdb3201030031a2f1e07d929f6a142",
+    "app/components/sonoscope-experience.tsx": "3fdbc76293c0b38fe821a2bb3ddb11b5ffc3a4624217079386636c5bdcf02fe7",
+    "app/hooks/use-recordings.ts": "3f54f13b77e744ebc39e3cc264d3a4cbe3a297c9b5ac77f8c0ef38124b40910f",
+    "app/hooks/use-sonoscope.ts": "f3f44fc22c34e153c54734d562c5912dd01cdcbedbbefabafdd1d7ba08080fa6",
+    "app/visuals/wave.ts": "2898be0cb152e3c5f55b69bed2a97d7d8b8bdcf94d0443cb9a904a58f1e612b3",
+    "packages/danmu-pipeline/acoustic-observations.ts": "57f9f764c625a97dcafda5862b62d60f31af546be67066b774e7d025e0f9a9ae",
+    "packages/danmu-pipeline/comment-queue.ts": "bcc71d7e3cf3f1db688d461c9f53ddf819595945126e84422f28400e031eacfe",
+    "packages/danmu-pipeline/controller.ts": "816a3a60ef9b0a559fe72e76728ff7b394e1caa2003b39ac27c49cb151a4ec41",
+    "packages/danmu-pipeline/dom-sink.ts": "6e9a95caf739e27daea4103461cd96b02f6f1010a94b3a48ff5bc2d7fd6cb879",
+    "test/launch/acoustic-density.test.ts": "ce24b49e7142b573b21163a509f5b6fd81aaecfcaf74446ad3601bc26f7a211d",
+    "test/launch/dom-sink.test.tsx": "8fe4ecf8fcbe4060c7396326d787a1e2614505fb9c821d9ee4b526d861faed71",
+    "test/launch/experience-controls.test.tsx": "639075fc78159fb70e821b57f2d7075fcc6d375d56b3098f4152b52c17fb7769",
+    "test/launch/wave-response.test.ts": "6960a94e56ac1883940cbaf034c048dcb9366ac2d1aedf7069691ad2c483905c"
+  },
+  "engineering": {
+    "initialFormalPassed": 272,
+    "formalTotal": 274,
+    "targetedRerunPassed": 18,
+    "compatibilityPassed": 47,
+    "lint": "passed",
+    "typeCheck": "passed",
+    "productionBuild": "passed with webpack build cache disabled in isolated copy",
+    "releaseSmoke": {
+      "source": "local standalone release (same platform/architecture)",
+      "measuredAt": "2026-11-24T17:13:41.655Z",
+      "basePath": "/SonoScope",
+      "routes": [
+        {
+          "path": "/SonoScope",
+          "status": 200
+        },
+        {
+          "path": "/api/health",
+          "status": 200
+        },
+        {
+          "path": "/api/runtime-config",
+          "status": 200
+        },
+        {
+          "path": "/standalone-client",
+          "status": 307,
+          "location": "/SonoScope/"
+        },
+        {
+          "path": "/mochi",
+          "status": 200
+        },
+        {
+          "path": "/test",
+          "status": 404
+        },
+        {
+          "path": "/icon.png",
+          "status": 200
+        },
+        {
+          "path": "/apple-icon.png",
+          "status": 200
+        },
+        {
+          "path": "/manifest.webmanifest",
+          "status": 200
+        },
+        {
+          "path": "/sonoscope-sw.js",
+          "status": 200
+        },
+        {
+          "path": "/audio/capture-worklet.js",
+          "status": 200
+        },
+        {
+          "path": "/model/yamnet-1.tflite",
+          "status": 200
+        },
+        {
+          "path": "/vendor/mediapipe-audio-1.1.0/wasm/audio_wasm_internal.wasm",
+          "status": 200
+        }
+      ],
+      "staticFiles": 47,
+      "providerKeyInPublicOutput": null
+    }
+  },
+  "shader": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+    "rendererClass": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+    "query": "GPU elapsed query",
+    "drawsPerSample": 6,
+    "focused": false,
+    "visible": "visible",
+    "error": 0,
+    "pixels": [
+      {
+        "name": "quiet",
+        "w": 1280,
+        "h": 720,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 3686400,
+        "mae": 0
+      },
+      {
+        "name": "medium",
+        "w": 1280,
+        "h": 720,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 3686400,
+        "mae": 0
+      },
+      {
+        "name": "loud",
+        "w": 1280,
+        "h": 720,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 3686400,
+        "mae": 0
+      },
+      {
+        "name": "upper",
+        "w": 1280,
+        "h": 720,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 3686400,
+        "mae": 0
+      },
+      {
+        "name": "thin",
+        "w": 1280,
+        "h": 720,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 3686400,
+        "mae": 0
+      },
+      {
+        "name": "quiet",
+        "w": 320,
+        "h": 568,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 727040,
+        "mae": 0
+      },
+      {
+        "name": "medium",
+        "w": 320,
+        "h": 568,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 727040,
+        "mae": 0
+      },
+      {
+        "name": "loud",
+        "w": 320,
+        "h": 568,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 727040,
+        "mae": 0
+      },
+      {
+        "name": "upper",
+        "w": 320,
+        "h": 568,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 727040,
+        "mae": 0
+      },
+      {
+        "name": "thin",
+        "w": 320,
+        "h": 568,
+        "max": 0,
+        "channelsChanged": 0,
+        "channels": 727040,
+        "mae": 0
+      }
+    ],
+    "speed": [
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.08720133333333334
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.0229375
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.0335555
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.0876735
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.08712483333333333
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.061416500000000006
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.06121516666666666
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.032729
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.08695833333333335
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.06195133333333333
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.023166500000000003
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.03777066666666667
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.08697916666666666
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.06223600000000001
+      },
+      {
+        "name": "quiet",
+        "key": "after",
+        "ms": 0.061805500000000006
+      },
+      {
+        "name": "quiet",
+        "key": "before",
+        "ms": 0.08704849999999999
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.124854
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.081479
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.030333166666666665
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.03800683333333333
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.08786100000000001
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.08197216666666667
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.08152766666666666
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.0872985
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.08711799999999999
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.08190966666666667
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.08195133333333333
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.0870625
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.08770816666666666
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.08151383333333333
+      },
+      {
+        "name": "medium",
+        "key": "after",
+        "ms": 0.0820415
+      },
+      {
+        "name": "medium",
+        "key": "before",
+        "ms": 0.0873055
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.08710416666666666
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.0875415
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08756233333333334
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.08700683333333332
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.08741666666666666
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08749983333333333
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08743733333333333
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.0870415
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.037368
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08761799999999999
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08760416666666666
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.08695833333333335
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.08711799999999999
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08754849999999999
+      },
+      {
+        "name": "loud",
+        "key": "after",
+        "ms": 0.08734716666666666
+      },
+      {
+        "name": "loud",
+        "key": "before",
+        "ms": 0.0870625
+      }
+    ]
+  },
+  "queuedCommentRecovery": [
+    {
+      "version": "before",
+      "kind": "space-recovers-after-expiry",
+      "opensAt": 3300,
+      "visible": [
+        {
+          "atMs": 12080,
+          "text": "这段声音的低频比较明显"
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "kind": "new-tone-after-silence",
+      "opensAt": 2000,
+      "visible": [
+        {
+          "atMs": 2000,
+          "text": "这段声音的低频比较明显"
+        },
+        {
+          "atMs": 3000,
+          "text": "声音刚刚有了新的变化"
+        },
+        {
+          "atMs": 13200,
+          "text": "这段声音的高频比较明显"
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "kind": "space-recovers-after-expiry",
+      "opensAt": 3300,
+      "visible": [
+        {
+          "atMs": 3300,
+          "text": "这段声音的低频比较明显"
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "kind": "new-tone-after-silence",
+      "opensAt": 2000,
+      "visible": [
+        {
+          "atMs": 2000,
+          "text": "声音刚刚有了新的变化"
+        },
+        {
+          "atMs": 14000,
+          "text": "这段声音的高频比较明显"
+        }
+      ]
+    }
+  ],
+  "browserSummary": {
+    "before": {
+      "normal": {
+        "runs": 3,
+        "firstVisibleMs": [
+          88.67,
+          873.67,
+          90.33
+        ],
+        "medianFirstVisibleMs": 90.33,
+        "medianSessionFps": 21,
+        "secondsObserved": 15,
+        "secondsAtOrAbove45Fps": 0
+      },
+      "recording": {
+        "runs": 3,
+        "firstVisibleMs": [
+          1006.67,
+          313.67,
+          537.33
+        ],
+        "medianFirstVisibleMs": 537.33,
+        "medianSessionFps": 6,
+        "secondsObserved": 15,
+        "secondsAtOrAbove45Fps": 0
+      }
+    },
+    "after": {
+      "normal": {
+        "runs": 3,
+        "firstVisibleMs": [
+          47.67,
+          362.67,
+          374.33
+        ],
+        "medianFirstVisibleMs": 362.67,
+        "medianSessionFps": 22,
+        "secondsObserved": 14,
+        "secondsAtOrAbove45Fps": 0
+      },
+      "recording": {
+        "runs": 3,
+        "firstVisibleMs": [
+          478.67,
+          314.67,
+          239.33
+        ],
+        "medianFirstVisibleMs": 314.67,
+        "medianSessionFps": 22,
+        "secondsObserved": 14,
+        "secondsAtOrAbove45Fps": 0
+      }
+    }
+  },
+  "browserComparisonsAndQuality": [
+    {
+      "v": "before",
+      "name": "short-vibeace",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 8525.905000001192,
+        "comments": [
+          {
+            "t": 1216,
+            "mediaMs": 1134,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "5d65cddc-0423-47c7-a2c3-bdeee80a6b5a"
+          },
+          {
+            "t": 2450,
+            "mediaMs": 2368,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "7ccce62e-85bd-4029-8f2a-77c00db999e6"
+          },
+          {
+            "t": 6067,
+            "mediaMs": 5983,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "84fbafe1-3d83-440f-9642-6630a3412879"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 902
+          },
+          {
+            "s": "idle",
+            "t": 6683
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "0b76e7c2-3dbb-4fa7-939a-abde52264622",
+          "observedSeconds": 4,
+          "visualSamples": 143,
+          "visualP95Ms": 23,
+          "featureSamples": 281,
+          "dspComputeP95Ms": 5,
+          "captureToFeatureP95Ms": 7,
+          "featureToDrawP95Ms": 20,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0.25,
+          "fpsMedian": 27,
+          "localFirstP95Ms": 75,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": false,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-vibeace",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 12877.570000007749,
+        "comments": [
+          {
+            "t": 1152,
+            "mediaMs": 1093,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "b528d6f1-d75c-457f-b739-f420e6f3118c"
+          },
+          {
+            "t": 2452,
+            "mediaMs": 2405,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "1829e54b-31f5-4e5e-b5ee-fd97785fef26"
+          },
+          {
+            "t": 3467,
+            "mediaMs": 3407,
+            "text": "这段声音保持着连续",
+            "source": "local",
+            "id": "faa55ad2-1dfd-475e-a4a2-8c93b1292861"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 918
+          },
+          {
+            "s": "idle",
+            "t": 6650
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "d0bd9e1a-4b4c-43c1-98f8-ed43d13da346",
+          "observedSeconds": 4,
+          "visualSamples": 115,
+          "visualP95Ms": 24,
+          "featureSamples": 276,
+          "dspComputeP95Ms": 7,
+          "captureToFeatureP95Ms": 24,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0.25,
+          "fpsMedian": 22,
+          "localFirstP95Ms": 42,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-vibeace",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 10206.84999999404,
+        "comments": [
+          {
+            "t": 1697,
+            "mediaMs": 1524,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "42628c5c-0a6b-424c-9a32-9da8dbbf0fcf"
+          },
+          {
+            "t": 4345,
+            "mediaMs": 4180,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "64c8d557-544f-4c64-b8b2-794da8a6338b"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 695
+          },
+          {
+            "s": "idle",
+            "t": 7828
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "4f1e6a26-b760-4d74-9f05-94bc76dce9f5",
+          "observedSeconds": 4,
+          "visualSamples": 39,
+          "visualP95Ms": 48,
+          "featureSamples": 280,
+          "dspComputeP95Ms": 5,
+          "captureToFeatureP95Ms": 15,
+          "featureToDrawP95Ms": 31,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 2,
+          "localFirstP95Ms": 467.666748046875,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "0f5e262b-b45e-409d-bb7a-58f8be435bda",
+          "durationMs": 5728,
+          "bytes": 46045,
+          "pendingBytes": 7046,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 695,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": false,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "0f5e262b-b45e-409d-bb7a-58f8be435bda",
+        "durationMs": 5716.563,
+        "bytes": 54929,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "before",
+      "name": "short-vibeace",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 17219.614999994636,
+        "comments": [
+          {
+            "t": 3168,
+            "mediaMs": 2052,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "7ea21e24-dc5c-4b79-8c00-9c9eee29985e"
+          },
+          {
+            "t": 4634,
+            "mediaMs": 3573,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "987d7404-67ce-4ebf-b836-30a51ed53b43"
+          },
+          {
+            "t": 7117,
+            "mediaMs": 5961,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "0de7e13e-e94c-4a0b-a4b6-a293eacec2f5"
+          }
+        ],
+        "states": [
+          {
+            "s": "requesting",
+            "t": -314
+          },
+          {
+            "s": "running",
+            "t": 1652
+          },
+          {
+            "s": "idle",
+            "t": 7834
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "7d3f2752-4ea8-4a2b-bf73-ed46f2e78955",
+          "observedSeconds": 5,
+          "visualSamples": 20,
+          "visualP95Ms": 152,
+          "featureSamples": 265,
+          "dspComputeP95Ms": 10,
+          "captureToFeatureP95Ms": 273,
+          "featureToDrawP95Ms": 125,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 2,
+          "localFirstP95Ms": 980.666748046875,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "9605eaaa-2049-4d31-b69d-da116bc1eb82",
+          "durationMs": 4240,
+          "bytes": 36474,
+          "pendingBytes": 9436,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 1652,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "9605eaaa-2049-4d31-b69d-da116bc1eb82",
+        "durationMs": 4223.542,
+        "bytes": 38310,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "after",
+      "name": "short-nutcracker",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 38955.390000000596,
+        "comments": [
+          {
+            "t": 2685,
+            "mediaMs": 2496,
+            "text": "这段声音保持着连续",
+            "source": "local",
+            "id": "48c79e43-e73e-4dd2-afe1-03370e65976b"
+          },
+          {
+            "t": 5337,
+            "mediaMs": 5136,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "e1c5072a-f9a9-487d-a102-d8558fbbad88"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 802
+          },
+          {
+            "s": "idle",
+            "t": 7919
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "79d159a8-2712-46ca-b9ba-9e1a4efaf8d1",
+          "observedSeconds": 6,
+          "visualSamples": 158,
+          "visualP95Ms": 25,
+          "featureSamples": 311,
+          "dspComputeP95Ms": 5,
+          "captureToFeatureP95Ms": 21,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 28,
+          "localFirstP95Ms": 341,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "before",
+      "name": "short-nutcracker",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 15599.260000005364,
+        "comments": [
+          {
+            "t": 3111,
+            "mediaMs": 3007,
+            "text": "这段声音保持着连续",
+            "source": "local",
+            "id": "59f4f6fe-3298-425b-a421-797453ab9429"
+          },
+          {
+            "t": 5280,
+            "mediaMs": 5261,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "03f9a457-dee8-41ad-9a60-884b4726902d"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 295
+          },
+          {
+            "s": "idle",
+            "t": 8844
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "1723c4e1-12d7-4abb-beda-033df1a04dd7",
+          "observedSeconds": 6,
+          "visualSamples": 104,
+          "visualP95Ms": 26,
+          "featureSamples": 316,
+          "dspComputeP95Ms": 6,
+          "captureToFeatureP95Ms": 41,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 5,
+          "localFirstP95Ms": 860.666748046875,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "before",
+      "name": "short-nutcracker",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 19757.230000004172,
+        "comments": [
+          {
+            "t": 2847,
+            "mediaMs": 2447,
+            "text": "这段声音保持着连续",
+            "source": "local",
+            "id": "ebea7430-6639-4f59-aa75-bfdb0a8d34be"
+          },
+          {
+            "t": 6230,
+            "mediaMs": 5840,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "59ff86a3-9b90-47a5-9054-30a6fdece35f"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 799
+          },
+          {
+            "s": "idle",
+            "t": 8080
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "16ad115b-41b8-477b-9929-a232fac389aa",
+          "observedSeconds": 5,
+          "visualSamples": 35,
+          "visualP95Ms": 126,
+          "featureSamples": 313,
+          "dspComputeP95Ms": 7,
+          "captureToFeatureP95Ms": 93,
+          "featureToDrawP95Ms": 70,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 6,
+          "localFirstP95Ms": 288,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "458c4aa1-ef06-4b06-8ff6-89703712a046",
+          "durationMs": 7002.666666666666,
+          "bytes": 59275,
+          "pendingBytes": 9458,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 799,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "458c4aa1-ef06-4b06-8ff6-89703712a046",
+        "durationMs": 6975.042,
+        "bytes": 71525,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "after",
+      "name": "short-nutcracker",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 16734.295000001788,
+        "comments": [
+          {
+            "t": 2705,
+            "mediaMs": 2448,
+            "text": "这段声音保持着连续",
+            "source": "local",
+            "id": "3cb07fb3-2a1b-403d-b0a9-71bc43fb5228"
+          },
+          {
+            "t": 5388,
+            "mediaMs": 5104,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "00e67782-ee05-44f8-8916-1ac222f72657"
+          }
+        ],
+        "states": [
+          {
+            "s": "requesting",
+            "t": 155
+          },
+          {
+            "s": "running",
+            "t": 1155
+          },
+          {
+            "s": "idle",
+            "t": 8019
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "9213c79f-3828-410d-93b7-3be0da2e15d3",
+          "observedSeconds": 5,
+          "visualSamples": 125,
+          "visualP95Ms": 34,
+          "featureSamples": 327,
+          "dspComputeP95Ms": 8,
+          "captureToFeatureP95Ms": 29,
+          "featureToDrawP95Ms": 28,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0.2,
+          "fpsMedian": 22,
+          "localFirstP95Ms": 295,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "3ea5f8c8-8046-4a2f-bb3a-1e9ab654c3ab",
+          "durationMs": 6597.333333333333,
+          "bytes": 50238,
+          "pendingBytes": 9366,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 1155,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": false,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "3ea5f8c8-8046-4a2f-bb3a-1e9ab654c3ab",
+        "durationMs": 6569.979,
+        "bytes": 70351,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "before",
+      "name": "short-pistachio",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1066.6666666666667,
+      "observed": {
+        "file": "short-pistachio.wav",
+        "visibility": "visible",
+        "changed": 8888.304999992251,
+        "comments": [
+          {
+            "t": 1260,
+            "mediaMs": 1157,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "8bcd2924-92f7-4dfe-aa68-d00ce70cc2b4"
+          },
+          {
+            "t": 2325,
+            "mediaMs": 2197,
+            "text": "声音主要落在中频",
+            "source": "local",
+            "id": "33db07ed-40cb-4e2f-a6d8-30713ca44ed7"
+          },
+          {
+            "t": 3858,
+            "mediaMs": 3737,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "88cf9a16-7810-4d61-9bd5-02d0f9a204de"
+          },
+          {
+            "t": 5291,
+            "mediaMs": 5163,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "784b8e54-8cbc-4f90-ac86-bb6b582fc022"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 258
+          },
+          {
+            "s": "idle",
+            "t": 6724
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "be9d7742-a5c9-4735-a799-a55649f5a55f",
+          "observedSeconds": 5,
+          "visualSamples": 106,
+          "visualP95Ms": 29,
+          "featureSamples": 281,
+          "dspComputeP95Ms": 7,
+          "captureToFeatureP95Ms": 21,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 21,
+          "localFirstP95Ms": 84,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-pistachio",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1066.6666666666667,
+      "observed": {
+        "file": "short-pistachio.wav",
+        "visibility": "visible",
+        "changed": 12087.320000007749,
+        "comments": [
+          {
+            "t": 1625,
+            "mediaMs": 1441,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "5cf9e0f4-23ce-4357-bc10-49c4e7a7283a"
+          },
+          {
+            "t": 2773,
+            "mediaMs": 2573,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "146008e8-3805-4c36-95b7-ad3319e93380"
+          },
+          {
+            "t": 4490,
+            "mediaMs": 4301,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "2a349fb9-433c-47da-96a0-1b11fc3fe991"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 592
+          },
+          {
+            "s": "idle",
+            "t": 7007
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "49b3041f-aad0-422e-b5b5-48feec27a7cf",
+          "observedSeconds": 4,
+          "visualSamples": 89,
+          "visualP95Ms": 31,
+          "featureSamples": 280,
+          "dspComputeP95Ms": 9,
+          "captureToFeatureP95Ms": 27,
+          "featureToDrawP95Ms": 26,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 13,
+          "localFirstP95Ms": 360,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": false,
+        "state": "visible"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-pistachio",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 1066.6666666666667,
+      "observed": {
+        "file": "short-pistachio.wav",
+        "visibility": "visible",
+        "changed": 6815.79999999702,
+        "comments": [
+          {
+            "t": 1594,
+            "mediaMs": 1306,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "ffbf2048-3943-4626-bbc1-2de9c04d39b4"
+          },
+          {
+            "t": 2827,
+            "mediaMs": 2523,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "a9d3d28c-3959-4786-891e-4291180e60a4"
+          },
+          {
+            "t": 4043,
+            "mediaMs": 3738,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "9db1c4fc-106b-4451-ba5f-10ed110bdf86"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 593
+          },
+          {
+            "s": "idle",
+            "t": 6893
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "0fab6ebb-6ec6-4411-a17c-035459e6a3e7",
+          "observedSeconds": 5,
+          "visualSamples": 114,
+          "visualP95Ms": 27,
+          "featureSamples": 280,
+          "dspComputeP95Ms": 7,
+          "captureToFeatureP95Ms": 17,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 23,
+          "localFirstP95Ms": 222,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "f05ac0ea-dbef-4db0-bd3f-7f7acd5622cd",
+          "durationMs": 6048,
+          "bytes": 51526,
+          "pendingBytes": 9400,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 593,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "f05ac0ea-dbef-4db0-bd3f-7f7acd5622cd",
+        "durationMs": 6036.354,
+        "bytes": 64637,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "before",
+      "name": "short-pistachio",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 1066.6666666666667,
+      "observed": {
+        "file": "short-pistachio.wav",
+        "visibility": "visible",
+        "changed": 7287.230000004172,
+        "comments": [
+          {
+            "t": 1650,
+            "mediaMs": 1604,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "4c14b49a-38ab-4128-ad59-e47b346ae571"
+          },
+          {
+            "t": 2651,
+            "mediaMs": 2603,
+            "text": "声音变得更有力了",
+            "source": "local",
+            "id": "d6940e2e-70a5-409f-9d1c-d26b997f19e8"
+          },
+          {
+            "t": 3867,
+            "mediaMs": 3845,
+            "text": "声音轻了下来",
+            "source": "local",
+            "id": "1674f6a6-a3b8-4cee-ab9e-48d2a3fa81f1"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 636
+          },
+          {
+            "s": "idle",
+            "t": 6652
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "1aa5e975-21b6-40d3-a4e3-f7ce6e27e9a4",
+          "observedSeconds": 5,
+          "visualSamples": 85,
+          "visualP95Ms": 28,
+          "featureSamples": 271,
+          "dspComputeP95Ms": 5,
+          "captureToFeatureP95Ms": 52,
+          "featureToDrawP95Ms": 21,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 18,
+          "localFirstP95Ms": 517,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "e9d47463-3420-4c6a-a69c-8b083ab67ab8",
+          "durationMs": 5888,
+          "bytes": 52522,
+          "pendingBytes": 9426,
+          "message": null
+        },
+        "interruptions": 0,
+        "ended": true,
+        "armed": 636,
+        "endState": "idle"
+      },
+      "visibility": {
+        "events": [],
+        "focus": true,
+        "state": "visible"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "e9d47463-3420-4c6a-a69c-8b083ab67ab8",
+        "durationMs": 5865.7919999999995,
+        "bytes": 63451,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    {
+      "v": "after",
+      "test": "quality",
+      "name": "steady-long",
+      "error": "PageUnresponsiveError: Page p1 (http://127.0.0.1:15356/SonoScope?experienceQA=steady-long) did not answer Input.dispatchMouseEvent within 15000ms: a main-frame navigation had started but not committed. It was stopped once that wait ran out, so the Page answers again and shows http://127.0.0.1:15356/SonoScope?experienceQA=steady-long. Retry the call to continue on that document; to load the pending one, call page.goto(url, { timeout }) with a longer timeout, or continue on a new Page from task.newPage()."
+    },
+    {
+      "v": "after",
+      "test": "quality",
+      "name": "low-high",
+      "onsetMs": 650,
+      "observed": {
+        "file": "low-high.wav",
+        "visibility": "visible",
+        "changed": 53246.44500000775,
+        "comments": [
+          {
+            "t": 3220,
+            "mediaMs": 1674,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "701549a8-1488-433d-9bbc-6d327f3a37d4"
+          },
+          {
+            "t": 6202,
+            "mediaMs": 4568,
+            "text": "高频的声音更明显了",
+            "source": "local",
+            "id": "e7e2844e-c9e1-4f90-9c9f-a366afa1f485"
+          }
+        ],
+        "states": [
+          {
+            "s": "requesting",
+            "t": -96
+          },
+          {
+            "s": "running",
+            "t": 1835
+          },
+          {
+            "s": "idle",
+            "t": 9869
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "3194f8ac-160f-436c-8e93-7711e69c8cf5",
+          "observedSeconds": 6,
+          "visualSamples": 81,
+          "visualP95Ms": 175,
+          "featureSamples": 328,
+          "dspComputeP95Ms": 19,
+          "captureToFeatureP95Ms": 186,
+          "featureToDrawP95Ms": 45,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 10,
+          "localFirstP95Ms": 1061.333251953125,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      }
+    },
+    {
+      "v": "after",
+      "test": "quality",
+      "name": "high-low",
+      "onsetMs": 650,
+      "observed": {
+        "file": "high-low.wav",
+        "visibility": "visible",
+        "changed": 27830.37999999523,
+        "comments": [
+          {
+            "t": 997,
+            "mediaMs": 694,
+            "text": "声音刚刚有了新的变化",
+            "source": "local",
+            "id": "f7f54ea6-bba5-4ad3-9787-760fcbab7c5a"
+          },
+          {
+            "t": 4432,
+            "mediaMs": 4161,
+            "text": "低频的声音更明显了",
+            "source": "local",
+            "id": "4cce01f8-0c7b-45ce-a7e0-3f85e268ccde"
+          }
+        ],
+        "states": [
+          {
+            "s": "running",
+            "t": 497
+          },
+          {
+            "s": "idle",
+            "t": 8447
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "30295533-0452-4e7d-9e40-c02d9a17f93c",
+          "observedSeconds": 6,
+          "visualSamples": 124,
+          "visualP95Ms": 29,
+          "featureSamples": 326,
+          "dspComputeP95Ms": 10,
+          "captureToFeatureP95Ms": 29,
+          "featureToDrawP95Ms": 25,
+          "dspMode": "worker",
+          "desktopFpsPassRate": 0,
+          "mobileFpsPassRate": 0,
+          "fpsMedian": 17,
+          "localFirstP95Ms": 43,
+          "aiFirstP95Ms": null
+        },
+        "record": null,
+        "interruptions": 0,
+        "ended": true,
+        "endState": "idle"
+      }
+    },
+    {
+      "v": "after",
+      "test": "immersive",
+      "error": "ElementResolutionError: page.click timed out after 16619ms: CDP request timed out: Runtime.evaluate"
+    }
+  ],
+  "interruptedInitialBrowserRuns": [
+    {
+      "v": "before",
+      "name": "short-vibeace",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 7536.9000000059605,
+        "comments": [],
+        "states": [
+          {
+            "s": "running",
+            "t": 856
+          },
+          {
+            "s": "idle",
+            "t": 1873
+          }
+        ],
+        "metrics": null,
+        "record": null,
+        "interruptions": 2,
+        "ended": true,
+        "endState": "idle"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-vibeace",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 1045.3333333333333,
+      "observed": {
+        "file": "short-vibeace.wav",
+        "visibility": "visible",
+        "changed": 9002.219999998808,
+        "comments": [],
+        "states": [
+          {
+            "s": "requesting",
+            "t": -1
+          },
+          {
+            "s": "running",
+            "t": 999
+          },
+          {
+            "s": "idle",
+            "t": 1032
+          }
+        ],
+        "metrics": null,
+        "record": null,
+        "interruptions": 2,
+        "ended": true,
+        "endState": "idle"
+      },
+      "saved": null
+    },
+    {
+      "v": "after",
+      "name": "short-vibeace",
+      "record": true,
+      "test": "timing",
+      "error": "Error: page.waitForFunction timed out after 15000ms on page p1; last URL was \"http://127.0.0.1:15356/SonoScope?experienceQA=2\"; last title was \"SonoScope - 声象\"."
+    },
+    {
+      "v": "before",
+      "name": "short-vibeace",
+      "record": true,
+      "test": "timing",
+      "error": "Error: page.waitForFunction timed out after 15000ms on page p1; last URL was \"http://127.0.0.1:15357/SonoScope?experienceQA=3\"; last title was \"SonoScope - 声象\"."
+    },
+    {
+      "v": "after",
+      "name": "short-nutcracker",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 11607.734999999404,
+        "comments": [],
+        "states": [
+          {
+            "s": "requesting",
+            "t": -54
+          },
+          {
+            "s": "running",
+            "t": 964
+          },
+          {
+            "s": "idle",
+            "t": 2014
+          }
+        ],
+        "metrics": null,
+        "record": null,
+        "interruptions": 2,
+        "ended": true,
+        "endState": "idle"
+      },
+      "saved": null
+    },
+    {
+      "v": "before",
+      "name": "short-nutcracker",
+      "record": false,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 9635.230000004172,
+        "comments": [],
+        "states": [
+          {
+            "s": "running",
+            "t": 621
+          },
+          {
+            "s": "idle",
+            "t": 1636
+          }
+        ],
+        "metrics": null,
+        "record": null,
+        "interruptions": 2,
+        "ended": true,
+        "endState": "idle"
+      },
+      "saved": null
+    },
+    {
+      "v": "before",
+      "name": "short-nutcracker",
+      "record": true,
+      "test": "timing",
+      "onsetMs": 2133.3333333333335,
+      "observed": {
+        "file": "short-nutcracker.wav",
+        "visibility": "visible",
+        "changed": 5901.5400000065565,
+        "comments": [],
+        "states": [
+          {
+            "s": "running",
+            "t": 774
+          },
+          {
+            "s": "idle",
+            "t": 1907
+          }
+        ],
+        "metrics": {
+          "audioSessionId": "3ab8772c-d74c-4cb4-8aed-ac3d390708b2",
+          "observedSeconds": 0,
+          "visualSamples": 1,
+          "visualP95Ms": 23,
+          "featureSamples": 47,
+          "dspComputeP95Ms": 4,
+          "captureToFeatureP95Ms": 8,
+          "featureToDrawP95Ms": 22,
+          "dspMode": "worker",
+          "desktopFpsPassRate": null,
+          "mobileFpsPassRate": null,
+          "fpsMedian": null,
+          "localFirstP95Ms": null,
+          "aiFirstP95Ms": null
+        },
+        "record": {
+          "status": "finalizing",
+          "id": "d814c780-eaec-4b82-a272-eb62b3fe1787",
+          "durationMs": 869.3333333333333,
+          "bytes": 0,
+          "pendingBytes": 9720,
+          "message": null
+        },
+        "interruptions": 2,
+        "ended": true,
+        "armed": 774,
+        "endState": "idle"
+      },
+      "saved": {
+        "status": "saved",
+        "id": "d814c780-eaec-4b82-a272-eb62b3fe1787",
+        "durationMs": 852.4580000000001,
+        "bytes": 4753,
+        "pendingBytes": 0,
+        "message": "录制已中断，已保留可播放内容。"
+      }
+    },
+    {
+      "v": "after",
+      "name": "short-nutcracker",
+      "record": true,
+      "test": "timing",
+      "error": "ElementResolutionError: page.click timed out after 19007ms: CDP request timed out: Runtime.callFunctionOn"
+    }
+  ],
+  "compactRecording": {
+    "v": "after",
+    "test": "immersive",
+    "entry": {
+      "viewport": [
+        320,
+        568
+      ],
+      "prompt": true,
+      "hidden": "true",
+      "footer": true
+    },
+    "active": {
+      "hidden": "true",
+      "canvas": true,
+      "inputMeter": false,
+      "noScroll": true,
+      "stop": true,
+      "boundary": 508,
+      "comments": [
+        {
+          "text": "声音刚刚有了新的变化",
+          "bottom": 101
+        }
+      ]
+    },
+    "saved": {
+      "text": "录播已保存",
+      "focus": "显示界面",
+      "state": {
+        "status": "saved",
+        "id": "e56a4c2d-c8c0-462d-b0b0-b67ca595b9aa",
+        "durationMs": 1108.958,
+        "bytes": 2708,
+        "pendingBytes": 0,
+        "message": null
+      }
+    },
+    "opened": {
+      "hidden": "false",
+      "meter": false,
+      "presets": [
+        "Wave",
+        "Accretion",
+        "Spiral",
+        "Mosaic",
+        "Mochi"
+      ]
+    },
+    "switched": []
+  },
+  "filePlaybackPresets": [
+    {
+      "label": "Wave",
+      "audio": "running",
+      "canvas": [
+        1470,
+        739
+      ]
+    },
+    {
+      "label": "Accretion",
+      "canvas": [
+        1470,
+        739
+      ],
+      "audio": "running",
+      "error": false
+    },
+    {
+      "label": "Spiral",
+      "canvas": [
+        1470,
+        739
+      ],
+      "audio": "running",
+      "error": false
+    },
+    {
+      "label": "Mosaic",
+      "canvas": [
+        1470,
+        739
+      ],
+      "audio": "running",
+      "error": false
+    },
+    {
+      "label": "Mochi",
+      "canvas": [
+        1470,
+        739
+      ],
+      "audio": "running",
+      "error": false
+    }
+  ],
+  "limitations": [
+    "File sources only, macOS Chromium desktop and an emulated 320×568 viewport.",
+    "Three paired cases per mode, insufficient for the formal recording p95 or whole-page desktop and device thresholds.",
+    "The whole-page steady recording fixture was interrupted; the automated stable-audio regression completed.",
+    "Wave screenshots and timings exercise only the specified resolutions and shader inputs. GPU timings exclude the rest of the experience."
+  ]
+}
