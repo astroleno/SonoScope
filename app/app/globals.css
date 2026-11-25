@@ -53,7 +53,8 @@ button:disabled { color: #b7b7c0; cursor: default; }
 .primary-action { background: white; color: #0a0a0f; border-color: white; font-weight: 600; }
 .action-button:disabled { background: #202027; border-color: #4f4f58; }
 .audio-error { border-left: 2px solid var(--accent-color); padding-left: 12px; line-height: 1.7; font-size: 14px; max-width: 640px; }
-.experience-footer { position: absolute; z-index: 20; inset: auto 0 0; max-height: calc(100svh - 150px); overflow-y: auto; padding: 16px clamp(16px, 4vw, 64px) max(16px, env(safe-area-inset-bottom)); background: linear-gradient(#0a0a0f00, #0a0a0feb 38%, #0a0a0f); }
+.experience-bottom { position: absolute; z-index: 20; inset: auto 0 0; pointer-events: none; }
+.experience-footer { pointer-events: auto; max-height: calc(100svh - 150px); overflow-y: auto; padding: 16px clamp(16px, 4vw, 64px) max(16px, env(safe-area-inset-bottom)); background: linear-gradient(#0a0a0f00, #0a0a0feb 38%, #0a0a0f); }
 .dock-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .tools-toggle { color: var(--text-secondary); }
 .tools-panel { padding: 16px 0 4px; margin-top: 12px; border-top: 1px solid #ffffff26; }
@@ -64,9 +65,10 @@ button:disabled { color: #b7b7c0; cursor: default; }
 .input-status[data-input-signal='missing'], .input-status[data-input-signal='analysing'] { color: var(--text-primary); }
 .offline-indicator { margin-top: 8px; color: var(--text-secondary); font-size: 11px; }
 .offline-indicator .service-note { margin: 0; font-size: inherit; }
-.hidden-controls { position: absolute; z-index: 25; inset: auto clamp(16px, 4vw, 64px) max(16px, env(safe-area-inset-bottom)); display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.hidden-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 clamp(16px, 4vw, 64px) max(16px, env(safe-area-inset-bottom)); }
+.hidden-controls > * { pointer-events: auto; }
 .hidden-controls .recording-controls { margin-top: 0; }
-.hidden-controls > .audio-error { flex-basis: 100%; margin: 0; }
+.recording-result { max-width: 42ch; margin: 0; padding: 8px 12px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
 .footer-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 16px; color: var(--text-secondary); font-size: 12px; }
 .service-note { color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
 .toast { position: fixed; bottom: 170px; left: 50%; transform: translateX(-50%); padding: 12px 20px; background: #0a0a0f; border: 1px solid var(--border-color); z-index: 40; font-size: 13px; white-space: nowrap; }

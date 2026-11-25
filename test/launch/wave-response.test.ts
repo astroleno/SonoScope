@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { applyWaveUniforms, WaveEnvelope, WAVE_QUIET_AMPLITUDE, type WaveAudioUniforms } from '../../app/visuals/wave';
+import { applyWaveUniforms, drawWave, WaveEnvelope, WAVE_QUIET_AMPLITUDE, type WaveAudioUniforms } from '../../app/visuals/wave';
 
 const loud: WaveAudioUniforms = { level: .08, flux: .7, pulse: 1, centroid: .6, flatness: .1, zcr: .1, mfcc: [.2, .3, .1, .4] };
 const noise: WaveAudioUniforms = { ...loud, level: .00037, flux: 1, pulse: 1 };
@@ -36,4 +36,14 @@ it('applies one authoritative amplitude and snaps a replay seek without retainin
   const shader = { setUniform: vi.fn((key, value) => uniforms.set(key, value)) };
   applyWaveUniforms({ width: 1280, height: 800, millis: () => 0 }, shader, { ...loud, pulse: 1 }, 1.5, { amplitude: response.amplitude });
   expect(uniforms.get('uAmplitude')).toBe(WAVE_QUIET_AMPLITUDE);
+});
+
+it('uploads the viewport once and uses the replay clock for the full-size Wave draw', () => {
+  const p = { width: 600, height: 800, millis: () => 9999, shader: vi.fn(), noStroke: vi.fn(), rectMode: vi.fn(), rect: vi.fn() };
+  const shader = { setUniform: vi.fn() };
+  applyWaveUniforms(p, shader, loud, 1.5, undefined, 42);
+  drawWave(p, shader);
+  expect(shader.setUniform.mock.calls.filter(([key]) => key === 'uResolution')).toEqual([['uResolution', [600, 800]]]);
+  expect(shader.setUniform).toHaveBeenCalledWith('uTime', 42);
+  expect(p.rect).toHaveBeenCalledWith(0, 0, 600, 800);
 });

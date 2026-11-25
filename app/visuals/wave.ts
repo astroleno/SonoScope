@@ -42,10 +42,7 @@ uniform float uDesaturate;    // 去饱和 0..1（向暖白混合）
 uniform float uLevel;         // 0..1
 uniform float uFlux;          // 0..1
 uniform float uCentroid;      // 0..1
-uniform float uZCR;           // 0..1
-uniform vec4  uMFCC;          // 0..1
 uniform float uPulse;         // 0..1
-uniform float uSensitivity;   // 0.5..3.0
 
 varying vec2 vTexCoord;
 
@@ -66,18 +63,7 @@ float vignette(vec2 uv){
   return smoothstep(1.2, 0.3, r);
 }
 
-void main(){
-  // 归一坐标（按短边保持比例）
-  vec2 uv = (gl_FragCoord.xy - 0.5*R) / min(R.x, R.y);
-
-  // 柔和背景
-  vec3 bgA = vec3(0.06, 0.07, 0.085);
-  vec3 bgB = vec3(0.01, 0.012, 0.015);
-  float grad = clamp((uv.y+0.9)/2.0, 0.0, 1.0);
-  vec3 col = mix(bgA, bgB, grad);
-  col *= 0.98 + 0.02*cos(uTime*0.2);
-  col *= vignette(uv)*0.9 + 0.1;
-
+vec3 waveLight(vec2 uv, float t, float gOff, float glowSigma){
   // 核心相位：固定速度水平推进
   float x = uv.x + uSpeed * uTime;
   float w = 6.2831853 * uFrequency;
@@ -103,9 +89,6 @@ void main(){
   float yG = uAmplitude * sin(phaseG);
   float yB = uAmplitude * sin(phaseB);
 
-  // 固定厚度，避免音频带来的闪烁
-  float t = max(0.001, uThickness);
-
   // 带形强度
   float iR = band(uv, yR, t);
   float iG = band(uv, yG, t);
@@ -119,14 +102,11 @@ void main(){
   float audioGlowIntensity = (uLevel * 4.0 + uFlux * 3.0 + uPulse * 4.5) * highFreqModulation * pulseModulation;
   audioGlowIntensity = clamp(audioGlowIntensity, 0.2, 8.0); // 强烈的扩散光响应
 
-  // 固定的光晕采样距离，只改变强度，不改变距离
-  float gOff = t * 1.8 + 0.001; // 保持原始的扩散距离
-
   // 只增强扩散光的强度，不改变光条本身
   float glowBoost = uGlowStrength * 0.35 * audioGlowIntensity;
-  iR += glowBoost*(band(uv+vec2(0.0, gOff), yR, t*1.35) + band(uv-vec2(0.0, gOff), yR, t*1.35));
-  iG += glowBoost*(band(uv+vec2(0.0, gOff), yG, t*1.35) + band(uv-vec2(0.0, gOff), yG, t*1.35));
-  iB += glowBoost*(band(uv+vec2(0.0, gOff), yB, t*1.35) + band(uv-vec2(0.0, gOff), yB, t*1.35));
+  iR += glowBoost*(band(uv+vec2(0.0, gOff), yR, glowSigma) + band(uv-vec2(0.0, gOff), yR, glowSigma));
+  iG += glowBoost*(band(uv+vec2(0.0, gOff), yG, glowSigma) + band(uv-vec2(0.0, gOff), yG, glowSigma));
+  iB += glowBoost*(band(uv+vec2(0.0, gOff), yB, glowSigma) + band(uv-vec2(0.0, gOff), yB, glowSigma));
 
   // 统一 RGB 带，专注振幅表现
   vec3 waves = vec3(iR, iG, iB);
@@ -134,8 +114,29 @@ void main(){
   vec3 warmWhite = vec3(1.0, 0.97, 0.92) * lumin;
   waves = mix(waves, warmWhite, clamp(uDesaturate, 0.0, 1.0));
 
-  // 亮度整体控制：只增强光晕效果，波形本身保持稳定
-  col = mix(col, col + waves * uBrightness, 1.0);
+  return waves * uBrightness;
+}
+
+void main(){
+  // 归一坐标（按短边保持比例）
+  vec2 uv = (gl_FragCoord.xy - 0.5*R) / min(R.x, R.y);
+
+  // 柔和背景
+  vec3 bgA = vec3(0.06, 0.07, 0.085);
+  vec3 bgB = vec3(0.01, 0.012, 0.015);
+  float grad = clamp((uv.y+0.9)/2.0, 0.0, 1.0);
+  vec3 col = mix(bgA, bgB, grad);
+  col *= 0.98 + 0.02*cos(uTime*0.2);
+  col *= vignette(uv)*0.9 + 0.1;
+
+  float t = max(0.001, uThickness);
+  float gOff = t * 1.8 + 0.001;
+  float glowSigma = t * 1.35;
+  // All centers lie inside [-abs(amplitude), abs(amplitude)]. Beyond eight
+  // glow sigmas the shoulders vanish and each Gaussian is below 1.3e-14.
+  if (abs(uv.y) <= abs(uAmplitude) + gOff + 8.0 * glowSigma) {
+    col += waveLight(uv, t, gOff, glowSigma);
+  }
 
   // 柔和映射
   col = pow(col, vec3(0.95));
@@ -261,15 +262,7 @@ export function applyWaveUniforms(
     shader.setUniform('uLevel', clamp01(audio.level));
     shader.setUniform('uFlux', clamp01(audio.flux));
     shader.setUniform('uCentroid', clamp01(audio.centroid));
-    shader.setUniform('uZCR', clamp01(audio.zcr));
-    shader.setUniform('uMFCC', [
-      clamp01(audio.mfcc?.[0] ?? 0),
-      clamp01(audio.mfcc?.[1] ?? 0),
-      clamp01(audio.mfcc?.[2] ?? 0),
-      clamp01(audio.mfcc?.[3] ?? 0),
-    ]);
     shader.setUniform('uPulse', clamp01(audio.pulse));
-    shader.setUniform('uSensitivity', Math.max(0.5, Math.min(3.0, sensitivity || 1.2)));
   } catch (err) {
     console.error('[Wave] applyWaveUniforms error:', err);
   }
@@ -277,7 +270,6 @@ export function applyWaveUniforms(
 
 export function drawWave(p: any, shader: any){
   try {
-    shader.setUniform('uResolution', [p.width, p.height]);
     p.shader(shader);
     p.noStroke();
     p.rectMode(p.CENTER);

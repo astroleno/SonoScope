@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import SonoScopeExperience from '../../app/components/sonoscope-experience';
 
@@ -13,10 +13,55 @@ beforeEach(() => {
     refreshRecordings: vi.fn(), setRecordingControls: vi.fn(), openPlayback: vi.fn(), recordingSupported: true, finishRecording: vi.fn().mockResolvedValue(undefined),
   };
 });
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 function dismissPrompt() { fireEvent.click(screen.getByRole('button', { name: '先看看' })); }
 function showInterface() { dismissPrompt(); fireEvent.click(screen.getByRole('button', { name: '显示界面' })); }
+
+it('subscribes to the input meter only while the controls are shown', () => {
+  const releasePCM = vi.fn(), releaseFeatures = vi.fn();
+  const onPCM = vi.fn(() => releasePCM), onFrame = vi.fn(() => releaseFeatures);
+  mock.session.inputMonitor = {
+    audio: { onPCM, subscribeState: (listener: (state: unknown) => void) => { listener({ status: 'running', audioSessionId: 'file' }); return () => {}; } },
+    features: { onFrame },
+  };
+  render(<SonoScopeExperience />);
+  expect(onPCM).not.toHaveBeenCalled();
+  showInterface();
+  expect(screen.getByRole('meter', { name: '声音输入电平' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: '隐藏界面' }));
+  expect(releasePCM).toHaveBeenCalledOnce();
+  expect(releaseFeatures).toHaveBeenCalledOnce();
+  expect(screen.queryByRole('meter')).toBeNull();
+});
+
+it('keeps compact recording feedback in the measured boundary and returns to a clean canvas', () => {
+  vi.useFakeTimers();
+  const view = render(<SonoScopeExperience />);
+  dismissPrompt();
+  const bottom = view.container.querySelector('[data-danmu-bottom-boundary]');
+  mock.session.audio = { status: 'running', error: null, sourceType: 'file' };
+  mock.session.recording = { status: 'recording', id: 'take', durationMs: 1200, bytes: 1200 };
+  view.rerender(<SonoScopeExperience />);
+  const stop = screen.getByRole('button', { name: '停止并保存' });
+  expect(bottom?.contains(stop)).toBe(true);
+  fireEvent.click(stop);
+  expect(mock.session.finishRecording).toHaveBeenCalledOnce();
+  expect(document.activeElement).toBe(screen.getByRole('button', { name: '显示界面' }));
+  mock.session.recording = { ...mock.session.recording, status: 'finalizing' };
+  view.rerender(<SonoScopeExperience />);
+  expect(bottom?.contains(screen.getByRole('button', { name: '正在保存…' }))).toBe(true);
+  mock.session.recording = { ...mock.session.recording, status: 'saved' };
+  view.rerender(<SonoScopeExperience />);
+  expect(bottom?.contains(screen.getByText('录播已保存'))).toBe(true);
+  act(() => { vi.advanceTimersByTime(4200); });
+  expect(screen.queryByText('录播已保存')).toBeNull();
+  mock.session.recording = { ...mock.session.recording, status: 'error', message: '空间不足' };
+  view.rerender(<SonoScopeExperience />);
+  expect(bottom?.contains(screen.getByRole('alert'))).toBe(true);
+  expect(bottom?.contains(screen.getByRole('button', { name: '查看录播' }))).toBe(true);
+  expect(screen.queryByRole('radiogroup')).toBeNull();
+});
 
 it('asks before using the microphone and defaults to only two icon controls', () => {
   render(<SonoScopeExperience />);
