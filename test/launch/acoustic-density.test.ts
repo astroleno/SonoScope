@@ -27,8 +27,70 @@ function setup(canShow = () => true) {
       vi.advanceTimersByTime(20);
     }
   };
-  return { controller, shown, sound, play };
+  return { controller, shown, sound, play, skipFrame: () => seq++ };
 }
+
+it('uses 128 ms of consecutive strong frames for a grounded first continuity comment', () => {
+  const t = setup(), start = Date.now();
+  try {
+    t.sound.values.centroidHz = 900;
+    t.sound.values.bands = { low: .38, mid: .43, high: .19, columns: [] };
+    t.sound.values.flatness = .1;
+    t.play(140);
+    expect(t.shown).toHaveLength(0);
+    t.play(20);
+    expect(t.shown).toEqual([{ text: '这段声音保持着连续', at: start + 140 }]);
+  } finally { t.controller.dispose(); }
+});
+
+it('does not borrow weak audio for the first strong continuity window', () => {
+  const t = setup();
+  try {
+    t.sound.values.centroidHz = 900;
+    t.sound.values.bands = { low: .38, mid: .43, high: .19, columns: [] };
+    t.sound.values.flatness = .1;
+    t.sound.values.rms = .0025;
+    t.play(100);
+    t.sound.values.rms = .02;
+    t.play(140);
+    expect(t.shown).toHaveLength(0);
+    t.play(20);
+    expect(t.shown).toHaveLength(1);
+  } finally { t.controller.dispose(); }
+});
+
+it('starts the strong evidence window over when a capture block is missing', () => {
+  const t = setup(), start = Date.now();
+  try {
+    t.sound.values.centroidHz = 900;
+    t.sound.values.bands = { low: .38, mid: .43, high: .19, columns: [] };
+    t.sound.values.flatness = .1;
+    t.play(80);
+    t.skipFrame();
+    t.play(140);
+    expect(t.shown).toHaveLength(0);
+    t.play(20);
+    expect(t.shown).toEqual([{ text: '这段声音保持着连续', at: start + 220 }]);
+  } finally { t.controller.dispose(); }
+});
+
+it('keeps the regular continuity window after the first comment has appeared', () => {
+  const t = setup();
+  try {
+    t.sound.values.centroidHz = 900;
+    t.sound.values.bands = { low: .38, mid: .43, high: .19, columns: [] };
+    t.sound.values.flatness = .1;
+    t.play(180);
+    expect(t.shown).toHaveLength(1);
+    t.sound.values.rms = 0;
+    t.play(11000);
+    t.sound.values.rms = .06;
+    t.play(240);
+    expect(t.shown).toHaveLength(1);
+    t.play(20);
+    expect(t.shown).toHaveLength(2);
+  } finally { t.controller.dispose(); }
+});
 
 it('sparsely reaffirms a stable sound without cycling through paraphrases', () => {
   const t = setup(), onset = Date.now();

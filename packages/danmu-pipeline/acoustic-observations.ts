@@ -7,6 +7,8 @@ const changeIntervalMs = 4000;
 const bandHoldMs = 65;
 const evidenceGapMs = 350;
 const phraseGapMs = 500;
+const firstStrongHoldMs = 128;
+const maxStrongFrameGapMs = 85;
 
 const bandText = {
   low: '这段声音的低频比较明显',
@@ -40,11 +42,14 @@ function dominantBand(frame: FeatureFrame): Band | null {
 /** Session-local evidence and pacing for acoustic feedback. */
 export class AcousticFeedback {
   private lastFrame = -Infinity;
+  private lastSeq = -1;
   private lastAudible = -Infinity;
   private startedAt: number | null = null;
   private continuousSince: number | null = null;
   private level = 0;
   private phraseFeedback = false;
+  private hasPresented = false;
+  private strongStart: { at: number; seq: number } | null = null;
   private lastFeedback = -Infinity;
   private lastChange: Partial<Record<Change, number>> = {};
   private band: Band | null = null;
@@ -59,6 +64,7 @@ export class AcousticFeedback {
     this.continuousSince = null;
     this.level = 0;
     this.phraseFeedback = false;
+    this.strongStart = null;
     this.clearBand();
     this.energyChange = null;
   }
@@ -91,8 +97,15 @@ export class AcousticFeedback {
       this.lastAudible = -Infinity;
     }
     const delta = at - this.lastFrame;
+    const consecutive = frame.seq === this.lastSeq + 1;
     this.lastFrame = at;
+    this.lastSeq = frame.seq;
     const rms = frame.validity.rms.state === 'valid' ? frame.values.rms : 0;
+    const strong = rms >= strongRms;
+    if (!strong) this.strongStart = null;
+    else if (!this.hasPresented && (!this.strongStart || !consecutive || delta <= 0 || delta > maxStrongFrameGapMs)) {
+      this.strongStart = { at, seq: frame.seq };
+    }
     const priorLevel = this.level;
     const alpha = Number.isFinite(delta) && delta > 0 ? 1 - Math.exp(-delta / 300) : .08;
     this.level = this.continuousSince === null ? rms : priorLevel + (rms - priorLevel) * alpha;
@@ -110,7 +123,6 @@ export class AcousticFeedback {
     this.continuousSince ??= at;
     this.lastAudible = at;
     const elapsed = at - this.continuousSince;
-    const strong = rms >= strongRms;
     const band = this.observeBand(strong ? dominantBand(frame) : null, at);
     const onset = rms >= .03 && rms > priorLevel * 1.8 && frame.validity.flux.state === 'valid' && frame.values.flux >= .42;
     const energy = strong && rms > Math.max(.03, priorLevel * 1.8) ? 'louder'
@@ -137,7 +149,9 @@ export class AcousticFeedback {
     if (strong && elapsed >= 180 && frame.validity.flatness.state === 'valid' && frame.values.flatness >= .45) {
       return { text: '声音里有细碎的质感', startedAt: this.startedAt };
     }
-    if (rms >= quietRms && this.level >= quietRms && elapsed >= (strong ? 240 : 300)) {
+    const earlyStrongContinuity = strong && !this.hasPresented && this.strongStart !== null &&
+      at - this.strongStart.at >= firstStrongHoldMs && frame.seq - this.strongStart.seq >= 3;
+    if (rms >= quietRms && this.level >= quietRms && (earlyStrongContinuity || elapsed >= (strong ? 240 : 300))) {
       return { text: strong ? '这段声音保持着连续' : '轻微的声音持续了一小段', startedAt: this.startedAt };
     }
     return null;
@@ -148,6 +162,8 @@ export class AcousticFeedback {
   presented(observation: AcousticObservation, now: number) {
     this.lastFeedback = now;
     this.phraseFeedback = true;
+    this.hasPresented = true;
+    this.strongStart = null;
     if (observation.change) this.lastChange[observation.change] = now;
   }
 }
